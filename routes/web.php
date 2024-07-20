@@ -19,6 +19,12 @@ Route::middleware('auth')->group(function() {
     // User Dashboard Route
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    // User attendace Route
+    Route::get('/attendance', [DashboardController::class, 'toAttendance'])->name('attendance');
+
+    // User seat plan Route
+    Route::get('/seatplan', [DashboardController::class, 'toSeatplan'])->name('seatplan');
+
     // Logout Route
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 

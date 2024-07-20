@@ -25,4 +25,16 @@ class DashboardController extends Controller
             'user' => $user
         ]);
     }
+
+    //Gawa gawa ko to 
+    public function toAttendance(){
+
+        return view('users.attendance');
+    }
+
+    public function toSeatplan(){
+
+        return view('users.seatplan');
+    }
+    
 }

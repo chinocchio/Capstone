@@ -9,6 +9,7 @@ use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Psy\CodeCleaner\ReturnTypePass;
+use Illuminate\Support\Facades\Storage;
 
 
 class PostController extends Controller implements HasMiddleware
@@ -48,17 +49,25 @@ class PostController extends Controller implements HasMiddleware
         // Validate
         $request->validate([
             'title' => ['required', 'max:255'],
-            'body' => ['required']
+            'body' => ['required'],
+            'image' => ['nullable', 'file', 'max:3000', 'mimes:webp,png,jpg']
         ]);
+
+        // Store image if exists
+        $path = null;
+        if ($request->hasFile('image')) {
+            $path = Storage::disk('public')->put('posts_images', $request->image);
+        }
 
         // Create a post
         Auth::user()->posts()->create([
             'title' => $request->title,
-            'body' => $request->body
+            'body' => $request->body,
+            'image' => $path
         ]);
 
         //Redirect to dashboard
-        return redirect()->route('dashboard')->with('success', 'Your post was created.'); 
+        return redirect()->route('dashboard')->with('success', 'You added a schedule.'); 
     }
 
     /**
@@ -93,17 +102,28 @@ class PostController extends Controller implements HasMiddleware
         // Validate
         $request->validate([
             'title' => ['required', 'max:255'],
-            'body' => ['required']
+            'body' => ['required'],
+            'image' => ['nullable', 'file', 'max:3000', 'mimes:webp,png,jpg']
         ]);
+
+        // Store image if exists
+        $path = $post->image ?? null;
+        if ($request->hasFile('image')) {
+            if ($post->image) {
+                Storage::disk('public')->delete($post->image);
+            }
+            $path = Storage::disk('public')->put('posts_images', $request->image);
+        }
 
         // Update a post
         $post->update([
             'title' => $request->title,
-            'body' => $request->body
+            'body' => $request->body,
+            'image' => $path
         ]);
 
         //Redirect to dashboard
-        return redirect()->route('dashboard')->with('success', 'Your post was updated.'); 
+        return redirect()->route('dashboard')->with('success', 'Your schedule was updated.'); 
     }
 
     /**
@@ -114,10 +134,15 @@ class PostController extends Controller implements HasMiddleware
         // Authorizing the action
         Gate::authorize('modify', $post);
 
+        // Delete post image if exists
+        if ($post->image) {
+            Storage::disk('public')->delete($post->image);
+        }
+
         // Delete the post
         $post->delete();
 
         // Redirect back to dashboard
-        return back()->with('delete', 'Your post was deleted!');
+        return back()->with('delete', 'Schedule deleted!');
     }
 }

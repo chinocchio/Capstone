@@ -11,7 +11,11 @@
 <body class="bg-slate-100 text-slate-900">
     <header class="bg-slate-800 shadow-lg">
         <nav>
-            <a href="{{ route('posts.index') }}" class="nav-link">LockUp</a>
+            <a href="{{ route('posts.index') }}" class="nav-link">
+                <img src="{{ asset('storage/posts_images/1jeEWgOagO3eBPcjAJT4eDAgunLMKawi9kwGlYaN.png') }}"
+                alt="LockUp Logo"
+                class="h-1/auto w-1/2">
+            </a>
 
             @auth
                 <div class="relative grid place-items-center" x-data="{ open: false }">
@@ -28,6 +32,9 @@
                         <p class="username">{{ auth()->user()->username }}</p>
 
                         <a href="{{ route('dashboard') }}" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Dashboard</a>
+                        <a href="{{ route('attendance') }}" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Attendance</a>
+                        <a href="#" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Schedule</a>
+                        <a href="{{ route('seatplan') }}" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Seat Plan</a>
 
                         <form action="{{ route('logout') }}" method="post">
                             @csrf
