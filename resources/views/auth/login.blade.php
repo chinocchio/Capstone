@@ -41,6 +41,9 @@
 
             {{-- Button --}}
             <button class="btn">Login</button>
+            <div class="w-3/5 mx-auto mt-4">
+                <a href="{{ route('google-auth') }}" >Sign in with Google</a>
+            </div>
             
         </form>
 
