@@ -7,7 +7,7 @@
             @if ($post->image)
                 <img src="{{ asset('storage/' . $post->image) }}" alt="">
             @else
-                <img class="object-cover object-center rounded-md" src="{{ asset('storage/posts_images/default.jpeg') }}" alt="">
+                <img class="object-cover object-center rounded-md" src="{{ asset('storage/posts_images/default.jpg') }}" alt="">
             @endif
         </div>
 
