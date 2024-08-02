@@ -28,7 +28,6 @@ class AuthController extends Controller
         //Redirect
         return redirect()->route('dashboard');
 
-        dd('ok');
     }
 
     //Login User

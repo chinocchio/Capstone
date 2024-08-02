@@ -4,6 +4,7 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Admin\AdminController;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', 'posts');
@@ -29,10 +30,23 @@ Route::middleware('auth')->group(function() {
 
     // Logout Route
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
-
-
 });
+
+
+// Routes for admin Dashboard
+Route::middleware('admin')->prefix('admin')->group(function() 
+{
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin_dashboard');
+});
+
+//Admin Login Routes
+Route::middleware('guest')->prefix('admin')->group(function() {
+
+    Route::get('/login',[AdminController::class, 'login']);
+    Route::post('/login',[AdminController::class, 'login_submit'])->name('admin_login_submit');
+    Route::post('/logout',[AdminController::class, 'logout'])->name('admin_logout');
+});
+
 
 // Routes for guest users
 Route::middleware('guest')->group(function() {

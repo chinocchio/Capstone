@@ -16,6 +16,8 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        Post::factory(3)->create();
+        // Post::factory(3)->create();
+
+        $this->call([AdminSeeder::class]);
     }
 }

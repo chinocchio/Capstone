@@ -25,11 +25,15 @@ class PostController extends Controller implements HasMiddleware
     /**
      * Display a listing of the resource.
      */
+
     public function index()
     {
         $posts = Post::latest()->paginate(6);
 
-
+        if(Auth::guard('admin')->check())
+        {
+            return view ('posts.aIndex', [ 'posts' => $posts ]);
+        }
         return view ('posts.index', [ 'posts' => $posts ]);
     }
 
