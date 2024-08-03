@@ -79,6 +79,10 @@ class PostController extends Controller implements HasMiddleware
      */
     public function show(Post $post)
     {
+        if(Auth::guard('admin')->check())
+        {
+            return view('posts.aShow', ['post' => $post]);
+        }
         return view('posts.show', ['post' => $post]);
     }
 
@@ -87,11 +91,10 @@ class PostController extends Controller implements HasMiddleware
      */
     public function edit(Post $post)
     {
-
+        
         // Authorizing the action
         Gate::authorize('modify', $post);
-
-
+        
         return view('posts.edit', ['post' => $post]);
     }
 

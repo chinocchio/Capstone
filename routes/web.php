@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\DashboardController;
@@ -11,6 +12,9 @@ Route::redirect('/', 'posts');
 
 // Posts Routes
 Route::resource('posts', PostController::class);
+
+// User Routes
+Route::resource('users', UserController::class);
 
 // User Posts Route
 Route::get('/{user}/posts', [DashboardController::class, 'userPosts'])->name('posts.user');

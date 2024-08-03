@@ -20,6 +20,13 @@ class DashboardController extends Controller
 
         $userPosts = $user->posts()->latest()->paginate(6);
 
+        if(Auth::guard('admin')->check())
+        {
+            return view ('users.aPosts', [
+                'posts' => $userPosts,
+                'user' => $user
+            ]);
+        }
         return view ('users.posts', [
             'posts' => $userPosts,
             'user' => $user
