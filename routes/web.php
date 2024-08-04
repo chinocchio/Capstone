@@ -13,8 +13,8 @@ Route::redirect('/', 'posts');
 // Posts Routes
 Route::resource('posts', PostController::class);
 
-// User Routes
-Route::resource('users', UserController::class);
+//wala lang to
+Route::get('admin/user', [AdminController::class, 'edit'])->name('edit_user');
 
 // User Posts Route
 Route::get('/{user}/posts', [DashboardController::class, 'userPosts'])->name('posts.user');
@@ -40,6 +40,8 @@ Route::middleware('auth')->group(function() {
 // Routes for admin Dashboard
 Route::middleware('admin')->prefix('admin')->group(function() 
 {
+    // User Routes
+    Route::resource('users', UserController::class);
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin_dashboard');
 });
 

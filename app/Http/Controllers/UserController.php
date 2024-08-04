@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 
 use App\Models\User;
+use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
@@ -20,12 +21,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $instructors = User::paginate(6);
-
-        if(Auth::guard('admin')->check())
-        {
-            return view ('admin.admins.dashboard', [ 'users' => $instructors ]);
-        }
+        $instructor = User::all();
     }
 
     /**
@@ -55,18 +51,22 @@ class UserController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Request $request)
-    {
+    public function edit($instructor)
+    {   
+        $instructor = User::find($instructor);
 
-        return view('posts.edit');
+        return view('admin.admins.aEdit', ['instructor' => $instructor]);    
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $instructor)
     {
-        //
+
+        $instructor = User::find($instructor);
+        $instructor->update($request->all());
+        return redirect()->route('admin_dashboard');
     }
 
     /**
@@ -74,6 +74,7 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        User::destroy($id);
+        return redirect()->route('admin_dashboard');
     }
 }

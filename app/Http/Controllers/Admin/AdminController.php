@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 
 use App\Models\User;
+use App\Models\Post;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth; 
@@ -63,5 +64,11 @@ class AdminController extends Controller
     {
         Auth::guard('admin')->logout();
         return redirect('/');
+    }
+
+    public function edit(User $instructors)
+    {
+        dd($instructors);
+        return view('admin.admins.aEdit', ['instructor' => $instructors]);
     }
 }

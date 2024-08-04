@@ -27,11 +27,11 @@
             <x-userCard :instructor="$instructor">
                 <div class="flex items-center justify-end gap-4 mt-6">
                     {{-- Update post --}}
-                    <a href="#"
+                    <a href="{{ route('users.edit', $instructor) }}"
                         class="bg-green-500 text-white px-2 py-1 text-xs rounded-md">Update</a>
 
                     {{-- Delete post --}}
-                    <form action="#" method="post">
+                    <form action="{{ route('users.destroy' , $instructor->id )}}" method="post">
                         @csrf
                         @method('DELETE')
                         <button class="bg-red-500 text-white px-2 py-1 text-xs rounded-md">Delete</button>

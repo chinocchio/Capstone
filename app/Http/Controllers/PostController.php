@@ -90,11 +90,10 @@ class PostController extends Controller implements HasMiddleware
      * Show the form for editing the specified resource.
      */
     public function edit(Post $post)
-    {
-        
+    { 
+
         // Authorizing the action
         Gate::authorize('modify', $post);
-        
         return view('posts.edit', ['post' => $post]);
     }
 

@@ -6,6 +6,7 @@
         <div class="w-4/5">
             {{-- Title --}}
             <h2 class="font-bold text-xl">{{ $instructor->username }}</h2>
+            <p class="font-bold text-xl">{{ $instructor->email }}</p>
         </div>
 
     </div>
