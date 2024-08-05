@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\DashboardController;
@@ -36,6 +37,8 @@ Route::middleware('auth')->group(function() {
 // Routes for admin Dashboard
 Route::middleware('admin')->prefix('admin')->group(function() 
 {
+    // User Routes
+    Route::resource('users', UserController::class);
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin_dashboard');
 });
 

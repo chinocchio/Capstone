@@ -15,7 +15,7 @@ class AuthController extends Controller
         //Validate 
         $fields = $request->validate([
             'username'=>['required', 'max:255'],
-            'email'=>['required', 'max:255', 'email', 'unique:users'],
+            'email'=>['required', 'max:255', 'email', 'unique:users','ends_with:my.cspc.edu.ph'],
             'password'=>['required', 'min:4', 'confirmed'],
         ]);
 
