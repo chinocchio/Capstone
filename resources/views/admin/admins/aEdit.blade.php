@@ -45,7 +45,7 @@
 
             {{-- Post Body --}}
             <div class="mb-4">
-                <label for="body" class="block">Post Content</label>
+                <label for="body" class="block">Subjects</label>
                 <textarea id="body" name="body" rows="4" class="input w-full @error('body') ring-red-500 @enderror">{{ $instructor->email }}</textarea>
     
                 @error('body')

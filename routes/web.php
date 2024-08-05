@@ -13,9 +13,6 @@ Route::redirect('/', 'posts');
 // Posts Routes
 Route::resource('posts', PostController::class);
 
-//wala lang to
-Route::get('admin/user', [AdminController::class, 'edit'])->name('edit_user');
-
 // User Posts Route
 Route::get('/{user}/posts', [DashboardController::class, 'userPosts'])->name('posts.user');
 
