@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GoogleAuthController;
@@ -20,6 +21,10 @@ Route::get('/{user}/posts', [DashboardController::class, 'userPosts'])->name('po
 // Routes for authenticated users
 Route::middleware('auth')->group(function() {
 
+    Route::get('edit-subjects', [UserController::class, 'showDashboard'])->name('user.dashboard');
+    Route::post('link-subject', [UserController::class, 'linkSubject'])->name('user.linkSubject');
+    Route::post('unlink-subject', [UserController::class, 'unlinkSubject'])->name('user.unlinkSubject');
+
     // User Dashboard Route
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -29,6 +34,9 @@ Route::middleware('auth')->group(function() {
     // User seat plan Route
     Route::get('/seatplan', [DashboardController::class, 'toSeatplan'])->name('seatplan');
 
+    // User add subjects Route
+    Route::get('/subjects', [DashboardController::class, 'toSubjects'])->name('subjects');
+
     // Logout Route
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
@@ -37,6 +45,9 @@ Route::middleware('auth')->group(function() {
 // Routes for admin Dashboard
 Route::middleware('admin')->prefix('admin')->group(function() 
 {
+    // Subject Routes
+    Route::resource('subjects', SubjectController::class);
+
     // User Routes
     Route::resource('users', UserController::class);
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin_dashboard');

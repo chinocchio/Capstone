@@ -43,5 +43,10 @@ class DashboardController extends Controller
 
         return view('users.seatplan');
     }
+
+    public function toSubjects(){
+
+        return view('users.subjects');
+    }
     
 }
