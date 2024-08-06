@@ -11,9 +11,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', 'posts');
 
-// Subject Routes
-Route::resource('subjects', SubjectController::class);
-
 // Posts Routes
 Route::resource('posts', PostController::class);
 
@@ -23,6 +20,10 @@ Route::get('/{user}/posts', [DashboardController::class, 'userPosts'])->name('po
 
 // Routes for authenticated users
 Route::middleware('auth')->group(function() {
+
+    Route::get('edit-subjects', [UserController::class, 'showDashboard'])->name('user.dashboard');
+    Route::post('link-subject', [UserController::class, 'linkSubject'])->name('user.linkSubject');
+    Route::post('unlink-subject', [UserController::class, 'unlinkSubject'])->name('user.unlinkSubject');
 
     // User Dashboard Route
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -44,6 +45,9 @@ Route::middleware('auth')->group(function() {
 // Routes for admin Dashboard
 Route::middleware('admin')->prefix('admin')->group(function() 
 {
+    // Subject Routes
+    Route::resource('subjects', SubjectController::class);
+
     // User Routes
     Route::resource('users', UserController::class);
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin_dashboard');
