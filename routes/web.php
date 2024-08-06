@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', 'posts');
 
+// Subject Routes
+Route::resource('subjects', SubjectController::class);
+
 // Posts Routes
 Route::resource('posts', PostController::class);
 
@@ -30,6 +33,9 @@ Route::middleware('auth')->group(function() {
     // User seat plan Route
     Route::get('/seatplan', [DashboardController::class, 'toSeatplan'])->name('seatplan');
 
+    // User add subjects Route
+    Route::get('/subjects', [DashboardController::class, 'toSubjects'])->name('subjects');
+
     // Logout Route
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
@@ -40,10 +46,6 @@ Route::middleware('admin')->prefix('admin')->group(function()
 {
     // User Routes
     Route::resource('users', UserController::class);
-
-    // Subject Routes
-    Route::resource('subjects', SubjectController::class);
-
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin_dashboard');
 });
 
