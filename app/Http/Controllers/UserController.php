@@ -80,15 +80,22 @@ class UserController extends Controller
     }
 
     //===============================================================================================
+
+    // Display user dashboard with linked and available subjects
     public function showDashboard()
     {
         $user = Auth::user();
-        $subjects = $user->subjects; // Subjects linked to the user
-        $allSubjects = Subject::all(); // All subjects available to link
+        
+        // Subjects currently linked to the user
+        $linkedSubjects = $user->subjects;
 
-        return view('users.subjects', compact('subjects', 'allSubjects'));
+        // All subjects that are not linked to any user
+        $availableSubjects = Subject::whereDoesntHave('users')->get();
+
+        return view('users.subjects', compact('linkedSubjects', 'availableSubjects'));
     }
 
+    // Link a new subject to the user
     public function linkSubject(Request $request)
     {
         $request->validate([
@@ -96,11 +103,18 @@ class UserController extends Controller
         ]);
 
         $user = Auth::user();
+        
+        // Check if the subject is already linked
+        if ($user->subjects->contains($request->subject_id)) {
+            return redirect()->route('user.dashboard')->with('error', 'Subject is already linked!');
+        }
+
         $user->subjects()->syncWithoutDetaching($request->subject_id);
 
         return redirect()->route('user.dashboard')->with('success', 'Subject linked successfully!');
     }
 
+    // Unlink a subject from the user
     public function unlinkSubject(Request $request)
     {
         $request->validate([
@@ -108,6 +122,12 @@ class UserController extends Controller
         ]);
 
         $user = Auth::user();
+        
+        // Check if the subject is currently linked
+        if (!$user->subjects->contains($request->subject_id)) {
+            return redirect()->route('user.dashboard')->with('error', 'Subject is not linked!');
+        }
+
         $user->subjects()->detach($request->subject_id);
 
         return redirect()->route('user.dashboard')->with('success', 'Subject unlinked successfully!');
