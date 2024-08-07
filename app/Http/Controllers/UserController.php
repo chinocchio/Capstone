@@ -55,8 +55,14 @@ class UserController extends Controller
     public function edit($instructor)
     {   
         $instructor = User::find($instructor);
+        
+        // Subjects currently linked to the user
+        $linkedSubjects = $instructor->subjects;
 
-        return view('admin.admins.aEdit', ['instructor' => $instructor]);    
+        // All subjects that are not linked to any user
+        $availableSubjects = Subject::whereDoesntHave('users')->get();
+
+        return view('admin.admins.aEdit', ['instructor' => $instructor], compact('linkedSubjects', 'availableSubjects'));    
     }
 
     /**

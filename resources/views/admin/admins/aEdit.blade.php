@@ -45,14 +45,12 @@
 
             {{-- Post Body --}}
             <div class="mb-4">
-                <label for="body" class="block">Subjects</label>
-                <textarea id="body" name="body" rows="4" class="input w-full @error('body') ring-red-500 @enderror">{{ $instructor->email }}</textarea>
-    
-                @error('body')
-                    <p class="error">{{ $message }}</p>
-                @enderror
-            </div>
-
+                <h2 class="font-bold mb-4">Linked Subjects</h2>
+                    <ul class="list-disc pl-6 mb-8">
+                        @foreach($linkedSubjects as $subject)
+                            <li class="mb-2 text-lg">{{ $subject->name }} - <span class="text-gray-600">{{ $subject->code }}</span></li>
+                        @endforeach
+                    </ul>
             {{-- Submit Button --}}
             <button type="submit" class="btn">Update</button>
         </form>
