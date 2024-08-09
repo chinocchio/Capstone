@@ -3,7 +3,7 @@
         <h1 class="text-3xl font-bold mb-6">Your Subjects</h1>
         
         <ul class="list-disc pl-6 mb-8">
-            @foreach($subjects as $subject)
+            @foreach($linkedSubjects as $subject)
                 <li class="mb-2 text-lg">{{ $subject->name }} - <span class="text-gray-600">{{ $subject->code }}</span></li>
             @endforeach
         </ul>
@@ -15,7 +15,7 @@
                 <div>
                     <label for="subject_id" class="block text-sm font-medium text-gray-700">Select Subject:</label>
                     <select name="subject_id" id="subject_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm text-lg py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                        @foreach($allSubjects as $subject)
+                        @foreach($availableSubjects as $subject)
                             <option value="{{ $subject->id }}">{{ $subject->name }}</option>
                         @endforeach
                     </select>
@@ -33,7 +33,7 @@
                 <div>
                     <label for="subject_id" class="block text-sm font-medium text-gray-700">Select Subject:</label>
                     <select name="subject_id" id="subject_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm text-lg py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                        @foreach($subjects as $subject)
+                        @foreach($linkedSubjects as $subject)
                             <option value="{{ $subject->id }}">{{ $subject->name }}</option>
                         @endforeach
                     </select>

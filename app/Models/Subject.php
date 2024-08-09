@@ -4,10 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Laravel\Sanctum\HasApiTokens;
 
 class Subject extends Model
 {
     use HasFactory;
+
+    protected $table = 'subjects';
 
     protected $fillable = [
         'name',
