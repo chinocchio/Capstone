@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Subject;
+use Carbon\Carbon;
 
 class SubjectController extends Controller
 {
@@ -35,6 +36,9 @@ class SubjectController extends Controller
             'name' => ['required', 'max:255'],
             'code' => ['required'],
             'description' => ['required'],
+            'section' => 'required|string|max:255',
+            'start_time' => 'required|string',
+            'end_time' => 'required|string',
             'image' => ['nullable', 'image'], // Optional image validation
         ]);
 
@@ -44,11 +48,18 @@ class SubjectController extends Controller
             $path = $request->file('image')->store('posts_images', 'public');
         }
 
+        // Convert start and end times from 12-hour to 24-hour format
+        $startTime24 = Carbon::createFromFormat('g:i A', $request->start_time)->format('H:i:s');
+        $endTime24 = Carbon::createFromFormat('g:i A', $request->end_time)->format('H:i:s');
+
         // Create a subject
         Subject::create([
             'name' => $request->name,
             'code' => $request->code,
             'description' => $request->description,
+            'section' => $request->section,
+            'start_time' => $startTime24,
+            'end_time' => $endTime24,
             'image' => $path,
         ]);
 

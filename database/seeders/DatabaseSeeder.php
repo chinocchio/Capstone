@@ -18,6 +18,12 @@ class DatabaseSeeder extends Seeder
 
         // Post::factory(3)->create();
 
-        $this->call([AdminSeeder::class]);
+        $this->call([
+            UsersTableSeeder::class,
+            // PasswordResetTokensSeeder::class,
+            // SessionsTableSeeder::class,
+            SubjectsTableSeeder::class,
+            AdminSeeder::class
+        ]);
     }
 }

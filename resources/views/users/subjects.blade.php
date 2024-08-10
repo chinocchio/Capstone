@@ -4,7 +4,13 @@
         
         <ul class="list-disc pl-6 mb-8">
             @foreach($linkedSubjects as $subject)
-                <li class="mb-2 text-lg">{{ $subject->name }} - <span class="text-gray-600">{{ $subject->code }}</span></li>
+                <li class="mb-2 text-lg">
+                    {{ $subject->name }} - 
+                    <span class="text-gray-600">{{ $subject->code }}</span> - 
+                    <span class="font-bold">{{ $subject->start_time->format('g:i A') }}</span> to 
+                    <span class="font-bold">{{ $subject->end_time->format('g:i A') }}</span> - 
+                    <span class="font-bold">Section: {{ $subject->section }}</span>
+                </li>
             @endforeach
         </ul>
 
@@ -16,7 +22,13 @@
                     <label for="subject_id" class="block text-sm font-medium text-gray-700">Select Subject:</label>
                     <select name="subject_id" id="subject_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm text-lg py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                         @foreach($availableSubjects as $subject)
-                            <option value="{{ $subject->id }}">{{ $subject->name }}</option>
+                            <option value="{{ $subject->id }}">
+                                {{ $subject->name }} - 
+                                {{ $subject->code }} - 
+                                {{ $subject->start_time->format('g:i A') }} to 
+                                {{ $subject->end_time->format('g:i A') }} - 
+                                <strong>Section: {{ $subject->section }}</strong>
+                            </option>
                         @endforeach
                     </select>
                 </div>
@@ -34,7 +46,13 @@
                     <label for="subject_id" class="block text-sm font-medium text-gray-700">Select Subject:</label>
                     <select name="subject_id" id="subject_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm text-lg py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                         @foreach($linkedSubjects as $subject)
-                            <option value="{{ $subject->id }}">{{ $subject->name }}</option>
+                            <option value="{{ $subject->id }}">
+                                {{ $subject->name }} - 
+                                {{ $subject->code }} - 
+                                {{ $subject->start_time->format('g:i A') }} to 
+                                {{ $subject->end_time->format('g:i A') }} - 
+                                <strong>Section: {{ $subject->section }}</strong>
+                            </option>
                         @endforeach
                     </select>
                 </div>

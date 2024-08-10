@@ -14,8 +14,11 @@ return new class extends Migration
         Schema::create('subjects', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('code')->unique();
+            $table->string('code');
             $table->text('description');
+            $table->time('start_time');
+            $table->time('end_time');
+            $table->string('section');
             $table->string('image')->nullable();
             $table->timestamps();
         });
