@@ -11,7 +11,7 @@ class DashboardController extends Controller
 {
     public function index(){
 
-        $posts = Auth::user()->posts()->latest()->paginate(6);
+        $posts = Auth::user()->subjects()->latest()->paginate(6);
 
         return view('users.dashboard', ['posts' => $posts]);
     }

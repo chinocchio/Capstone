@@ -17,8 +17,8 @@ class Subject extends Model
         'code',
         'description',
         'section',
-        'start_time',
-        'end_time',
+        'start_time' => 'datetime',
+        'end_time' => 'datetime',
         'image',
     ];
 
