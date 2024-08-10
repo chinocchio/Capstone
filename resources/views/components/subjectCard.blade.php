@@ -13,9 +13,19 @@
 
         <div class="w-4/5">
             {{-- Title --}}
-            <h2 class="font-bold text-xl mb-5" >{{ $subject->name }}</h2>
+            <h2 class="font-bold text-xl mb-5">{{ $subject->name }}</h2>
 
-            {{-- Body --}}
+            {{-- Section --}}
+            @if ($subject->section)
+                <p class="text-sm mb-2"><strong>Section:</strong> {{ $subject->section }}</p>
+            @endif
+
+            {{-- Time --}}
+            @if ($subject->start_time && $subject->end_time)
+                <p class="text-sm mb-2"><strong>Time:</strong> {{ \Carbon\Carbon::parse($subject->start_time)->format('g:i A') }} - {{ \Carbon\Carbon::parse($subject->end_time)->format('g:i A') }}</p>
+            @endif
+
+            {{-- Description --}}
             @if ($full)
                 {{-- Show full body text in single post page --}}
                 <div class="text-sm">
@@ -29,9 +39,7 @@
                 </div>
             @endif
         </div>
-
     </div>
-
 
     {{-- Placeholder for extra elements used in user dashboard --}}
     <div>

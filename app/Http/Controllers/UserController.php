@@ -2,18 +2,11 @@
 
 namespace App\Http\Controllers;
 
-
 use App\Models\User;
-use App\Models\Post;
 use App\Models\Subject;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Controllers\HasMiddleware;
-use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
-use Psy\CodeCleaner\ReturnTypePass;
-use Illuminate\Support\Facades\Storage;
-
+use Carbon\Carbon;
 
 class UserController extends Controller
 {
@@ -22,7 +15,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        $instructor = User::all();
+        $instructors = User::all();
+        return view('admin.instructors.index', compact('instructors'));
     }
 
     /**
@@ -30,7 +24,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        //
+        // Return view for creating a new user
     }
 
     /**
@@ -38,7 +32,7 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // Validate and store a new user
     }
 
     /**
@@ -46,32 +40,31 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        //
+        // Display details of a specific user
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($instructor)
-    {   
-        $instructor = User::find($instructor);
-        
+    public function edit($instructorId)
+    {
+        $instructor = User::findOrFail($instructorId);
+
         // Subjects currently linked to the user
         $linkedSubjects = $instructor->subjects;
 
         // All subjects that are not linked to any user
         $availableSubjects = Subject::whereDoesntHave('users')->get();
 
-        return view('admin.admins.aEdit', ['instructor' => $instructor], compact('linkedSubjects', 'availableSubjects'));    
+        return view('admin.admins.aEdit', compact('instructor', 'linkedSubjects', 'availableSubjects'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $instructor)
+    public function update(Request $request, $instructorId)
     {
-
-        $instructor = User::find($instructor);
+        $instructor = User::findOrFail($instructorId);
         $instructor->update($request->all());
         return redirect()->route('admin_dashboard');
     }
@@ -85,23 +78,33 @@ class UserController extends Controller
         return redirect()->route('admin_dashboard');
     }
 
-    //===============================================================================================
-
-    // Display user dashboard with linked and available subjects
+    /**
+     * Display user dashboard with linked and available subjects.
+     */
     public function showDashboard()
     {
         $user = Auth::user();
         
         // Subjects currently linked to the user
-        $linkedSubjects = $user->subjects;
+        $linkedSubjects = $user->subjects->map(function($subject) {
+            $subject->start_time = Carbon::parse($subject->start_time);
+            $subject->end_time = Carbon::parse($subject->end_time);
+            return $subject;
+        });
 
         // All subjects that are not linked to any user
-        $availableSubjects = Subject::whereDoesntHave('users')->get();
+        $availableSubjects = Subject::whereDoesntHave('users')->get()->map(function($subject) {
+            $subject->start_time = Carbon::parse($subject->start_time);
+            $subject->end_time = Carbon::parse($subject->end_time);
+            return $subject;
+        });
 
         return view('users.subjects', compact('linkedSubjects', 'availableSubjects'));
     }
 
-    // Link a new subject to the user
+    /**
+     * Link a new subject to the user.
+     */
     public function linkSubject(Request $request)
     {
         $request->validate([
@@ -120,7 +123,9 @@ class UserController extends Controller
         return redirect()->route('user.dashboard')->with('success', 'Subject linked successfully!');
     }
 
-    // Unlink a subject from the user
+    /**
+     * Unlink a subject from the user.
+     */
     public function unlinkSubject(Request $request)
     {
         $request->validate([

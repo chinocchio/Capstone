@@ -16,6 +16,9 @@ class Subject extends Model
         'name',
         'code',
         'description',
+        'section',
+        'start_time',
+        'end_time',
         'image',
     ];
 
