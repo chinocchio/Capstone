@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Route;
 Route::apiResource('subs', ApiSubjectController::class);
 Route::apiResource('instructors', ApiInstructorsController::class);
 Route::apiResource('linkedSubjects', ApiLinkedSubjectsController::class);
-Route::apiResource('/user/{id}/subjects', [UserController::class, 'getUserSubjects']);
+Route::get('/user/{id}/subjects', [UserController::class, 'getUserSubjects']);
 
 Route::get('/user', function (Request $request) {
     return $request->user();

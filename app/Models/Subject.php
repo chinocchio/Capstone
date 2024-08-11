@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Laravel\Sanctum\HasApiTokens;
+use Carbon\Carbon;
 
 class Subject extends Model
 {
@@ -17,10 +18,15 @@ class Subject extends Model
         'code',
         'description',
         'section',
-        'start_time' => 'datetime',
-        'end_time' => 'datetime',
+        'start_time',
+        'end_time',
         'image',
     ];
+
+    // protected $casts = [
+    //     'start_time' => 'datetime:H:i',
+    //     'end_time' => 'datetime:H:i',
+    // ];
 
     public function users()
     {
