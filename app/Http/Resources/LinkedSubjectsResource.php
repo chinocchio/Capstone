@@ -18,7 +18,6 @@ class LinkedSubjectsResource extends JsonResource
             'id' => $this->id,
             'user_id' => $this->user_id,
             'subject_id' => $this->subject_id,
-            'subject name' => $this->subject_name,
         ];
     }
 }

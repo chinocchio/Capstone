@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Models\Subject;
 use Illuminate\Http\Request;
@@ -142,5 +143,22 @@ class UserController extends Controller
         $user->subjects()->detach($request->subject_id);
 
         return redirect()->route('user.dashboard')->with('success', 'Subject unlinked successfully!');
+    }
+
+    /**
+     * API Fetch the subjects associated with a user.
+     */
+    public function getUserSubjects($userId)
+    {
+        // Fetch the user with their subjects
+        $user = User::with('subjects')->find($userId);
+
+        // Check if user exists
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        // Return the user resource
+        return new UserResource($user);
     }
 }

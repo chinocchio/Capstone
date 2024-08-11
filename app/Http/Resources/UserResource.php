@@ -19,6 +19,7 @@ class UserResource extends JsonResource
             'username' => $this->username,
             'email' => $this->email,
             'password' => $this->password,
+            'subjects' => SubjectResource::collection($this->whenLoaded('subjects')),
         ];
     }
 }
