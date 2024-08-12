@@ -1,7 +1,7 @@
 
 <x-layout>
         
-    <h1 class="title">MACLAB SCHEDULES GUEST</h1>
+    <h1 class="title">MACLAB SCHEDULES</h1>
 
     <div class="grid grid-cols-2 gap-6">
 

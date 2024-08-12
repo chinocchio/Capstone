@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Post;
+use App\Models\Subject;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
@@ -10,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Psy\CodeCleaner\ReturnTypePass;
 use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 
 
 class PostController extends Controller implements HasMiddleware
@@ -28,7 +30,16 @@ class PostController extends Controller implements HasMiddleware
 
     public function index()
     {
-        $posts = Post::latest()->paginate(6);
+        // $posts = Post::latest()->paginate(6);
+
+        // if(Auth::guard('admin')->check())
+        // {
+        //     return view ('posts.aIndex', [ 'posts' => $posts ]);
+        // }
+        // return view ('posts.index', [ 'posts' => $posts ]);
+
+
+        $posts = Subject::latest()->paginate(6);
 
         if(Auth::guard('admin')->check())
         {

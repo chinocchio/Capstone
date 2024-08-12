@@ -19,6 +19,9 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
+
+    protected $table = 'users';
+
     protected $fillable = [
         'username',
         'email',
@@ -56,6 +59,7 @@ class User extends Authenticatable
 
     public function subjects()
     {
-        return $this->belongsToMany(Subject::class, 'user_subject');
+        // return $this->belongsToMany(Subject::class, 'user_subject');
+        return $this->belongsToMany(Subject::class, 'user_subject', 'user_id', 'subject_id');
     }
 }
