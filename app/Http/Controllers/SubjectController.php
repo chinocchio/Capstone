@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\SubjectImport;
 use Illuminate\Http\Request;
 use App\Models\Subject;
 use Carbon\Carbon;
+
 
 class SubjectController extends Controller
 {
@@ -23,7 +26,7 @@ class SubjectController extends Controller
      */
     public function create()
     {
-        //
+        return view ('admin.admins.createSubject');
     }
 
     /**
@@ -98,4 +101,15 @@ class SubjectController extends Controller
     {
         //
     }
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xls,xlsx',
+        ]);
+
+        Excel::import(new SubjectImport, $request->file('file'));
+
+        return redirect()->back()->with('success', 'Subjects imported successfully!');
+    }
+
 }

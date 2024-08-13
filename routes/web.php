@@ -47,6 +47,7 @@ Route::middleware('admin')->prefix('admin')->group(function()
 {
     // Subject Routes
     Route::resource('subjects', SubjectController::class);
+    Route::post('/subjects/import', [SubjectController::class,'import'])->name("importSubsFromExcel");
 
     // User Routes
     Route::resource('users', UserController::class);
