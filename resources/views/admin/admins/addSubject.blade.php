@@ -10,7 +10,7 @@
         {{-- Import Excel Form --}}
         <div class="mt-8">
             <h2 class="font-bold mb-4">Import Subjects from Excel</h2>
-            <form action="#" method="post" enctype="multipart/form-data">
+            <form action="{{ route('importSubsFromExcel') }}" method="post" enctype="multipart/form-data">
                 {{-- {{ route('subjects.import') }} --}}
                 @csrf
                 <div class="mb-4">
