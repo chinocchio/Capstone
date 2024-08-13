@@ -1,6 +1,6 @@
 <x-adminlayout>
     {{-- Heading --}}
-    <a href="{{ route('subjects.index') }}" class="block mb-2 text-xs text-blue-500">&larr; Go back to your dashboard</a>
+    <a href="{{ route('subjects.index') }}" class="block mb-2 text-xs text-blue-500">&larr; Go back</a>
     <div class="card mb-4">
         <h2 class="font-bold mb-4">Add a new subject</h2>
 

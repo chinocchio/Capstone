@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
             UsersTableSeeder::class,
             // PasswordResetTokensSeeder::class,
             // SessionsTableSeeder::class,
-            SubjectsTableSeeder::class,
+            // SubjectsTableSeeder::class,
             AdminSeeder::class
         ]);
     }
