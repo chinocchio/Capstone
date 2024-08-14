@@ -18,14 +18,17 @@ class SubjectImport implements ToCollection, WithHeadingRow
         
         foreach ($rows as $row) 
         {
+            $generatedCode = mt_rand(11111111111,99999999999);
+
             Subject::create([
             'name' => $row['name'],
             'code' => $row['code'],
             'description' => $row['description'],
             'section' => $row['section'],
+            'qr' => $row['qr'] ?? $generatedCode,
             'start_time' => $this->formatTime($row['start_time']),
             'end_time' => $this->formatTime($row['end_time']),
-            'image' => $row[6], // Ensure the index matches the actual column if used
+            'image' => $row['image'], // Ensure the index matches the actual column if used
             ]);
         }
     }

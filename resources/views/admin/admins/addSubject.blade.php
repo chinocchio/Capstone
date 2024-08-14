@@ -3,8 +3,14 @@
     {{-- Heading --}}
     <div class="flex justify-between items-center mb-4">
         <a href="{{ route('admin_dashboard') }}" class="text-xs text-blue-500">&larr; Go back to your dashboard</a>
-        <a href="{{ route('subjects.create') }}" class="btn">Manually Add Subject</a>
+        <a href="{{ route('subjects.create') }}" class="bg-blue-500 text-white px-2 py-1 text-xs rounded-md">Manually Add Subject</a>
     </div>
+            {{-- Session Messages --}}
+        @if (session('success'))
+        <x-flashMsg msg="{{ session('success') }}" />
+        @elseif (session('delete'))
+            <x-flashMsg msg="{{ session('delete') }}" bg="bg-red-500" />
+        @endif
 
     <div class="card mb-4">
         {{-- Import Excel Form --}}
@@ -31,7 +37,7 @@
     <h2 class="font-bold mb-4">Your Subjects</h2>
 
     <div class="grid grid-cols-2 gap-6">
-        @foreach ($subject as $subject)
+        @foreach ($subjects as $subject)
             {{-- Subject card component --}}
             <x-subjectCard :subject="$subject">
 
@@ -48,5 +54,9 @@
                 </div>
             </x-subjectCard>
         @endforeach
+    </div>
+
+    <div>
+        {{ $subjects->links() }}
     </div>
 </x-adminlayout>
