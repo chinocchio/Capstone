@@ -34,6 +34,8 @@ class SubjectController extends Controller
      */
     public function store(Request $request)
     {
+
+        
         // Validate
         $request->validate([
             'name' => ['required', 'max:255'],
@@ -54,13 +56,19 @@ class SubjectController extends Controller
         // Convert start and end times from 12-hour to 24-hour format
         $startTime24 = Carbon::createFromFormat('g:i A', $request->start_time)->format('H:i:s');
         $endTime24 = Carbon::createFromFormat('g:i A', $request->end_time)->format('H:i:s');
-        dd($request);
+
+
+        $generatedCode = mt_rand(11111111111,99999999999);
+
+
+
         // Create a subject
         Subject::create([
             'name' => $request->name,
             'code' => $request->code,
             'description' => $request->description,
             'section' => $request->section,
+            'qr' => $generatedCode,
             'start_time' => $startTime24,
             'end_time' => $endTime24,
             'image' => $path,
