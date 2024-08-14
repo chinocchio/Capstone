@@ -51,7 +51,7 @@ class SubjectController extends Controller
         // Convert start and end times from 12-hour to 24-hour format
         $startTime24 = Carbon::createFromFormat('g:i A', $request->start_time)->format('H:i:s');
         $endTime24 = Carbon::createFromFormat('g:i A', $request->end_time)->format('H:i:s');
-
+        dd($request);
         // Create a subject
         Subject::create([
             'name' => $request->name,
