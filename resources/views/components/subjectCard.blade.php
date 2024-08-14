@@ -13,7 +13,12 @@
 
         <div class="w-4/5">
             {{-- Title --}}
-            <h2 class="font-bold text-xl mb-5">{{ $subject->name }}</h2>
+            <h2 class="font-bold text-xl">{{ $subject->name }}</h2>
+
+            {{-- Post Code --}}
+            <div class="text-sm mb-4">
+                <span class="font-medium">Code:</span> {{ $subject->code }}
+            </div>
 
             {{-- Section --}}
             @if ($subject->section)

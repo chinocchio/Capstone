@@ -1,107 +1,43 @@
 <x-adminlayout>
     {{-- Heading --}}
-    <a href="{{ route('admin_dashboard') }}" class="block mb-2 text-xs text-blue-500">&larr; Go back to your dashboard</a>
-    <div class="card mb-4">
-        <h2 class="font-bold mb-4">Add a new subject</h2>
-
-        {{-- Session Messages --}}
+    {{-- Heading --}}
+    <div class="flex justify-between items-center mb-4">
+        <a href="{{ route('admin_dashboard') }}" class="text-xs text-blue-500">&larr; Go back to your dashboard</a>
+        <a href="{{ route('subjects.create') }}" class="bg-blue-500 text-white px-2 py-1 text-xs rounded-md">Manually Add Subject</a>
+    </div>
+            {{-- Session Messages --}}
         @if (session('success'))
-            <x-flashMsg msg="{{ session('success') }}" />
+        <x-flashMsg msg="{{ session('success') }}" />
         @elseif (session('delete'))
             <x-flashMsg msg="{{ session('delete') }}" bg="bg-red-500" />
         @endif
 
-        {{-- Create Post Form --}}
-        <form action="{{ route('subjects.store') }}" method="post" enctype="multipart/form-data">
-            @csrf
+    <div class="card mb-4">
+        {{-- Import Excel Form --}}
+        <div class="mt-8">
+            <h2 class="font-bold mb-4">Import Subjects from Excel</h2>
+            <form action="{{ route('importSubsFromExcel') }}" method="post" enctype="multipart/form-data">
+                {{-- {{ route('subjects.import') }} --}}
+                @csrf
+                <div class="mb-4">
+                    <label for="file" class="block mb-2">Select Excel File</label>
+                    <input type="file" name="file" id="file" accept=".xls,.xlsx"
+                        class="input @error('file') ring-red-500 @enderror">
 
-            {{-- Subject Name --}}
-            <div class="mb-4">
-                <label for="name">Subject Name</label>
-                <input type="text" name="name" value="{{ old('name') }}"
-                    class="input @error('name') ring-red-500 @enderror">
-
-                @error('name')
-                    <p class="error">{{ $message }}</p>
-                @enderror
-            </div>
-
-            {{-- Subject Code --}}
-            <div class="mb-4">
-                <label for="code">Subject Code</label>
-                <input type="text" name="code" value="{{ old('code') }}"
-                    class="input @error('code') ring-red-500 @enderror">
-
-                @error('code')
-                    <p class="error">{{ $message }}</p>
-                @enderror
-            </div>
-
-            {{-- Section --}}
-            <div class="mb-4">
-                <label for="section">Section</label>
-                <input type="text" name="section" value="{{ old('section') }}"
-                    class="input @error('section') ring-red-500 @enderror">
-
-                @error('section')
-                    <p class="error">{{ $message }}</p>
-                @enderror
-            </div>
-
-            {{-- Description --}}
-            <div class="mb-4">
-                <label for="description">Description</label>
-
-                <textarea name="description" rows="4" class="input @error('description') ring-red-500 @enderror">{{ old('description') }}</textarea>
-
-                @error('description')
-                    <p class="error">{{ $message }}</p>
-                @enderror
-            </div>
-
-            {{-- Start Time --}}
-            <div class="mb-4">
-                <label for="start_time">Start Time</label>
-                <input type="text" name="start_time" value="{{ old('start_time') }}" placeholder="1:00 PM"
-                    class="input @error('start_time') ring-red-500 @enderror">
-
-                @error('start_time')
-                    <p class="error">{{ $message }}</p>
-                @enderror
-            </div>
-
-            {{-- End Time --}}
-            <div class="mb-4">
-                <label for="end_time">End Time</label>
-                <input type="text" name="end_time" value="{{ old('end_time') }}" placeholder="5:00 PM"
-                    class="input @error('end_time') ring-red-500 @enderror">
-
-                @error('end_time')
-                    <p class="error">{{ $message }}</p>
-                @enderror
-            </div>
-
-            {{-- Cover Photo --}}
-            <div class="mb-4">
-                <label for="image">Cover photo</label>
-                <input type="file" name="image" id="image">
-
-                @error('image')
-                    <p class="error">{{ $message }}</p>
-                @enderror
-            </div>
-
-            {{-- Submit Button --}}
-            <button class="btn">Add</button>
-
-        </form>
+                    @error('file')
+                        <p class="error">{{ $message }}</p>
+                    @enderror
+                </div>
+                <button type="submit" class="btn">Import</button>
+            </form>
+        </div>
     </div>
 
     {{-- User Posts --}}
     <h2 class="font-bold mb-4">Your Subjects</h2>
 
     <div class="grid grid-cols-2 gap-6">
-        @foreach ($subject as $subject)
+        @foreach ($subjects as $subject)
             {{-- Subject card component --}}
             <x-subjectCard :subject="$subject">
 
@@ -118,5 +54,9 @@
                 </div>
             </x-subjectCard>
         @endforeach
+    </div>
+
+    <div>
+        {{ $subjects->links() }}
     </div>
 </x-adminlayout>
