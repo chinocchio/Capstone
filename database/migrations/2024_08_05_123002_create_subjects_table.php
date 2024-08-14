@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('code');
             $table->text('description');
+            $table->string('qr');
             $table->time('start_time');
             $table->time('end_time');
             $table->string('section');
