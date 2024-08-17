@@ -21,6 +21,9 @@ Route::get('/{user}/posts', [DashboardController::class, 'userPosts'])->name('po
 // Routes for authenticated users
 Route::middleware('auth')->group(function() {
 
+    //AJAX Route
+    Route::get('/scans/list', [DashboardController::class, 'fetchScans'])->name('scans.list');
+
     Route::get('edit-subjects', [UserController::class, 'showDashboard'])->name('user.dashboard');
     Route::post('link-subject', [UserController::class, 'linkSubject'])->name('user.linkSubject');
     Route::post('unlink-subject', [UserController::class, 'unlinkSubject'])->name('user.unlinkSubject');
@@ -77,10 +80,6 @@ Route::middleware('guest')->group(function() {
     //Google Auth Route
     Route::get('auth/google',[GoogleAuthController::class,'redirect'])->name('google-auth');
     Route::get('auth/google/call-back', [GoogleAuthController::class, 'callbackGoogle']);
-
-    //AJAX Route
-    Route::get('/scans/list', [DashboardController::class, 'fetchScans'])->name('scans.list');
-
 
 });
 

@@ -71,6 +71,22 @@ class DashboardController extends Controller
 
     }
 
+    public function fetchScans()
+    {
+        $user = Auth::user();
+
+        // Fetch the user's subjects
+        $linkedSubjects = $user->subjects->pluck('id');
+
+        // Fetch the scans related to the user's subjects
+        $scans = Scan::whereIn('subject_id', $linkedSubjects)
+                    ->with('subject')
+                    ->orderBy('scanned_at', 'desc')
+                    ->get();
+
+        return view('partials.scans-list', compact('scans'))->render();
+    }
+
     public function toSeatplan(){
 
         return view('users.seatplan');

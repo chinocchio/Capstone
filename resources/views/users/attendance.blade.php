@@ -14,14 +14,27 @@
                 @endforeach
             </ul>
         </div>
-        
         <div class="card">
-            <span class="mb-4">Present Students:</span>
-            @forelse($scans as $scan)
-                <p>{{ $scan->scanned_by }} | {{ $scan->subject->name }} | {{ $scan->scanned_at->format('h:i a') }}</p>
-            @empty
-                <p>No scans recorded.</p>
-            @endforelse
+            <span>List</span>
+            <div id="scans-list">
+                @include('partials.scans-list', ['scans' => $scans])
+            </div>
         </div>
     </div>
+
+    <script>
+        setInterval(function() {
+            // Fetch the updated scans list via AJAX
+            fetchScans();
+        }, 5000); // Poll every 5 seconds
+
+        function fetchScans() {
+            fetch('{{ route('scans.list') }}')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('scans-list').innerHTML = data;
+                })
+                .catch(error => console.error('Error fetching scans:', error));
+        }
+    </script>
 </x-layout>
