@@ -4,9 +4,11 @@ use App\Http\Controllers\Api\ApiSubjectController;
 use App\Http\Controllers\Api\ApiInstructorsController;
 use App\Http\Controllers\Api\ApiLinkedSubjectsController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ScansController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\PinVerificationController;
+use App\Http\Controllers\StudentController;
 
 Route::apiResource('subs', ApiSubjectController::class);
 Route::apiResource('instructors', ApiInstructorsController::class);
@@ -19,3 +21,9 @@ Route::get('/user', function (Request $request) {
 
 // Route for PIN authentication
 Route::post('/verify-pin', [PinVerificationController::class, 'verifyPin']);
+
+//Student login API route
+Route::post('/student', [StudentController::class, 'verifyStudent']);
+
+//Scan API Route
+Route::post('/record-scan', [ScansController::class, 'recordScan']);

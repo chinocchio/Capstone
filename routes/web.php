@@ -78,6 +78,10 @@ Route::middleware('guest')->group(function() {
     Route::get('auth/google',[GoogleAuthController::class,'redirect'])->name('google-auth');
     Route::get('auth/google/call-back', [GoogleAuthController::class, 'callbackGoogle']);
 
+    //AJAX Route
+    Route::get('/scans/list', [DashboardController::class, 'fetchScans'])->name('scans.list');
+
+
 });
 
 
