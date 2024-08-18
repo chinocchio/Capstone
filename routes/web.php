@@ -21,6 +21,9 @@ Route::get('/{user}/posts', [DashboardController::class, 'userPosts'])->name('po
 // Routes for authenticated users
 Route::middleware('auth')->group(function() {
 
+    //AJAX Route
+    Route::get('/scans/list', [DashboardController::class, 'fetchScans'])->name('scans.list');
+
     Route::get('edit-subjects', [UserController::class, 'showDashboard'])->name('user.dashboard');
     Route::post('link-subject', [UserController::class, 'linkSubject'])->name('user.linkSubject');
     Route::post('unlink-subject', [UserController::class, 'unlinkSubject'])->name('user.unlinkSubject');

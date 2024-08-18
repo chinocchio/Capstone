@@ -20,7 +20,7 @@ class UsersTableSeeder extends Seeder
             [
                 'username' => 'Angeline Escuro ',
                 'email' => 'an@my.cspc.edu.ph',
-                'password' => Hash::make('1234'),
+                'password' => Hash::make('1111'),
                 'google_id' => null,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -36,7 +36,7 @@ class UsersTableSeeder extends Seeder
             [
                 'username' => 'Boyet Penales ',
                 'email' => 'bo@my.cspc.edu.ph',
-                'password' => Hash::make('1234'),
+                'password' => Hash::make('2222'),
                 'google_id' => null,
                 'created_at' => now(),
                 'updated_at' => now(),

@@ -34,4 +34,9 @@ class Subject extends Model
         // return $this->belongsToMany(User::class, 'user_subject');
         return $this->belongsToMany(User::class, 'user_subject', 'subject_id', 'user_id');
     }
+
+    public function scans()
+    {
+        return $this->hasMany(Scan::class);
+    }
 }

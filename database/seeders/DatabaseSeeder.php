@@ -23,7 +23,8 @@ class DatabaseSeeder extends Seeder
             // PasswordResetTokensSeeder::class,
             // SessionsTableSeeder::class,
             // SubjectsTableSeeder::class,
-            AdminSeeder::class
+            AdminSeeder::class,
+            StudentSeeder::class
         ]);
     }
 }
