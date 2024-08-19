@@ -4,6 +4,7 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\MacController;
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\AdminController;
@@ -51,6 +52,9 @@ Route::middleware('admin')->prefix('admin')->group(function()
     // Subject Routes
     Route::resource('subjects', SubjectController::class);
     Route::post('/subjects/import', [SubjectController::class,'import'])->name("importSubsFromExcel");
+
+    // MAC Routes
+    Route::resource('mac',MacController::class);
 
     // User Routes
     Route::resource('users', UserController::class);

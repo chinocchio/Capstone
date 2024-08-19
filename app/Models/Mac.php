@@ -4,13 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\MAac;
+use App\Models\Student;
 
-class Student extends Model
+class Mac extends Model
 {
     use HasFactory;
 
-    protected $table = 'students';
+    protected $table = 'macs';
 
     protected $fillable = [
         'name',
@@ -18,8 +18,8 @@ class Student extends Model
         'password',
     ];
 
-    public function macs()
+    public function student()
     {
-        return $this->belongsTo(Mac::class);
+        return $this->hasMany(Student::class);
     }
 }

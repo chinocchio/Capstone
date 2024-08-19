@@ -34,7 +34,7 @@
 
                         <a href="{{ route('admin_dashboard') }}" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Dashboard</a>
                         <a href="{{ route('subjects.index') }}" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Subjects</a>
-                        <a href="#" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">MAC PCs</a>
+                        <a href="{{ route('mac.index') }}" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">MAC PCs</a>
                         <a href="#" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Reports</a>
                         <a href="#" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Door Lock</a>
                         
