@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
@@ -55,10 +56,15 @@ Route::middleware('admin')->prefix('admin')->group(function()
 
     // MAC Routes
     Route::resource('mac',MacController::class);
+    Route::post('/macs/import', [MacController::class,'import'])->name("importMacsFromExcel");
 
     // User Routes
     Route::resource('users', UserController::class);
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin_dashboard');
+
+    // Student Route
+    Route::view('/student/import','admin.admins.addStudents')->name('studentImport');
+    Route::post('/student/importExcel', [MacController::class,'import'])->name("importStudentsFromExcel");
 });
 
 //Admin Login Routes

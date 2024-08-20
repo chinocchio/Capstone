@@ -13,9 +13,8 @@ class Mac extends Model
     protected $table = 'macs';
 
     protected $fillable = [
-        'name',
-        'section',
-        'password',
+        'mac_number',
+        'qr',
     ];
 
     public function student()

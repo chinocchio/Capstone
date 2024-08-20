@@ -9,6 +9,12 @@ use App\Models\Student;
 
 class StudentController extends Controller
 {
+
+    public function index()
+    {
+        return view ('admin.admins.addStudents');
+    }
+
     //API 
     public function verifyStudent (Request $request)
     {
@@ -18,9 +24,6 @@ class StudentController extends Controller
         ]);
 
         $user = Student::where('name', $request->name)->first();
-
-        // dd($user);
-
 
         // Check if the user exists and the password is correct
         if (!$user || !Hash::check($request->password, $user->password)) {
@@ -36,5 +39,17 @@ class StudentController extends Controller
             'name' => $user->name,
             'section' => $user->section,
         ]);
+    }
+
+    //Import Student
+    public function import()
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xls,xlsx',
+        ]);
+
+        Excel::import(new StudentImport, $request->file('file'));
+
+        return redirect()->back()->with('success', 'Subjects imported successfully!');
     }
 }

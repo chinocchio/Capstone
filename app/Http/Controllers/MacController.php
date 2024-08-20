@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\MacImport;
 use Illuminate\Http\Request;
 
 class MacController extends Controller
@@ -60,5 +63,17 @@ class MacController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function import(Request $request)
+    {
+        dd('ok');
+        $request->validate([
+            'file' => 'required|file|mimes:xls,xlsx',
+        ]);
+
+        Excel::import(new MacImport, $request->file('file'));
+
+        return redirect()->back()->with('success', 'MAC Computers imported successfully!');
     }
 }
