@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('section');
             $table->string('password');
+            $table->binary('biometric_data')->nullable();
             $table->timestamps();
         });
     }

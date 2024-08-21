@@ -44,6 +44,7 @@ class StudentController extends Controller
     //Import Student
     public function import()
     {
+        dd('ok');
         $request->validate([
             'file' => 'required|file|mimes:xls,xlsx',
         ]);
@@ -52,4 +53,25 @@ class StudentController extends Controller
 
         return redirect()->back()->with('success', 'Subjects imported successfully!');
     }
+
+
+    public function registerBiometrics(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|integer',
+            'biometric_data' => 'required|string',
+        ]);
+
+        // Save the biometric data in the database
+        $user = Student::find($request->user_id);
+        if ($user) {
+            $user->biometric_data = $request->biometric_data; // Store the biometric data
+            $user->save();
+
+            return response()->json(['message' => 'Biometrics registered successfully'], 200);
+        }
+
+        return response()->json(['message' => 'User not found'], 404);
+    }
+
 }
