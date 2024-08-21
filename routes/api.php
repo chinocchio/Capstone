@@ -27,3 +27,7 @@ Route::post('/student', [StudentController::class, 'verifyStudent']);
 
 //Scan API Route
 Route::post('/record-scan', [ScansController::class, 'recordScan']);
+
+//fingerprint
+Route::post('/register-biometrics', [StudentController::class, 'registerBiometrics']);
+
