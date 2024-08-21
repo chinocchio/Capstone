@@ -53,7 +53,6 @@ class StudentController extends Controller
     //Import Student
     public function import(Request $request)
     {
-        dd('ok');
         $request->validate([
             'file' => 'required|file|mimes:xls,xlsx',
         ]);
