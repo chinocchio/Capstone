@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+use App\Imports\StudentImport;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Student;
 
 class StudentController extends Controller
@@ -41,8 +43,15 @@ class StudentController extends Controller
         ]);
     }
 
+    public function finger(Request $request)
+    {
+        $request->validate([
+            
+        ]);
+    }
+
     //Import Student
-    public function import()
+    public function import(Request $request)
     {
         $request->validate([
             'file' => 'required|file|mimes:xls,xlsx',

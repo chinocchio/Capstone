@@ -108,7 +108,6 @@ class SubjectController extends Controller
     }
     public function import(Request $request)
     {
-        dd('ok');
         $request->validate([
             'file' => 'required|file|mimes:xls,xlsx',
         ]);

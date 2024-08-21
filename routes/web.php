@@ -64,7 +64,7 @@ Route::middleware('admin')->prefix('admin')->group(function()
 
     // Student Route
     Route::view('/student/import','admin.admins.addStudents')->name('studentImport');
-    Route::post('/student/importExcel', [MacController::class,'import'])->name("importStudentsFromExcel");
+    Route::post('/student/importExcel', [StudentController::class,'import'])->name("importStudentsFromExcel");
 });
 
 //Admin Login Routes

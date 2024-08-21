@@ -16,7 +16,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('section');
-            $table->string('password');
+            $table->string('password')->hash()->nullable();
+            $table->binary('fingerprint');
             $table->timestamps();
         });
     }
