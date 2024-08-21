@@ -15,11 +15,11 @@ return new class extends Migration
             // $table->id();
             // $table->foreignId('user_id')->constrained()->onDelete('cascade');
             // $table->foreignId('subject_id')->constrained()->onDelete('cascade');
-            // $table->timestamps();
 
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('subject_id')->constrained()->onDelete('cascade');
             $table->primary(['user_id', 'subject_id']); // Composite primary key
+            $table->timestamps();
         });
     }
 

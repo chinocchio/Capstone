@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('macs', function (Blueprint $table) {
+        Schema::create('fingerprints', function (Blueprint $table) {
             $table->id();
-            // $table->foreignId('student_id')->constrained()->onDelete('cascade');
-            $table->integer('mac_number');
-            $table->string('qr');
+            $table->string('fname');
+            $table->integer('pin');
+            $table->binary('finger_print');
             $table->timestamps();
         });
     }
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('macs');
+        Schema::dropIfExists('fingerprints');
     }
 };

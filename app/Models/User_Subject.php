@@ -10,4 +10,9 @@ class User_Subject extends Model
     use HasFactory;
 
     protected $table = 'user_subject';
+
+    protected $fillable = [
+        'user_id',
+        'subject_id',
+    ];
 }

@@ -23,9 +23,23 @@ class ApiLinkedSubjectsController extends Controller
             return response()->json(['message' => 'No subjects Recorde'], 200);
         }
     }
-    public function store()
+    public function store(Request $request)
     {
-        
+
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'subject_id' => 'required|exists:subjects,id'
+        ]);
+
+        $data = User_Subject::create([
+            'user_id' => $request->user_id,
+            'subject_id' => $request->subject_id
+        ]);
+
+        return response()->json([
+            'message' => 'Linked Subjects added Successfully',
+            'data' => new LinkedSubjectsResource($data)
+        ]);
     }
     public function show()
     {

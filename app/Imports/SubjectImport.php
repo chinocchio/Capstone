@@ -19,7 +19,7 @@ class SubjectImport implements ToCollection, WithHeadingRow
         foreach ($rows as $row) 
         {
             $generatedCode = mt_rand(11111111111,99999999999);
-
+            
             Subject::create([
             'name' => $row['name'],
             'code' => $row['code'],

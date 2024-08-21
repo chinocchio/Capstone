@@ -14,8 +14,10 @@ return new class extends Migration
         Schema::create('students', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('email')->unique();
             $table->string('section');
-            $table->string('password');
+            $table->string('password')->hash()->nullable();
+            $table->binary('fingerprint');
             $table->timestamps();
         });
     }
