@@ -21,4 +21,5 @@ class Fingerprint extends Model
     // protected $hidden = [
     //     'finger_print',
     // ];
+    
 }

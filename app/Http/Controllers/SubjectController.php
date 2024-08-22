@@ -44,6 +44,7 @@ class SubjectController extends Controller
             'section' => 'required|string|max:255',
             'start_time' => 'required|string',
             'end_time' => 'required|string',
+            'day' => 'required|string',
             'image' => ['nullable', 'image'], // Optional image validation
         ]);
 
@@ -68,6 +69,7 @@ class SubjectController extends Controller
             'qr' => $generatedCode,
             'start_time' => $startTime24,
             'end_time' => $endTime24,
+            'day' => $request->day,
             'image' => $path,
         ]);
 

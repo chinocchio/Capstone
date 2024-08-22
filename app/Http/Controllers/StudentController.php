@@ -147,19 +147,35 @@ class StudentController extends Controller
      */
     public function storeStudent(Request $request)
     {
+        dd($request);
+        // Validation rules
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:students',
             'section' => 'required|string|max:255',
             'password' => 'required|string|min:8',
-            'biometric_data' => 'nullable|binary',
+            'biometric_data' => 'nullable|string', // Use string for binary data
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), Response::HTTP_BAD_REQUEST);
         }
 
-        $student = Student::create($request->all());
+        // Process biometric data if present
+        $biometricData = $request->input('biometric_data');
+        if ($biometricData) {
+            // If you are using base64 encoding, decode it before saving
+            $biometricData = base64_decode($biometricData);
+        }
+
+        // Create a new student record
+        $student = Student::create([
+            'name' => $request->input('name'),
+            'email' => $request->input('email'),
+            'section' => $request->input('section'),
+            'password' => Hash::make($request->input('password')),
+            'biometric_data' => $biometricData, // Save binary data
+        ]);
 
         return response()->json($student, Response::HTTP_CREATED);
     }

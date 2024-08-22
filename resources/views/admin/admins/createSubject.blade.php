@@ -81,6 +81,17 @@
                 @enderror
             </div>
 
+            {{-- Subject Day --}}
+            <div class="mb-4">
+                <label for="day">Subject Day</label>
+                <input type="text" name="day" value="{{ old('day') }}"
+                    class="input @error('day') ring-red-500 @enderror">
+
+                @error('name')
+                    <p class="error">{{ $message }}</p>
+                @enderror
+            </div>
+
             {{-- Cover Photo --}}
             <div class="mb-4">
                 <label for="image">Cover photo</label>

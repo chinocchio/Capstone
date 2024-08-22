@@ -20,6 +20,7 @@ return new class extends Migration
             $table->time('start_time');
             $table->time('end_time');
             $table->string('section');
+            $table->string('day');
             $table->string('image')->nullable();
             $table->timestamps();
         });
