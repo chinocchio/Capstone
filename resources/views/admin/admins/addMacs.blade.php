@@ -43,7 +43,7 @@
     </div>
         <div class="p-4">
             <h2 class="font-bold text-lg mb-4">Added MAC PCs</h2>
-            <table class="table-fixed">
+            <table id="myTable">
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
