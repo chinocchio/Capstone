@@ -25,6 +25,9 @@ Route::post('/verify-pin', [PinVerificationController::class, 'verifyPin']);
 
 //Student login API route
 Route::post('/student', [StudentController::class, 'verifyStudent']);
+Route::get('/students', [StudentController::class, 'getAllStudent']);
+Route::post('/students', [StudentController::class, 'storeStudent']);
+Route::get('students/find-by-biometric-data', [StudentController::class, 'findByBiometricData']);
 
 //Scan API Route
 Route::post('/record-scan', [ScansController::class, 'recordScan']);
