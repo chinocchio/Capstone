@@ -19,6 +19,8 @@ class UserResource extends JsonResource
             'username' => $this->username,
             'email' => $this->email,
             'password' => $this->password,
+            'finger_print' => base64_encode($this->finger_print),
+            'pin' => $this->pin,
             'subjects' => SubjectResource::collection($this->whenLoaded('subjects')),
         ];
     }

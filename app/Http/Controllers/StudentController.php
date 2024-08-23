@@ -14,9 +14,18 @@ use App\Models\Student;
 class StudentController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
-        return view ('admin.admins.addStudents');
+        $query = Student::query();
+
+        if ($request->has('search')) {
+            $searchTerm = $request->input('search');
+            $query->where('name', 'like', "%{$searchTerm}%")
+                ->orWhere('id', 'like', "%{$searchTerm}%");
+        }
+
+        $students = $query->paginate(5);
+        return view ("admin.admins.addStudents", compact('students'));
     }
 
     //API 

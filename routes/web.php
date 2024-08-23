@@ -63,7 +63,7 @@ Route::middleware('admin')->prefix('admin')->group(function()
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin_dashboard');
 
     // Student Route
-    Route::view('/student/import','admin.admins.addStudents')->name('studentImport');
+    Route::get('/student',[StudentController::class, 'index'])->name('student_view');
     Route::post('/student/importExcel', [StudentController::class,'import'])->name("importStudentsFromExcel");
 });
 
