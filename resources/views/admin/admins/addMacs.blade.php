@@ -108,7 +108,7 @@
 
                     idEl.textContent = id;
                     macEl.textContent = mac;
-                    qrEl.textContent = qr;
+                    qrEl.innerHTML = `{!! DNS2D::getBarcodeHTML('__placeholder__', 'QRCODE') !!}`.replace('__placeholder__', qr);
                 });
             });
         });
