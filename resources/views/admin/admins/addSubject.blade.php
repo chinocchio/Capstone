@@ -16,7 +16,7 @@
     <div class="card mb-4">
         {{-- Import Excel Form --}}
         <div class="mt-8">
-            <h2 class="font-bold mb-4">Import Subjects from Excel</h2>
+            <h2 class="font-bold mb-4">Import Schedules using Excel</h2>
             <form action="{{ route('importSubsFromExcel') }}" method="post" enctype="multipart/form-data">
                 {{-- {{ route('subjects.import') }} --}}
                 @csrf
@@ -35,7 +35,15 @@
     </div>
 
     {{-- User Posts --}}
-    <h2 class="font-bold mb-4">Your Subjects</h2>
+    <h2 class="font-bold mb-4">Mac Laboratory Schedules</h2>
+            {{-- Search Filter --}}
+            <div class="mb-4">
+                <form action="{{ route('subjects.index') }}" method="GET" class="flex">
+                    <input type="text" name="search" value="{{ request()->query('search') }}" placeholder=" Enter Subject Code or Subject Name"
+                        class="input rounded-l-md border border-gray-300 focus:ring-blue-500 focus:border-blue-500 flex-grow">
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Search</button>
+                </form>
+            </div>
 
     <div class="grid grid-cols-2 gap-6">
         @foreach ($subjects as $subject)
@@ -44,10 +52,10 @@
 
                 <div class="flex items-center justify-end gap-4 mt-6">
                     {{-- Update post --}}
-                    <a href="#" class="bg-green-500 text-white px-2 py-1 text-xs rounded-md">Update</a>
+                    <a href="{{ route('subjects.edit', $subject->id) }}" class="bg-green-500 text-white px-2 py-1 text-xs rounded-md">Update</a>
 
                     {{-- Delete post --}}
-                    <form action="#" method="post">
+                    <form action="{{ route('subjects.destroy', $subject->id) }}" method="post">
                         @csrf
                         @method('DELETE')
                         <button class="bg-red-500 text-white px-2 py-1 text-xs rounded-md">Delete</button>

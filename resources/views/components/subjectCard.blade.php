@@ -20,6 +20,11 @@
                 <span class="font-medium">Code:</span> {{ $subject->code }}
             </div>
 
+                        {{-- Post day --}}
+                        <div class="text-sm mb-4">
+                            <span class="font-medium">Every:</span> {{ $subject->day }}
+                        </div>
+
             {{-- Section --}}
             @if ($subject->section)
                 <p class="text-sm mb-2"><strong>Section:</strong> {{ $subject->section }}</p>
@@ -40,7 +45,6 @@
                 {{-- Show limited body text in single post page --}}
                 <div class="text-sm">
                     <span>{{ Str::words($subject->description, 15) }}</span>
-                    <a href="#" class="text-blue-500 ml-2">Read more &rarr;</a>
                 </div>
             @endif
         </div>

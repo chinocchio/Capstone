@@ -27,20 +27,34 @@ class FingerprintController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
-        $validatedData = $request->validate([
-            'fname' => 'required|string|max:255',
-            'pin' => 'required|integer',
-            'finger_print' => 'required|string', // Accept Base64 encoded string
+        // $validatedData = $request->validate([
+        //     'fname' => 'required|string|max:255',
+        //     'pin' => 'required|integer',
+        //     'finger_print' => 'required|string', // Accept Base64 encoded string
+        // ]);
+
+        // // Decode Base64 data to binary
+        // $validatedData['finger_print'] = base64_decode($validatedData['finger_print']);
+
+        // $fingerprint = Fingerprint::create($validatedData);
+
+        // // Encode the binary data to Base64 for the response
+        // $fingerprint->finger_print = base64_encode($fingerprint->finger_print);
+
+        // return response()->json($fingerprint, 201);
+
+        //for adafruit
+        $request->validate([
+            'fingerprint_data' => 'required|binary',
+            'pin' => 'required|string|max:10', // Adjust validation as needed
         ]);
 
-        // Decode Base64 data to binary
-        $validatedData['finger_print'] = base64_decode($validatedData['finger_print']);
+        $fingerprint = new Fingerprint();
+        $fingerprint->fingerprint_data = $request->input('fingerprint_data');
+        $fingerprint->pin = $request->input('pin');
+        $fingerprint->save();
 
-        $fingerprint = Fingerprint::create($validatedData);
-
-        // Encode the binary data to Base64 for the response
-        $fingerprint->finger_print = base64_encode($fingerprint->finger_print);
-
-        return response()->json($fingerprint, 201);
+        return response()->json(['message' => 'Fingerprint and PIN saved successfully'], 201);
+    
     }
 }

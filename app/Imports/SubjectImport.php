@@ -15,7 +15,6 @@ class SubjectImport implements ToCollection, WithHeadingRow
     */
     public function collection(Collection $rows)
     {
-        
         foreach ($rows as $row) 
         {
             $generatedCode = mt_rand(11111111111,99999999999);

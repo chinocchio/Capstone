@@ -13,8 +13,7 @@ return new class extends Migration
     {
         Schema::create('fingerprints', function (Blueprint $table) {
             $table->id();
-            $table->string('fname');
-            $table->integer('pin');
+            $table->string('pin');
             $table->binary('finger_print');
             $table->timestamps();
         });

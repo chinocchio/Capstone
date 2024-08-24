@@ -12,7 +12,6 @@ class Fingerprint extends Model
     protected $table = "fingerprints";
 
     protected $fillable = [
-        'fname',
         'pin',
         'finger_print',
     ];
