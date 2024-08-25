@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\PinVerificationController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\FingerprintController;
+use App\Http\Controllers\MacController;
 
 Route::apiResource('subs', ApiSubjectController::class);
 Route::apiResource('instructors', ApiInstructorsController::class);
@@ -31,6 +32,7 @@ Route::get('students/find-by-biometric-data', [StudentController::class, 'findBy
 
 //Scan API Route
 Route::post('/record-scan', [ScansController::class, 'recordScan']);
+Route::post('/macs', [ScansController::class, 'linkToStudent']);
 
 //fingerprint
 Route::post('/register-biometrics', [StudentController::class, 'registerBiometrics']);
