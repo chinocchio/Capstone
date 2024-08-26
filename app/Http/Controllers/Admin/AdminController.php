@@ -6,20 +6,42 @@ namespace App\Http\Controllers\Admin;
 use App\Models\User;
 use App\Models\Post;
 use App\Http\Controllers\Controller;
+use App\Models\Subject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth; 
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class AdminController extends Controller
 {
     public function dashboard()
-    {
-        $instructors = User::paginate(6);
+{
+    // Fetch instructors with pagination
+    $instructors = User::paginate(6);
 
-        if(Auth::guard('admin')->check())
-        {
-            return view ('admin.admins.dashboard', [ 'instructors' => $instructors ]);
-        }
+    if (Auth::guard('admin')->check()) {
+        $now = Carbon::now('Asia/Manila');
+        $currentDate = $now->format('Y-m-d'); // Format for SQL comparison
+        $currentTime = $now->format('H:i:s'); // Format for SQL comparison
+        $today = $now->format('l'); // For day name comparison
+        
+        // Retrieve subjects with optional instructor information
+        $subjects = DB::table('subjects')
+            ->leftJoin('user_subject', 'subjects.id', '=', 'user_subject.subject_id')
+            ->leftJoin('users', 'user_subject.user_id', '=', 'users.id')
+            ->where('subjects.day', $today)
+            ->where('subjects.start_time', '<=', $currentTime)
+            ->where('subjects.end_time', '>=', $currentTime)
+            ->select('subjects.*', 'users.username', 'users.email')
+            ->get();
+
+        return view('admin.admins.dashboard', [
+            'instructors' => $instructors,
+            'subjects' => $subjects,
+            'currentDate' => $now->format('l, F j, Y') // For display
+        ]);
     }
+}
 
     public function userPosts(User $user) {
 

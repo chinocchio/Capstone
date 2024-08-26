@@ -14,11 +14,19 @@ class SubjectController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $subjects = Subject::paginate(6);
+        $query = Subject::query();
 
-        return view('admin.admins.addSubject', ['subjects' => $subjects]);
+        if ($request->has('search')) {
+            $searchTerm = $request->input('search');
+            $query->where('name', 'like', "%{$searchTerm}%")
+                ->orWhere('code', 'like', "%{$searchTerm}%");
+        }
+
+        $subjects = $query->paginate(4);
+
+        return view('admin.admins.addSubject', compact('subjects'));
     }
 
     /**
@@ -35,7 +43,6 @@ class SubjectController extends Controller
     public function store(Request $request)
     {
 
-        
         // Validate
         $request->validate([
             'name' => ['required', 'max:255'],
@@ -44,6 +51,7 @@ class SubjectController extends Controller
             'section' => 'required|string|max:255',
             'start_time' => 'required|string',
             'end_time' => 'required|string',
+            'day' => 'required|string',
             'image' => ['nullable', 'image'], // Optional image validation
         ]);
 
@@ -68,6 +76,7 @@ class SubjectController extends Controller
             'qr' => $generatedCode,
             'start_time' => $startTime24,
             'end_time' => $endTime24,
+            'day' => $request->day,
             'image' => $path,
         ]);
 
@@ -88,7 +97,8 @@ class SubjectController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $subject = Subject::findOrFail($id);
+        return view ('admin.admins.editSubject', compact('subject'));
     }
 
     /**
@@ -96,7 +106,9 @@ class SubjectController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $subject = Subject::findOrFail($id);
+        $subject->update($request->all());
+        return redirect()->route('subjects.index');
     }
 
     /**
@@ -104,8 +116,10 @@ class SubjectController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        Subject::destroy($id);
+        return redirect()->route('subjects.index');
     }
+    
     public function import(Request $request)
     {
         $request->validate([

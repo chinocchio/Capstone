@@ -15,7 +15,6 @@ class SubjectImport implements ToCollection, WithHeadingRow
     */
     public function collection(Collection $rows)
     {
-        
         foreach ($rows as $row) 
         {
             $generatedCode = mt_rand(11111111111,99999999999);
@@ -28,6 +27,7 @@ class SubjectImport implements ToCollection, WithHeadingRow
             'qr' => $row['qr'] ?? $generatedCode,
             'start_time' => $this->formatTime($row['start_time']),
             'end_time' => $this->formatTime($row['end_time']),
+            'day' => $row['day'],
             'image' => $row['image'], // Ensure the index matches the actual column if used
             ]);
         }

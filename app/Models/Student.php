@@ -17,10 +17,18 @@ class Student extends Model
         'email',
         'section',
         'password',
+        'biometric_data'
     ];
 
+    // public function macs()
+    // {
+    //     return $this->belongsTo(Mac::class);
+    // }
+
+    // Define the many-to-many relationship with the Mac model
     public function macs()
     {
-        return $this->belongsTo(Mac::class);
+        return $this->belongsToMany(Mac::class, 'mac_student')
+                        ->withTimestamps();
     }
 }

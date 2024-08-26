@@ -14,7 +14,6 @@ class StudentImport implements ToCollection, WithHeadingRow
     */
     public function collection(Collection $rows)
     {
-        dd($rows);
         foreach ($rows as $row) 
         {
             Student::create([

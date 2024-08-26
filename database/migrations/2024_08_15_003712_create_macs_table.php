@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('macs', function (Blueprint $table) {
             $table->id();
-            // $table->foreignId('student_id')->constrained()->onDelete('cascade');
             $table->integer('mac_number');
             $table->string('qr');
             $table->timestamps();

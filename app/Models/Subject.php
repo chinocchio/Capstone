@@ -21,6 +21,7 @@ class Subject extends Model
         'section',
         'start_time',
         'end_time',
+        'day',
         'image',
     ];
 

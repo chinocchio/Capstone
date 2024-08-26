@@ -9,10 +9,19 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\PinVerificationController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\FingerprintController;
+use App\Http\Controllers\MacController;
 
 Route::apiResource('subs', ApiSubjectController::class);
+
+//api for instructors
 Route::apiResource('instructors', ApiInstructorsController::class);
+Route::put('/instructors/{email}', [ApiInstructorsController::class, 'update']);
+Route::get('/instructors/pin/{pin}', [ApiInstructorsController::class, 'getByPin']);
+
 Route::apiResource('linkedSubjects', ApiLinkedSubjectsController::class);
+Route::delete('/linkedSubjects', [ApiLinkedSubjectsController::class, 'delete']);
+
 Route::get('/user/{id}/subjects', [UserController::class, 'getUserSubjects']);
 
 Route::get('/user', function (Request $request) {
@@ -24,6 +33,16 @@ Route::post('/verify-pin', [PinVerificationController::class, 'verifyPin']);
 
 //Student login API route
 Route::post('/student', [StudentController::class, 'verifyStudent']);
+Route::get('/students', [StudentController::class, 'getAllStudent']);
+Route::post('/students', [StudentController::class, 'storeStudent']);
+Route::get('students/find-by-biometric-data', [StudentController::class, 'findByBiometricData']);
 
 //Scan API Route
 Route::post('/record-scan', [ScansController::class, 'recordScan']);
+Route::post('/macs', [ScansController::class, 'linkToStudent']);
+
+//fingerprint
+Route::post('/register-biometrics', [StudentController::class, 'registerBiometrics']);
+Route::get('fingerprints', [FingerprintController::class, 'index']);
+Route::post('fingerprints', [FingerprintController::class, 'store']);
+

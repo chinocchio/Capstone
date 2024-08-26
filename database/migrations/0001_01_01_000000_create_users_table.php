@@ -16,8 +16,11 @@ return new class extends Migration
             $table->string('username');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
+            $table->integer('pin')->nullable();
             $table->string('password')->nullable();
             $table->string("google_id")->nullable();
+            $table->integer('finger_id')->nullable();
+            $table->binary('fingerprint_template')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

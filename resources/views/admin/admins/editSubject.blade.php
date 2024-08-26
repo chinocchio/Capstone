@@ -2,7 +2,7 @@
     {{-- Heading --}}
     <a href="{{ route('subjects.index') }}" class="block mb-2 text-xs text-blue-500">&larr; Go back</a>
     <div class="card mb-4">
-        <h2 class="font-bold mb-4">Add a new subject</h2>
+        <h2 class="font-bold mb-4">Edit subject</h2>
 
         {{-- Session Messages --}}
         @if (session('success'))
@@ -12,13 +12,13 @@
         @endif
 
         {{-- Create Post Form --}}
-        <form action="{{ route('subjects.store') }}" method="post" enctype="multipart/form-data">
+        <form action="{{ route('subjects.update', $subject->id) }}" method="post" enctype="multipart/form-data">
             @csrf
-
+            @method('PUT')
             {{-- Subject Name --}}
             <div class="mb-4">
                 <label for="name">Subject Name</label>
-                <input type="text" name="name" value="{{ old('name') }}"
+                <input type="text" name="name" value="{{ $subject->name }}"
                     class="input @error('name') ring-red-500 @enderror">
 
                 @error('name')
@@ -29,7 +29,7 @@
             {{-- Subject Code --}}
             <div class="mb-4">
                 <label for="code">Subject Code</label>
-                <input type="text" name="code" value="{{ old('code') }}"
+                <input type="text" name="code" value="{{ $subject->code }}"
                     class="input @error('code') ring-red-500 @enderror">
 
                 @error('code')
@@ -40,7 +40,7 @@
             {{-- Section --}}
             <div class="mb-4">
                 <label for="section">Section</label>
-                <input type="text" name="section" value="{{ old('section') }}"
+                <input type="text" name="section" value="{{ $subject->section }}"
                     class="input @error('section') ring-red-500 @enderror">
 
                 @error('section')
@@ -52,7 +52,7 @@
             <div class="mb-4">
                 <label for="description">Description</label>
 
-                <textarea name="description" rows="4" class="input @error('description') ring-red-500 @enderror">{{ old('description') }}</textarea>
+                <textarea name="description" rows="4" class="input @error('description') ring-red-500 @enderror">{{ $subject->description }}</textarea>
 
                 @error('description')
                     <p class="error">{{ $message }}</p>
@@ -62,7 +62,7 @@
             {{-- Start Time --}}
             <div class="mb-4">
                 <label for="start_time">Start Time</label>
-                <input type="text" name="start_time" value="{{ old('start_time') }}" placeholder="1:00 PM"
+                <input type="text" name="start_time" value="{{ $subject->start_time }}" placeholder="1:00 PM"
                     class="input @error('start_time') ring-red-500 @enderror">
 
                 @error('start_time')
@@ -73,7 +73,7 @@
             {{-- End Time --}}
             <div class="mb-4">
                 <label for="end_time">End Time</label>
-                <input type="text" name="end_time" value="{{ old('end_time') }}" placeholder="5:00 PM"
+                <input type="text" name="end_time" value="{{ $subject->end_time }}" placeholder="5:00 PM"
                     class="input @error('end_time') ring-red-500 @enderror">
 
                 @error('end_time')
@@ -84,7 +84,7 @@
             {{-- Subject Day --}}
             <div class="mb-4">
                 <label for="day">Subject Day</label>
-                <input type="text" name="day" value="{{ old('day') }}"
+                <input type="text" name="day" value="{{ $subject->day }}"
                     class="input @error('day') ring-red-500 @enderror">
 
                 @error('name')
@@ -103,7 +103,7 @@
             </div>
 
             {{-- Submit Button --}}
-            <button class="btn">Add</button>
+            <button class="btn">Edit</button>
 
         </form>
     </div>

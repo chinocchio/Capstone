@@ -17,8 +17,15 @@ class Mac extends Model
         'qr',
     ];
 
-    public function student()
+    // public function student()
+    // {
+    //     return $this->hasMany(Student::class);
+    // }
+
+    // Define the many-to-many relationship with the Student model
+    public function students()
     {
-        return $this->hasMany(Student::class);
+        return $this->belongsToMany(Student::class, 'mac_student')
+                    ->withTimestamps();
     }
 }

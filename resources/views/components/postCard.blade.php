@@ -20,6 +20,11 @@
                 <span class="font-medium">Code:</span> {{ $post->code }}
             </div>
 
+            {{-- Post day --}}
+            <div class="text-sm mb-4">
+                <span class="font-medium">Every:</span> {{ $post->day }}
+            </div>
+
             {{-- Time and Section --}}
             <div class="text-xs font-light mb-4">
                 <span class="font-medium">Time:</span> 

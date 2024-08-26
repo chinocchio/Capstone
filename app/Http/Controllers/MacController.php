@@ -6,15 +6,25 @@ namespace App\Http\Controllers;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\MacImport;
 use Illuminate\Http\Request;
+use App\Models\Mac;
 
 class MacController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return view ("admin.admins.addMacs");
+        $query = Mac::query();
+
+        if ($request->has('search')) {
+            $searchTerm = $request->input('search');
+            $query->where('mac_number', 'like', "%{$searchTerm}%")
+                ->orWhere('id', 'like', "%{$searchTerm}%");
+        }
+
+        $macs = $query->paginate(5);
+        return view ("admin.admins.addMacs", compact('macs'));
     }
 
     /**
@@ -46,7 +56,7 @@ class MacController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        dd('edit mac this id = ' . $id);
     }
 
     /**
@@ -62,7 +72,7 @@ class MacController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        dd('delete mac');
     }
 
     public function import(Request $request)

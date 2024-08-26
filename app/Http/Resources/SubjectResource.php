@@ -22,6 +22,7 @@ class SubjectResource extends JsonResource
             'description' => $this->description,
             'section' => $this->section, // Added section
             'image' => $this->image,
+            'day' => $this->day,
             'start_time' => $this->start_time, // Added start_time
             'end_time' => $this->end_time, // Added end_time
         ];

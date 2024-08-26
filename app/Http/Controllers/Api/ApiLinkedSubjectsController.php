@@ -25,7 +25,6 @@ class ApiLinkedSubjectsController extends Controller
     }
     public function store(Request $request)
     {
-
         $request->validate([
             'user_id' => 'required|exists:users,id',
             'subject_id' => 'required|exists:subjects,id'
@@ -49,8 +48,33 @@ class ApiLinkedSubjectsController extends Controller
     {
         
     }
-    public function destroy()
+    public function destroy(Request $request)
     {
-        
+    
+    }
+
+    public function delete(Request $request)
+    {
+        // Validate the request
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'subject_id' => 'required|exists:subjects,id'
+        ]);
+
+        // Find the record to delete
+        $deleted = User_Subject::where('user_id', $request->user_id)
+                               ->where('subject_id', $request->subject_id)
+                               ->delete();
+
+        // Check if any records were deleted
+        if ($deleted) {
+            return response()->json([
+                'message' => 'Linked Subject removed successfully'
+            ]);
+        } else {
+            return response()->json([
+                'message' => 'Record not found'
+            ], 404);
+        }
     }
 }
