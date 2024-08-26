@@ -9,6 +9,7 @@ use App\Models\Subject;
 use App\Models\Mac;
 use App\Models\Student;
 use App\Models\Mac_Student;
+use Carbon\Carbon;
 
 
 class ScansController extends Controller
@@ -16,21 +17,22 @@ class ScansController extends Controller
 
     public function recordScan(Request $request)
     {
-
         $validatedData = $request->validate([
             'qr' => 'required|string',
             'scanned_by' => 'required|string',
         ]);
-    
+
         // Find the subject by QR code
         $subject = Subject::where('qr', $validatedData['qr'])->firstOrFail();
-    
-        // Record the scan
+
+        // Record the scan with Asia/Manila timezone
         $scan = Scan::create([
             'subject_id' => $subject->id,
             'scanned_by' => $validatedData['scanned_by'],
+            'created_at' => Carbon::now()->setTimezone('Asia/Manila'),  // Set the timezone
+            'updated_at' => Carbon::now()->setTimezone('Asia/Manila'),  // Set the timezone
         ]);
-    
+
         return response()->json(['message' => 'Scan recorded successfully', 'scan' => $scan], 201);
     }
 
