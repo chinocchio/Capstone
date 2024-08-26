@@ -22,6 +22,7 @@
                 <div class="subject-card mb-4 p-4  rounded-lg">
                     <h2 class="font-bold text-xl">{{ $subject->name }}</h2>
                     <p class="text-md mb-2"><strong>Code:</strong> {{ $subject->code }}</p>
+                    <p class="text-md mb-2"><strong>Day:</strong> {{ $subject->day }}</p>
                     <p class="text-md mb-2"><strong>Description:</strong> {{ $subject->description }}</p>
                     <p class="text-md mb-2">
                         <strong>Time:</strong> 

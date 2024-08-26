@@ -24,13 +24,13 @@ class DashboardController extends Controller
         
         // Retrieve subjects with optional instructor information
         $subjects = DB::table('subjects')
-            ->leftJoin('user_subject', 'subjects.id', '=', 'user_subject.subject_id')
-            ->leftJoin('users', 'user_subject.user_id', '=', 'users.id')
-            ->where('subjects.day', $today)
-            ->where('subjects.start_time', '<=', $currentTime)
-            ->where('subjects.end_time', '>=', $currentTime)
-            ->select('subjects.*', 'users.username', 'users.email')
-            ->get();
+        ->leftJoin('user_subject', 'subjects.id', '=', 'user_subject.subject_id')
+        ->leftJoin('users', 'user_subject.user_id', '=', 'users.id')
+        ->where('subjects.day', $today) // Ensure the subject is for the current day
+        ->whereTime('subjects.start_time', '<=', $currentTime) // Ensure the subject's start time is before or equal to the current time
+        ->whereTime('subjects.end_time', '>=', $currentTime) // Ensure the subject's end time is after or equal to the current time
+        ->select('subjects.*', 'users.username', 'users.email')
+        ->get();
 
         return view('users.dashboard', [
             'posts' => $posts,
