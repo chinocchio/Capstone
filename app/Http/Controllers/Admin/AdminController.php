@@ -6,8 +6,11 @@ namespace App\Http\Controllers\Admin;
 use App\Models\User;
 use App\Models\Post;
 use App\Http\Controllers\Controller;
+use App\Models\Subject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth; 
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class AdminController extends Controller
 {
@@ -17,7 +20,22 @@ class AdminController extends Controller
 
         if(Auth::guard('admin')->check())
         {
-            return view ('admin.admins.dashboard', [ 'instructors' => $instructors ]);
+            $subjects = DB::table('subjects')
+            ->leftJoin('user_subject', 'subjects.id', '=', 'user_subject.subject_id')
+            ->leftJoin('users', 'user_subject.user_id', '=', 'users.id')
+            ->where('subjects.day', DB::raw('DAYNAME(CURDATE())'))
+            ->where('subjects.start_time', '<=', DB::raw('CURTIME()'))
+            ->where('subjects.end_time', '>=', DB::raw('CURTIME()'))
+            ->select('subjects.*', 'users.username', 'users.email')
+            ->get();
+
+            // return view ('admin.admins.dashboard', [ 'instructors' => $instructors ]);
+
+            return view('admin.admins.dashboard', [
+                'instructors' => $instructors,
+                'subjects' => $subjects,
+                'currentDate' => Carbon::now()->format('l, F j, Y')
+            ]);
         }
     }
 

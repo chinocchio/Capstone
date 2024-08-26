@@ -7,14 +7,25 @@
             Temperature display
         </div>
         <div class="card mb-4 p-6 col-span-10">
-            <h2 class="font-bold mb-4 text-lg">MAC LABORATORY OCCUPIED BY:</h2>
+            <h1 class="font-bold mb-4 text-lg">({{ $currentDate }})</h1>
 
-            <h2 class="font-bold text-xl">Chino Lawrence Noble</h2>
-            <h2 class="text-xl mb-4">chnoble@my.cspc.edu.ph</h2>
-
-            <h2 class="text-xl">1pm - 4pm Wednesday</h2>
-
-            <h2 class="text-xl">Mobile Technology 1 </h2>
+            @forelse($subjects as $subject)
+                <div class="subject-card mb-4 p-4  rounded-lg">
+                    <h2 class="font-bold text-xl">{{ $subject->name }}</h2>
+                    <p class="text-md mb-2"><strong>Code:</strong> {{ $subject->code }}</p>
+                    <p class="text-md mb-2"><strong>Description:</strong> {{ $subject->description }}</p>
+                    <p class="text-md mb-2">
+                        <strong>Time:</strong> 
+                        {{ \Carbon\Carbon::parse($subject->start_time)->format('g:i a') }} - 
+                        {{ \Carbon\Carbon::parse($subject->end_time)->format('g:i a') }}
+                    </p>
+                    <p class="text-md">
+                        <strong>Occupied By:</strong> {{ $subject->username ?? 'No Instructor Assigned' }}
+                    </p>
+                </div>
+            @empty
+                <p>No subjects are currently available.</p>
+            @endforelse 
         </div>
     </div>
 

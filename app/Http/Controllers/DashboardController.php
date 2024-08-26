@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Scan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -16,7 +17,21 @@ class DashboardController extends Controller
 
         $posts = Auth::user()->subjects()->latest()->paginate(6);
 
-        return view('users.dashboard', ['posts' => $posts]);
+        // Get the current subjects using query builder
+        $subjects = DB::table('subjects')
+            ->leftJoin('user_subject', 'subjects.id', '=', 'user_subject.subject_id')
+            ->leftJoin('users', 'user_subject.user_id', '=', 'users.id')
+            ->where('subjects.day', DB::raw('DAYNAME(CURDATE())'))
+            ->where('subjects.start_time', '<=', DB::raw('CURTIME()'))
+            ->where('subjects.end_time', '>=', DB::raw('CURTIME()'))
+            ->select('subjects.*', 'users.username', 'users.email')
+            ->get();
+
+        return view('users.dashboard', [
+            'posts' => $posts,
+            'subjects' => $subjects,
+            'currentDate' => Carbon::now()->format('l, F j, Y')
+        ]);
     }
 
     public function userPosts(User $user) {
