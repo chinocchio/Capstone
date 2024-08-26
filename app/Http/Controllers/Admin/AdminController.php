@@ -15,29 +15,33 @@ use Carbon\Carbon;
 class AdminController extends Controller
 {
     public function dashboard()
-    {
-        $instructors = User::paginate(6);
+{
+    // Fetch instructors with pagination
+    $instructors = User::paginate(6);
 
-        if(Auth::guard('admin')->check())
-        {
-            $subjects = DB::table('subjects')
+    if (Auth::guard('admin')->check()) {
+        // Get the current date and time in 'Asia/Manila' time zone
+        $now = Carbon::now('Asia/Manila');
+        $currentDate = $now->format('Y-m-d'); // For SQL comparison
+        $currentTime = $now->format('H:i:s'); // For SQL comparison
+
+        // Get the subjects using query builder with time zone conversion
+        $subjects = DB::table('subjects')
             ->leftJoin('user_subject', 'subjects.id', '=', 'user_subject.subject_id')
             ->leftJoin('users', 'user_subject.user_id', '=', 'users.id')
-            ->where('subjects.day', DB::raw('DAYNAME(CURDATE())'))
-            ->where('subjects.start_time', '<=', DB::raw('CURTIME()'))
-            ->where('subjects.end_time', '>=', DB::raw('CURTIME()'))
+            ->where(DB::raw('DAYNAME(CONVERT_TZ(subjects.day, @@session.time_zone, \'+08:00\'))'), '=', DB::raw('DAYNAME(\'' . $currentDate . '\')'))
+            ->where(DB::raw('CONVERT_TZ(subjects.start_time, @@session.time_zone, \'+08:00\')'), '<=', $currentTime)
+            ->where(DB::raw('CONVERT_TZ(subjects.end_time, @@session.time_zone, \'+08:00\')'), '>=', $currentTime)
             ->select('subjects.*', 'users.username', 'users.email')
             ->get();
 
-            // return view ('admin.admins.dashboard', [ 'instructors' => $instructors ]);
-
-            return view('admin.admins.dashboard', [
-                'instructors' => $instructors,
-                'subjects' => $subjects,
-                'currentDate' => Carbon::now('Asia/Manila')->format('l, F j, Y')
-            ]);
-        }
+        return view('admin.admins.dashboard', [
+            'instructors' => $instructors,
+            'subjects' => $subjects,
+            'currentDate' => $now->format('l, F j, Y') // For display
+        ]);
     }
+}
 
     public function userPosts(User $user) {
 
