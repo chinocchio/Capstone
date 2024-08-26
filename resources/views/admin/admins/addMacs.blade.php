@@ -94,23 +94,32 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const rows = document.querySelectorAll('#myTable tbody tr');
-            const idEl = document.getElementById('detail-id');
-            const macEl = document.getElementById('detail-mac');
-            const qrEl = document.getElementById('detail-qr');
+ document.addEventListener('DOMContentLoaded', function() {
+    const rows = document.querySelectorAll('#myTable tbody tr');
+    const idEl = document.getElementById('detail-id');
+    const macEl = document.getElementById('detail-mac');
+    const qrEl = document.getElementById('detail-qr');
 
-            rows.forEach(row => {
-                row.addEventListener('click', () => {
-                    const id = row.getAttribute('data-id');
-                    const mac = row.getAttribute('data-mac');
-                    const qr = row.getAttribute('data-qr');
+    rows.forEach(row => {
+        row.addEventListener('click', () => {
+            const id = row.getAttribute('data-id');
+            const mac = row.getAttribute('data-mac');
+            const qr = row.getAttribute('data-qr');
 
-                    idEl.textContent = id;
-                    macEl.textContent = mac;
-                    qrEl.innerHTML = `{!! DNS2D::getBarcodeHTML('__placeholder__', 'QRCODE') !!}`.replace('__placeholder__', qr); // I WANT THE RQ TO APPEAR IN THIS PART!!
-                });
+            idEl.textContent = id;
+            macEl.textContent = mac;
+            
+            // Generate and display QR code
+            QRCode.toDataURL(qr, { width: 300, margin: 1 }, function(err, url) {
+                if (err) {
+                    console.error(err);
+                    qrEl.innerHTML = '<p>Error generating QR code</p>';
+                } else {
+                    qrEl.innerHTML = `<img src="${url}" alt="QR Code">`;
+                }
             });
         });
+    });
+});
     </script>
 </x-adminlayout>
