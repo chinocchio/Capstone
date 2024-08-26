@@ -13,24 +13,22 @@ use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
-    public function index(){
-
+    public function index()
+    {
         $posts = Auth::user()->subjects()->latest()->paginate(6);
-        // Get the current date and time in 'Asia/Manila' time zone
+
         $now = Carbon::now('Asia/Manila');
         $currentDate = $now->format('Y-m-d'); // Format for SQL comparison
         $currentTime = $now->format('H:i:s'); // Format for SQL comparison
-
-        // Retrieve posts with pagination
-        $posts = Auth::user()->subjects()->latest()->paginate(6);
-
-        // Get the current subjects using query builder
+        $today = $now->format('l'); // For day name comparison
+        
+        // Retrieve subjects with optional instructor information
         $subjects = DB::table('subjects')
             ->leftJoin('user_subject', 'subjects.id', '=', 'user_subject.subject_id')
             ->leftJoin('users', 'user_subject.user_id', '=', 'users.id')
-            ->where(DB::raw('DAYNAME(CONVERT_TZ(subjects.day, @@session.time_zone, \'+08:00\'))'), '=', DB::raw('DAYNAME(\'' . $currentDate . '\')'))
-            ->where(DB::raw('CONVERT_TZ(subjects.start_time, @@session.time_zone, \'+08:00\')'), '<=', $currentTime)
-            ->where(DB::raw('CONVERT_TZ(subjects.end_time, @@session.time_zone, \'+08:00\')'), '>=', $currentTime)
+            ->where('subjects.day', $today)
+            ->where('subjects.start_time', '<=', $currentTime)
+            ->where('subjects.end_time', '>=', $currentTime)
             ->select('subjects.*', 'users.username', 'users.email')
             ->get();
 
