@@ -16,6 +16,7 @@ class DashboardController extends Controller
     public function index(){
 
         $posts = Auth::user()->subjects()->latest()->paginate(6);
+        $currentDate = Carbon::now('Asia/Manila')->format('l, F j, Y');
 
         // Get the current subjects using query builder
         $subjects = DB::table('subjects')
@@ -30,7 +31,7 @@ class DashboardController extends Controller
         return view('users.dashboard', [
             'posts' => $posts,
             'subjects' => $subjects,
-            'currentDate' => Carbon::now()->format('l, F j, Y')
+            'currentDate' => $currentDate
         ]);
     }
 

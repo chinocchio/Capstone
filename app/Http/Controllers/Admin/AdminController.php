@@ -34,7 +34,7 @@ class AdminController extends Controller
             return view('admin.admins.dashboard', [
                 'instructors' => $instructors,
                 'subjects' => $subjects,
-                'currentDate' => Carbon::now()->format('l, F j, Y')
+                'currentDate' => Carbon::now('Asia/Manila')->format('l, F j, Y')
             ]);
         }
     }

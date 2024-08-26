@@ -19,7 +19,8 @@ return new class extends Migration
             $table->integer('pin')->nullable();
             $table->string('password')->nullable();
             $table->string("google_id")->nullable();
-            $table->binary('finger_print')->nullable();
+            $table->integer('finger_id')->nullable();
+            $table->binary('fingerprint_template')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

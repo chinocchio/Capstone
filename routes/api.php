@@ -13,8 +13,15 @@ use App\Http\Controllers\FingerprintController;
 use App\Http\Controllers\MacController;
 
 Route::apiResource('subs', ApiSubjectController::class);
+
+//api for instructors
 Route::apiResource('instructors', ApiInstructorsController::class);
+Route::put('/instructors/{email}', [ApiInstructorsController::class, 'update']);
+Route::get('/instructors/pin/{pin}', [ApiInstructorsController::class, 'getByPin']);
+
 Route::apiResource('linkedSubjects', ApiLinkedSubjectsController::class);
+Route::delete('/linkedSubjects', [ApiLinkedSubjectsController::class, 'delete']);
+
 Route::get('/user/{id}/subjects', [UserController::class, 'getUserSubjects']);
 
 Route::get('/user', function (Request $request) {
