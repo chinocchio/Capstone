@@ -52,39 +52,38 @@ class DashboardController extends Controller
     }
 
     //Gawa gawa ko to 
-    public function toAttendance(){
-
-        // $user = Auth::user();
-        // $linkedSubjects = $user->subjects->map(function($subject) {
-        //     $subject->start_time = Carbon::parse($subject->start_time);
-        //     $subject->end_time = Carbon::parse($subject->end_time);
-        //     return $subject;
-        // });
-
-        // return view('users.attendance', compact('linkedSubjects'));
-
-        // Get the authenticated user
-
-
+    public function toAttendance()
+    {
         $user = Auth::user();
+        $now = Carbon::now('Asia/Manila');
+        $nowTime = $now->format('H:i:s');
+        $today = $now->format('l'); // Get the current day of the week (e.g., 'Monday')
 
-        // Fetch the user's subjects and parse the start and end times
-        $linkedSubjects = $user->subjects->map(function($subject) {
-            $subject->start_time = Carbon::parse($subject->start_time);
-            $subject->end_time = Carbon::parse($subject->end_time);
-            return $subject;
+        
+        // Fetch the user's subjects that are active today and within the current time
+        $linkedSubjects = $user->subjects->filter(function($subject) use ($nowTime, $today) {
+            $start_time = Carbon::parse($subject->start_time)->format('H:i:s');
+            $end_time = Carbon::parse($subject->end_time)->format('H:i:s');
+            $subjectDay = $subject->day;
+    
+            // Check if current day and time are within the subject's schedule
+            return $subjectDay === $today && $start_time <= $nowTime && $end_time >= $nowTime;
         });
-
-        // Fetch the scans related to the subjects of the authenticated user
+    
+        // Fetch the scans related to the filtered subjects
         $scans = Scan::whereIn('subject_id', $linkedSubjects->pluck('id'))
                     ->with('subject')
                     ->orderBy('scanned_at', 'desc')
                     ->get();
-
-        // Pass both the linked subjects and scans to the view
-        return view('users.attendance', compact('linkedSubjects', 'scans'));
-
+    
+        // Pass both the filtered subjects and scans to the view
+        return view('users.attendance', [
+            'linkedSubjects' => $linkedSubjects,
+            'scans' => $scans,
+            'currentDate' => $now->format('l, F j, Y')
+        ]);
     }
+    
 
     public function fetchScans()
     {
