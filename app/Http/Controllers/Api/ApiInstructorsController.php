@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\UserResource;
+use App\Models\User_Subject;
+use App\Models\Subject;
 use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -105,5 +107,30 @@ class ApiInstructorsController extends Controller
 
         // Return the user data using the UserResource
         return new UserResource($user);
+    }
+    public function getByPinWithSubjects($pin, $day)
+    {
+        // Check if the instructor exists
+        $user = User::where('pin', $pin)->first();
+
+        if (!$user) {
+            return response()->json(['message' => 'Instructor not found'], 404);
+        }
+
+        // Retrieve the instructor's details
+        $instructor = $user->only(['id', 'username', 'email', 'finger_id']); // Customize as needed
+
+        // Retrieve linked subjects for the given day
+        $subjects = $user->subjects()
+                         ->where('day', $day)
+                         ->get();
+
+        // Format the response
+        $response = [
+            'instructor' => $instructor,
+            'subjects' => $subjects
+        ];
+
+        return response()->json($response, 200);
     }
 }
