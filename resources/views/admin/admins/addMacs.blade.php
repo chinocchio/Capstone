@@ -83,6 +83,10 @@
                     <p><strong>ID:</strong> <span id="detail-id">Select a MAC PC</span></p>
                     <p><strong>MAC Number:</strong> <span id="detail-mac">---</span></p>
                     <p><strong>QR Code:</strong> <span id="detail-qr">---</span></p>
+                    <h3 class="font-bold text-lg mt-4">Linked Students</h3>
+                    <ul id="student-list" class="list-disc pl-5">
+                        <!-- Linked students will be populated here -->
+                    </ul>
                 </div>
             </div>
         </div>
@@ -94,11 +98,12 @@
     </div>
 
     <script>
- document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function() {
     const rows = document.querySelectorAll('#myTable tbody tr');
     const idEl = document.getElementById('detail-id');
     const macEl = document.getElementById('detail-mac');
     const qrEl = document.getElementById('detail-qr');
+    const studentList = document.getElementById('student-list');
 
     rows.forEach(row => {
         row.addEventListener('click', () => {
@@ -108,7 +113,7 @@
 
             idEl.textContent = id;
             macEl.textContent = mac;
-            
+
             // Generate and display QR code
             QRCode.toDataURL(qr, { width: 300, margin: 1 }, function(err, url) {
                 if (err) {
@@ -118,8 +123,33 @@
                     qrEl.innerHTML = `<img src="${url}" alt="QR Code">`;
                 }
             });
+
+            // Display linked students
+            fetch(`/api/mac/${id}/students`)  // Updated to match API route
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.length === 0) {
+                        studentList.innerHTML = '<li>No students linked</li>';
+                    } else {
+                        studentList.innerHTML = data.map(student => 
+                            `<li>
+                                ${student.name} - ${student.section}
+                            </li>`
+                        ).join('');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching students:', error);
+                    studentList.innerHTML = '<li>Error loading students</li>';
+                });
         });
     });
 });
+
     </script>
 </x-adminlayout>

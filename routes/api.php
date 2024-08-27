@@ -61,3 +61,10 @@ Route::post('/register-biometrics', [StudentController::class, 'registerBiometri
 Route::get('fingerprints', [FingerprintController::class, 'index']);
 Route::post('fingerprints', [FingerprintController::class, 'store']);
 
+
+//mac fo testing
+// In routes/web.php or routes/api.php
+// Route::get('/mac/{id}/students', [MacController::class, 'getStudents'])->name('mac.getStudents');
+Route::get('/mac/{id}/students', [MacController::class, 'getStudents']);
+
+
