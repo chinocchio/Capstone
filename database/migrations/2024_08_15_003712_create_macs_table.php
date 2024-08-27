@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('macs', function (Blueprint $table) {
             $table->id();
-            $table->integer('mac_number');
+            $table->integer('mac_number')->unique();
             $table->string('qr');
             $table->timestamps();
         });

@@ -57,6 +57,7 @@ Route::middleware('admin')->prefix('admin')->group(function()
     // MAC Routes
     Route::resource('mac',MacController::class);
     Route::post('/macs/import', [MacController::class,'import'])->name("importMacsFromExcel");
+    Route::post('/mac/{mac}/unlink/{student}', [MacController::class, 'unlinkStudent'])->name('mac.unlink');
 
     // User Routes
     Route::resource('users', UserController::class);

@@ -1,7 +1,14 @@
 <x-adminlayout>
     <div class="flex justify-between items-center mb-4">
         <a href="{{ route('admin_dashboard') }}" class="text-xs text-blue-500">&larr; Go back to your dashboard</a>
-        <a href="{{ route('subjects.create') }}" class="bg-blue-500 text-white px-2 py-1 text-xs rounded-md">Manually Add Mac</a>
+    
+        {{-- Form to add a new MAC --}}
+        <form action="{{ route('mac.store') }}" method="post" class="inline-block">
+            @csrf
+            <button type="submit" class="bg-blue-500 text-white px-2 py-1 text-xs rounded-md">
+                Add MAC +
+            </button>
+        </form>
     </div>
 
     {{-- Session Messages --}}

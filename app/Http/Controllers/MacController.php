@@ -39,7 +39,7 @@ class MacController extends Controller
      */
     public function create()
     {
-        //
+        
     }
 
     /**
@@ -47,7 +47,17 @@ class MacController extends Controller
      */
     public function store(Request $request)
     {
+        $generatedCode = mt_rand(1111111111,9999999999);
+        $maxMacNumber = Mac::max('mac_number');
+        $newMacNumber = $maxMacNumber ? $maxMacNumber + 1 : 1;
 
+        Mac::create([
+            'mac_number' => $newMacNumber,
+            'qr' => $generatedCode
+        ]);
+
+        // Return a success response or redirect as needed
+        return redirect()->route('mac.index')->with('success', 'MAC created successfully.');
     }
 
     /**
@@ -63,17 +73,30 @@ class MacController extends Controller
      */
     public function edit(string $id)
     {
-        $mac = Mac::findOrFail($id);
+        $mac = Mac::with('students')->findOrFail($id);
 
-        return view ('admin.admins.editMacs', compact('mac'));
+        return view('admin.admins.editMacs', compact('mac'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Mac $mac)
     {
-        //
+        if ($request->has('unlink_student')) {
+            // Unlink the student
+            $studentId = $request->input('unlink_student');
+            $mac->students()->detach($studentId);
+
+            // Redirect back with a success message
+            return redirect()->route('mac.index', $mac->id)->with('success', 'Student unlinked successfully.');
+        }
+
+        // Handle other update logic if needed
+        // ...
+
+        // Redirect back with a success message or other appropriate response
+        return redirect()->route('mac.edit', $mac->id)->with('success', 'Mac updated successfully.');
     }
 
     /**
