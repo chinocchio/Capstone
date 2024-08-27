@@ -18,7 +18,7 @@ class ApiSubjectController extends Controller
         }
         else
         {
-            return response()->json(['message' => 'No subjects Recorde'], 200);
+            return response()->json(['message' => 'No subjects Recorded'], 200);
         }
     }
     public function store()
@@ -36,5 +36,16 @@ class ApiSubjectController extends Controller
     public function destroy()
     {
         
+    }
+    public function getScheduleByDay(Request $request, $day)
+    {
+        dd($request);
+        $subjects = Subject::where('day', $day)->get();
+    
+        if ($subjects->count() > 0) {
+            return SubjectResource::collection($subjects);
+        }
+    
+        return response()->json(['message' => 'No subjects Recorded'], 200);
     }
 }

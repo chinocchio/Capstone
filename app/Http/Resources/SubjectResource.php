@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
+use App\Models\Subject;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Carbon\Carbon;
 

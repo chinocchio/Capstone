@@ -131,4 +131,19 @@ class SubjectController extends Controller
         return redirect()->back()->with('success', 'Subjects imported successfully!');
     }
 
+    public function getScheduleByDay(Request $request, string $day)
+    {
+        $subjects = Subject::where('day', $day)->get();
+
+        if ($subjects->isEmpty()) {
+            return response()->json(['message' => 'No subjects found for this day'], 404);
+        }
+
+        return response()->json($subjects);
+    }
+
+    public function getScheduleByPinAndDate(Request $request, $pin, $day)
+    {
+        
+    }
 }
