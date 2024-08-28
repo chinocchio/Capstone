@@ -106,9 +106,11 @@ class DashboardController extends Controller
         return view('partials.scans-list', compact('scans'))->render();
     }
 
-    public function toSeatplan(){
+    public function toSeatplan()
+    {
+        $posts = Auth::user()->subjects()->latest()->paginate(6);
 
-        return view('users.seatplan');
+        return view('users.seatplan', compact('posts'));
     }
 
     public function toSubjects(){
