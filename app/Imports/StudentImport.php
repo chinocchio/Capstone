@@ -17,6 +17,7 @@ class StudentImport implements ToCollection, WithHeadingRow
         foreach ($rows as $row) 
         {
             Student::create([
+                'student_number' => $row['student_number'],
                 'name' => $row['name'],
                 'email' => $row['email'],
                 'section' => $row['section'],

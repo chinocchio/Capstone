@@ -21,10 +21,10 @@ class StudentController extends Controller
         if ($request->has('search')) {
             $searchTerm = $request->input('search');
             $query->where('name', 'like', "%{$searchTerm}%")
-                ->orWhere('id', 'like', "%{$searchTerm}%");
+                ->orWhere('student_number', 'like', "%{$searchTerm}%");
         }
 
-        $students = $query->paginate(5);
+        $students = $query->paginate(15);
         return view ("admin.admins.addStudents", compact('students'));
     }
 
@@ -70,7 +70,7 @@ class StudentController extends Controller
 
         Excel::import(new StudentImport, $request->file('file'));
 
-        return redirect()->back()->with('success', 'Subjects imported successfully!');
+        return redirect()->back()->with('success', 'Students imported successfully!');
     }
 
 
