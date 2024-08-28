@@ -35,7 +35,7 @@
                         <a href="{{ route('dashboard') }}" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Dashboard</a>
                         <a href="{{ route('attendance') }}" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Attendance</a>
                         <a href="{{ route('user.dashboard') }}" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Subjects</a>
-                        <a href="{{ route('seatplan') }}" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Seat Plan</a>
+                        <a href="{{ route('seatplan') }}" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Students</a>
 
                         <form action="{{ route('logout') }}" method="post">
                             @csrf

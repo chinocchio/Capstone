@@ -29,6 +29,9 @@ Route::put('/instructors/{email}', [ApiInstructorsController::class, 'update']);
 //this api is for verifying the recorded biometric
 Route::get('/instructors/pin/{pin}', [ApiInstructorsController::class, 'getByPin']);
 
+////this api is for verifying the recorded biometric but with ALL linked subjects
+Route::get('/instructors/{pin}', [ApiInstructorsController::class, 'show']);
+
 //this api is for verifying the recorded biometric but with linked subjects
 Route::get('/instructors/pin/{pin}/{day}', [ApiInstructorsController::class, 'getByPinWithSubjects']);
 
@@ -40,7 +43,7 @@ Route::delete('/linkedSubjects', [ApiLinkedSubjectsController::class, 'delete'])
 Route::get('/user/{id}/subjects', [UserController::class, 'getUserSubjects']);
 
 Route::get('/user', function (Request $request) {
-    return $request->user();
+    return $request->user();    
 })->middleware('auth:sanctum');
 
 // Route for PIN authentication

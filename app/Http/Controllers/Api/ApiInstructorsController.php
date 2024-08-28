@@ -26,12 +26,32 @@ class ApiInstructorsController extends Controller
     }
     public function store()
     {
-        
+
     }
-    public function show()
+    public function show($pin)
     {
+        // Check if the instructor exists
+        $user = User::where('pin', $pin)->first();
+
+        if (!$user) {
+            return response()->json(['message' => 'Instructor not found'], 404);
+        }
+
+        // Retrieve the instructor's details
+        $instructor = $user->only(['id', 'username', 'email', 'finger_id']); // Customize as needed
+
+        $subjects = $user->subjects()
+                         ->get();
+
+        // Format the response
+            $response = [
+                'instructor' => $instructor,
+                'subjects' => $subjects
+            ];
         
+        return response()->json($response, 200);
     }
+
     public function update(Request $request, $email)
     {
         // Validate the incoming request
@@ -108,6 +128,7 @@ class ApiInstructorsController extends Controller
         // Return the user data using the UserResource
         return new UserResource($user);
     }
+
     public function getByPinWithSubjects($pin, $day)
     {
         // Check if the instructor exists
@@ -133,4 +154,5 @@ class ApiInstructorsController extends Controller
 
         return response()->json($response, 200);
     }
+    
 }

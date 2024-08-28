@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use App\Models\Subject;
 use App\Models\User;
+use App\Models\Student;
 use App\Models\Scan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -111,6 +112,45 @@ class DashboardController extends Controller
         $posts = Auth::user()->subjects()->latest()->paginate(6);
 
         return view('users.seatplan', compact('posts'));
+    }
+
+    public function importStudents(Request $request)
+    {
+        // Get the subjects with the same section as the students
+        $section = $request->input('section');
+
+        $subjects = DB::table('subjects')
+        ->where('subjects.section', $section) // Ensure the subject is for the current day
+        ->get();
+
+        $students = DB::table('students')
+        ->where('students.section', $section) // Ensure the subject is for the current day
+        ->get();
+
+        // Check if there are any students for the given section
+        if ($students->isEmpty()) {
+            return redirect()->back()->with('warning', 'No students found for the specified section.');
+        }
+
+        // Check if there are subjects for the given section
+        if ($subjects->isEmpty()) {
+            return redirect()->back()->with('warning', 'No subjects found for the specified section.');
+        }
+
+        foreach ($students as $student) {
+            foreach ($subjects as $subject) {
+                // Insert into student_subject table
+                \DB::table('student_subject')->updateOrInsert(
+                    [
+                        'student_id' => $student->id,
+                        'subject_id' => $subject->id
+                    ],
+                    []
+                );
+            }
+        }
+
+        return redirect()->back()->with('success', 'Students and subjects imported successfully.');
     }
 
     public function toSubjects(){

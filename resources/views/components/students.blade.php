@@ -1,27 +1,27 @@
 @props(['post', 'full' => false])
 
-<div class="card">
+<div class="card p-4 bg-white shadow-lg rounded-lg mb-4">
     <div class="flex gap-6">
         {{-- Cover photo --}}
         <div class="h-auto w-1/5 rounded-md overflow-hidden self-start">
             @if ($post->image)
-                <img src="{{ asset('storage/' . $post->image) }}" alt="Post Image">
+                <img src="{{ asset('storage/' . $post->image) }}" alt="Post Image" class="object-cover w-full h-full">
             @else
-                <img class="object-cover object-center rounded-md" src="{{ asset('storage/posts_images/default.jpg') }}" alt="Default Image">
+                <img class="object-cover object-center rounded-md w-full h-full" src="{{ asset('storage/posts_images/default.jpg') }}" alt="Default Image">
             @endif
         </div>
 
         <div class="w-4/5">
             {{-- Post Name --}}
-            <h2 class="font-bold text-xl">{{ $post->name }}</h2>
+            <h2 class="font-bold text-xl mb-2">{{ $post->name }}</h2>
 
             {{-- Post Code --}}
-            <div class="text-sm mb-4">
+            <div class="text-sm mb-2">
                 <span class="font-medium">Code:</span> {{ $post->code }}
             </div>
 
             {{-- Post day --}}
-            <div class="text-sm mb-4">
+            <div class="text-sm mb-2">
                 <span class="font-medium">Every:</span> {{ $post->day }}
             </div>
 
@@ -34,21 +34,17 @@
                 <span class="font-medium">Section:</span> 
                 <span class="font-bold">{{ $post->section }}</span>
             </div>
-
-            {{-- Description --}}
-            @if ($full)
-                {{-- Show full description text in single post page --}}
-                <div class="text-sm">
-                    <span>{{ $post->description }}</span>
-                </div>
-            @else
-                {{-- Show limited description text in single post page --}}
-                <div class="text-sm">
-                    <span>{{ Str::words($post->description, 15) }}</span>
-                    <a href="{{ route('posts.show', $post) }}" class="text-blue-500 ml-2">Read more &rarr;</a>
-                </div>
-            @endif
         </div>
+    </div>
+
+    <div class="mt-auto flex justify-center">
+        <form action="{{ route('import.students') }}" method="POST" id="import-form">
+            @csrf
+            <input type="hidden" name="section" value="{{ $post->section }}"> <!-- Replace with actual section value or logic to determine it -->
+            <button type="submit" class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-4 py-2 rounded-md shadow-md transform hover:scale-105 transition-transform duration-300 ease-in-out text-sm">
+                Import Students
+            </button>
+        </form>
     </div>
 
     {{-- Placeholder for extra elements used in user dashboard --}}
