@@ -12,6 +12,13 @@ use App\Http\Controllers\Api\PinVerificationController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\FingerprintController;
 use App\Http\Controllers\MacController;
+use App\Http\Controllers\LogsController;
+use App\Http\Controllers\TemperatureController;
+
+//for logs
+Route::apiResource('logs', LogsController::class)->only([
+    'store', 'index'
+]);
 
 Route::apiResource('subs', ApiSubjectController::class);
 Route::get('subs/{day}', [ApiSubjectController::class, 'getScheduleByDay']);// wag to bobo to 
@@ -48,6 +55,7 @@ Route::get('/user', function (Request $request) {
 
 // Route for PIN authentication
 Route::post('/verify-pin', [PinVerificationController::class, 'verifyPin']);
+Route::post('/verify-pinDoor', [PinVerificationController::class, 'verifyPinForDoor']);
 
 //Student login API route
 Route::post('/student', [StudentController::class, 'verifyStudent']);
@@ -63,6 +71,7 @@ Route::post('/macs', [ScansController::class, 'linkToStudent']);
 Route::post('/register-biometrics', [StudentController::class, 'registerBiometrics']);
 Route::get('fingerprints', [FingerprintController::class, 'index']);
 Route::post('fingerprints', [FingerprintController::class, 'store']);
+Route::apiResource('temperatures', TemperatureController::class);
 
 
 //mac fo testing
