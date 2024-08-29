@@ -35,4 +35,26 @@ class PinVerificationController extends Controller
         // If no user found with the provided PIN, return an error response
         return response()->json(['success' => false, 'message' => 'Invalid PIN'], 401);
     }
+
+    public function verifyPinForDoor(Request $request)
+    {
+        // Validate that the PIN is provided and is exactly 4 digits
+        $request->validate([
+            'pin' => 'required|digits:4',
+        ]);
+
+        // Retrieve the user with the matching PIN
+        $user = User::where('pin', $request->pin)->first();
+
+        if ($user) {
+            // Return the user data if the PIN matches
+            return response()->json([
+                'success' => true,
+                'user' => $user,
+            ]);
+        }
+
+        // If no user found with the provided PIN, return an error response
+        return response()->json(['success' => false, 'message' => 'Invalid PIN'], 401);
+    }
 }
