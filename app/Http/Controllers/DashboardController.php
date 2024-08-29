@@ -153,6 +153,32 @@ class DashboardController extends Controller
         return redirect()->back()->with('success', 'Students and subjects imported successfully.');
     }
 
+    public function checkStudents(Request $request)
+    {
+        $id = $request->input('subject_id');
+
+        // Fetch students enrolled in the given subject
+        $students = \DB::table('student_subject')
+        ->join('students', 'student_subject.student_id', '=', 'students.id')
+        ->where('student_subject.subject_id', $id)
+        ->select('students.id','students.student_number', 'students.name', 'students.email', 'students.biometric_data') // Adjust fields as necessary
+        ->get();
+
+        return view('users.enrolledStudentList', compact('students'));
+    }
+
+    public function unenroll($id)
+    {
+        // Find the student_subject entry and delete it
+        \DB::table('student_subject')
+            ->where('student_id', $id)
+            ->where('subject_id', request()->input('subject_id')) // Ensure to pass subject_id in your request
+            ->delete();
+
+        // Redirect back with a success message
+        return redirect()->back()->with('success', 'Student unenrolled successfully.');
+    }
+
     public function toSubjects(){
 
         return view('users.subjects');

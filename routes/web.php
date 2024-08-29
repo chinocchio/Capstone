@@ -39,6 +39,8 @@ Route::middleware('auth')->group(function() {
     // User seat plan Route
     Route::get('/seatplan', [DashboardController::class, 'toSeatplan'])->name('seatplan');
     Route::post('/import-students', [DashboardController::class, 'importStudents'])->name('import.students');
+    Route::get('/check-students', [DashboardController::class, 'checkStudents'])->name('check.students');
+    Route::delete('/students/{id}/unenroll', [DashboardController::class, 'unenroll'])->name('students.unenroll');
 
     // User add subjects Route
     Route::get('/subjects', [DashboardController::class, 'toSubjects'])->name('subjects');

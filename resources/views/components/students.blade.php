@@ -37,12 +37,19 @@
         </div>
     </div>
 
-    <div class="mt-auto flex justify-center">
+    <div class="mt-auto flex gap-4 justify-center">
         <form action="{{ route('import.students') }}" method="POST" id="import-form">
             @csrf
             <input type="hidden" name="section" value="{{ $post->section }}"> <!-- Replace with actual section value or logic to determine it -->
             <button type="submit" class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-4 py-2 rounded-md shadow-md transform hover:scale-105 transition-transform duration-300 ease-in-out text-sm">
                 Import Students
+            </button>
+        </form>
+        <form action="{{ route('check.students') }}" method="GET" id="check-form">
+            @csrf
+            <input type="hidden" name="subject_id" value="{{ $post->id }}"> <!-- Replace with actual section value or logic to determine it -->
+            <button type="submit" class="bg-gradient-to-r from-green-500 to-teal-500 text-white px-4 py-2 rounded-md shadow-md transform hover:scale-105 transition-transform duration-300 ease-in-out text-sm">
+                Check Students
             </button>
         </form>
     </div>
