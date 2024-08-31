@@ -66,6 +66,11 @@ Route::get('students/find-by-biometric-data', [StudentController::class, 'findBy
 //Scan API Route
 Route::post('/record-scan', [ScansController::class, 'recordScan']);
 Route::post('/macs', [ScansController::class, 'linkToStudent']);
+Route::get('/scans', [ScansController::class, 'getScans']);
+
+//time
+Route::get('/time/12-hour', [ScansController::class, 'get12HourFormat']);
+Route::get('/time/24-hour', [ScansController::class, 'get24HourFormat']);
 
 //fingerprint
 Route::post('/register-biometrics', [StudentController::class, 'registerBiometrics']);

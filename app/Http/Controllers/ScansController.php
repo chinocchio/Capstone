@@ -10,6 +10,7 @@ use App\Models\Mac;
 use App\Models\Student;
 use App\Models\Mac_Student;
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 
 
 class ScansController extends Controller
@@ -34,6 +35,77 @@ class ScansController extends Controller
         ]);
 
         return response()->json(['message' => 'Scan recorded successfully', 'scan' => $scan], 201);
+    }
+
+    /**
+     * Get the list of scans.
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function getScans(Request $request): JsonResponse
+    {
+        // Optionally, you can add filters here based on query parameters
+        // For example, filtering by 'subject_id' or 'scanned_by'
+        $query = Scan::query();
+
+        // Apply filters if provided
+        if ($request->has('subject_id')) {
+            $query->where('subject_id', $request->input('subject_id'));
+        }
+        if ($request->has('scanned_by')) {
+            $query->where('scanned_by', $request->input('scanned_by'));
+        }
+
+        // Fetch all records or apply pagination
+        $scans = $query->get();
+
+        return response()->json(['scans' => $scans]);
+    }
+
+    /**
+     * Get the current time and day in 12-hour format.
+     *
+     * @return JsonResponse
+     */
+    public function get12HourFormat(): JsonResponse
+    {
+        // Get the current time in Asia/Manila timezone
+        $currentTime = Carbon::now('Asia/Manila');
+        
+        // Format the time in 12-hour format with AM/PM
+        $formattedTime = $currentTime->format('g:i A');
+        
+        // Get the current day of the week
+        $dayOfWeek = $currentTime->format('l');
+        
+        // Return the formatted time and day as a JSON response
+        return response()->json([
+            'time' => $formattedTime,
+            'day' => $dayOfWeek,
+        ]);
+    }
+
+    /**
+     * Get the current time in 24-hour format.
+     *
+     * @return JsonResponse
+     */
+    public function get24HourFormat(): JsonResponse
+    {
+        // Get the current time in Asia/Manila timezone
+        $currentTime = Carbon::now('Asia/Manila');
+        
+        // Format the time in 24-hour format
+        $formattedTime = $currentTime->format('H:i');
+
+                // Get the current day of the week
+                $dayOfWeek = $currentTime->format('l');
+
+        return response()->json([
+            'time' => $formattedTime,
+            'day' => $dayOfWeek,
+        ]);
     }
 
 
