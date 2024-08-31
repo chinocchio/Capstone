@@ -11,10 +11,31 @@ use App\Models\Student;
 use App\Models\Mac_Student;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
+use Stevebauman\Location\Facades\Location;
 
 
 class ScansController extends Controller
 {
+    public function getLocation()
+    {
+        $location = Location::get();
+
+        if ($location) {
+            return response()->json([
+                'ip' => $location->ip,
+                'country' => $location->countryName,
+                'region' => $location->regionName,
+                'city' => $location->cityName,
+                'zip' => $location->zipCode,
+                'latitude' => $location->latitude,
+                'longitude' => $location->longitude,
+            ]);
+        } else {
+            return response()->json([
+                'message' => 'Location could not be determined',
+            ], 404);
+        }
+    }
 
     public function recordScan(Request $request)
     {
@@ -108,6 +129,8 @@ class ScansController extends Controller
             'day' => $dayOfWeek,
         ]);
     }
+
+
 
 
      //link mac to student
