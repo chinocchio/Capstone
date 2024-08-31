@@ -17,7 +17,7 @@ class DashboardController extends Controller
     public function index()
     {
         $posts = Auth::user()->subjects()->latest()->paginate(6);
-
+    
         $now = Carbon::now('Asia/Manila');
         $currentDate = $now->format('Y-m-d'); // Format for SQL comparison
         $currentTime = $now->format('H:i:s'); // Format for SQL comparison
@@ -25,20 +25,27 @@ class DashboardController extends Controller
         
         // Retrieve subjects with optional instructor information
         $subjects = DB::table('subjects')
-        ->leftJoin('user_subject', 'subjects.id', '=', 'user_subject.subject_id')
-        ->leftJoin('users', 'user_subject.user_id', '=', 'users.id')
-        ->where('subjects.day', $today) // Ensure the subject is for the current day
-        ->whereTime('subjects.start_time', '<=', $currentTime) // Ensure the subject's start time is before or equal to the current time
-        ->whereTime('subjects.end_time', '>=', $currentTime) // Ensure the subject's end time is after or equal to the current time
-        ->select('subjects.*', 'users.username', 'users.email')
-        ->get();
-
+            ->leftJoin('user_subject', 'subjects.id', '=', 'user_subject.subject_id')
+            ->leftJoin('users', 'user_subject.user_id', '=', 'users.id')
+            ->where('subjects.day', $today) // Ensure the subject is for the current day
+            ->whereTime('subjects.start_time', '<=', $currentTime) // Ensure the subject's start time is before or equal to the current time
+            ->whereTime('subjects.end_time', '>=', $currentTime) // Ensure the subject's end time is after or equal to the current time
+            ->select('subjects.*', 'users.username', 'users.email')
+            ->get();
+    
+        // Retrieve the latest temperature and humidity data
+        $latestTemperature = DB::table('temperature')
+            ->latest('created_at')
+            ->first();
+    
         return view('users.dashboard', [
             'posts' => $posts,
             'subjects' => $subjects,
+            'latestTemperature' => $latestTemperature,
             'currentDate' => $now->format('l, F j, Y') // Format for display
         ]);
     }
+    
 
     public function userPosts(User $user) {
 
