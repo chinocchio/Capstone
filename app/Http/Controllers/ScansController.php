@@ -12,28 +12,43 @@ use App\Models\Mac_Student;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Stevebauman\Location\Facades\Location;
+use Illuminate\Support\Facades\Http;
 
 
 class ScansController extends Controller
 {
     public function getLocation()
     {
-        $location = Location::get();
+        // Specific IP address
+        $ip = '122.3.156.198';
+        
+        // Replace with your actual IPregistry API key
+        $apiKey = 'pid2gc6x3r0bw739';
 
-        if ($location) {
+        // Send a GET request to the IPregistry API
+        $response = Http::get("https://api.ipregistry.co/{$ip}?key={$apiKey}");
+
+        // Check if the request was successful
+        if ($response->successful()) {
+            $data = $response->json();
+
+            $customLatitude = 13.405642;
+            $customLongitude = 123.377085;
+
             return response()->json([
-                'ip' => $location->ip,
-                'country' => $location->countryName,
-                'region' => $location->regionName,
-                'city' => $location->cityName,
-                'zip' => $location->zipCode,
-                'latitude' => $location->latitude,
-                'longitude' => $location->longitude,
+                'ip' => $data['ip'],
+                'country' => $data['location']['country']['name'],
+                'region' => $data['location']['region']['name'],
+                'city' => $data['location']['city'],
+                'isp' => $data['connection']['organization'],
+                'organization' => $data['connection']['organization'],
+                'latitude' => $customLatitude,
+                'longitude' => $customLongitude,
             ]);
         } else {
             return response()->json([
                 'message' => 'Location could not be determined',
-            ], 404);
+            ], 500);
         }
     }
 
