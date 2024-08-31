@@ -35,9 +35,15 @@ class AdminController extends Controller
             ->select('subjects.*', 'users.username', 'users.email')
             ->get();
 
+                // Retrieve the latest temperature and humidity data
+                $latestTemperature = DB::table('temperature')
+                ->latest('created_at')
+                ->first();
+
         return view('admin.admins.dashboard', [
             'instructors' => $instructors,
             'subjects' => $subjects,
+            'latestTemperature' => $latestTemperature,
             'currentDate' => $now->format('l, F j, Y') // For display
         ]);
     }
