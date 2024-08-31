@@ -22,20 +22,22 @@ class ScansController extends Controller
             'qr' => 'required|string',
             'scanned_by' => 'required|string',
         ]);
-
+    
         // Find the subject by QR code
         $subject = Subject::where('qr', $validatedData['qr'])->firstOrFail();
-
+    
         // Record the scan with Asia/Manila timezone
         $scan = Scan::create([
             'subject_id' => $subject->id,
             'scanned_by' => $validatedData['scanned_by'],
-            'created_at' => Carbon::now()->setTimezone('Asia/Manila'),  // Set the timezone
-            'updated_at' => Carbon::now()->setTimezone('Asia/Manila'),  // Set the timezone
+            'scanned_at' => Carbon::now()->setTimezone('Asia/Manila')->format('H:i:s'),  // Store only the time
+            'created_at' => Carbon::now()->setTimezone('Asia/Manila'),
+            'updated_at' => Carbon::now()->setTimezone('Asia/Manila'),
         ]);
-
+    
         return response()->json(['message' => 'Scan recorded successfully', 'scan' => $scan], 201);
     }
+    
 
     /**
      * Get the list of scans.
@@ -46,7 +48,6 @@ class ScansController extends Controller
     public function getScans(Request $request): JsonResponse
     {
         // Optionally, you can add filters here based on query parameters
-        // For example, filtering by 'subject_id' or 'scanned_by'
         $query = Scan::query();
 
         // Apply filters if provided
@@ -58,7 +59,7 @@ class ScansController extends Controller
         }
 
         // Fetch all records or apply pagination
-        $scans = $query->get();
+        $scans = $query->get(['subject_id', 'scanned_by', 'scanned_at', 'created_at', 'updated_at']);
 
         return response()->json(['scans' => $scans]);
     }
