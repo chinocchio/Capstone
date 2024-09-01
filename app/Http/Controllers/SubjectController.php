@@ -42,31 +42,26 @@ class SubjectController extends Controller
      */
     public function store(Request $request)
     {
-
-        // Validate
+        // Validate input data
         $request->validate([
             'name' => ['required', 'max:255'],
             'code' => ['required'],
             'description' => ['required'],
             'section' => 'required|string|max:255',
-            'start_time' => 'required|string',
-            'end_time' => 'required|string',
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => 'required|date_format:H:i',
             'day' => 'required|string',
             'image' => ['nullable', 'image'], // Optional image validation
         ]);
-
+    
         // Store image if exists
         $path = null;
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('posts_images', 'public');
         }
-
-        // Convert start and end times from 12-hour to 24-hour format
-        $startTime24 = Carbon::createFromFormat('g:i A', $request->start_time)->format('H:i:s');
-        $endTime24 = Carbon::createFromFormat('g:i A', $request->end_time)->format('H:i:s');
-
-        $generatedCode = mt_rand(11111111111,99999999999);
-
+    
+        $generatedCode = mt_rand(11111111111, 99999999999);
+    
         // Create a subject
         Subject::create([
             'name' => $request->name,
@@ -74,15 +69,18 @@ class SubjectController extends Controller
             'description' => $request->description,
             'section' => $request->section,
             'qr' => $generatedCode,
-            'start_time' => $startTime24,
-            'end_time' => $endTime24,
+            'start_time' => $request->start_time, // Directly use the 24-hour format from the input
+            'end_time' => $request->end_time,     // Directly use the 24-hour format from the input
             'day' => $request->day,
             'image' => $path,
         ]);
-
+    
         // Redirect to dashboard
         return redirect()->route('subjects.index')->with('success', 'You added a schedule.');
     }
+    
+    
+    
 
     /**
      * Display the specified resource.

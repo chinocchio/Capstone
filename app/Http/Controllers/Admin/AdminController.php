@@ -15,6 +15,20 @@ use Carbon\Carbon;
 
 class AdminController extends Controller
 {
+    public function getAdminByPin($pin)
+    {
+        // Find the admin with the given PIN
+        $admin = DB::table('admins')
+            ->where('pin', $pin)
+            ->first();
+
+        if ($admin) {
+            return response()->json($admin, 200);
+        } else {
+            return response()->json(['message' => 'Admin not found or incorrect PIN'], 404);
+        }
+    }
+
     public function getAdminByPassword($password)
     {
         // Fetch all admins

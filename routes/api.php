@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\AdminController;
 
 Route::get('/admin/{password}', [AdminController::class, 'getAdminByPassword']);
 Route::put('/admin/{password}', [AdminController::class, 'updateAdminByPassword']);
+Route::get('/admin/pin/{pin}', [AdminController::class, 'getAdminByPin']);
 
 Route::get('/location', [ScansController::class, 'getLocation']);
 
