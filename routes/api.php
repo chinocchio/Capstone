@@ -16,6 +16,7 @@ use App\Http\Controllers\LogsController;
 use App\Http\Controllers\TemperatureController;
 use App\Http\Controllers\Admin\AdminController;
 
+//API for admin sa device
 Route::get('/admin/{password}', [AdminController::class, 'getAdminByPassword']);
 Route::put('/admin/{password}', [AdminController::class, 'updateAdminByPassword']);
 Route::get('/admin/pin/{pin}', [AdminController::class, 'getAdminByPin']);

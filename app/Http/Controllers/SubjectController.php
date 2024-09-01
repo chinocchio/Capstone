@@ -24,7 +24,7 @@ class SubjectController extends Controller
                 ->orWhere('code', 'like', "%{$searchTerm}%");
         }
 
-        $subjects = $query->paginate(4);
+        $subjects = $query->paginate(6);
 
         return view('admin.admins.addSubject', compact('subjects'));
     }
@@ -77,6 +77,19 @@ class SubjectController extends Controller
     
         // Redirect to dashboard
         return redirect()->route('subjects.index')->with('success', 'You added a schedule.');
+    }
+
+    public function deleteAll(Request $request)
+    {
+        dd($request);
+        $subjectIds = $request->input('subject_ids');
+    
+        if (!empty($subjectIds)) {
+            Subject::whereIn('id', $subjectIds)->delete();
+            return redirect()->route('subjects.index')->with('delete', 'Selected subjects have been deleted.');
+        }
+    
+        return redirect()->route('subjects.index')->with('delete', 'No subjects were selected.');
     }
     
     
