@@ -10,10 +10,51 @@ use App\Models\Subject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth; 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 
 class AdminController extends Controller
 {
+    public function getAdminByPassword($password)
+    {
+        // Fetch all admins
+        $admins = DB::table('admins')->get();
+    
+        // Iterate over each admin and check if the password matches
+        foreach ($admins as $admin) {
+            if (Hash::check($password, $admin->password)) {
+                return response()->json($admin, 200);
+            }
+        }
+    
+        return response()->json(['message' => 'Admin not found or incorrect password'], 404);
+    }
+
+    public function updateAdminByPassword(Request $request, $password)
+    {
+        // Fetch all admins
+        $admins = DB::table('admins')->get();
+
+        // Iterate over each admin and check if the password matches
+        foreach ($admins as $admin) {
+            if (Hash::check($password, $admin->password)) {
+                // Update the admin details
+                DB::table('admins')
+                    ->where('id', $admin->id)
+                    ->update([
+                        'pin' => $request->input('pin'),
+                        'finger_id' => $request->input('finger_id'),
+                        'fingerprint_template' => $request->input('fingerprint_template')
+                    ]);
+
+                return response()->json(['message' => 'Admin details updated successfully'], 200);
+            }
+        }
+
+        return response()->json(['message' => 'Admin not found or incorrect password'], 404);
+    }
+
+
     public function dashboard()
 {
     // Fetch instructors with pagination

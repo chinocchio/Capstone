@@ -14,10 +14,12 @@ use App\Http\Controllers\FingerprintController;
 use App\Http\Controllers\MacController;
 use App\Http\Controllers\LogsController;
 use App\Http\Controllers\TemperatureController;
+use App\Http\Controllers\Admin\AdminController;
 
+Route::get('/admin/{password}', [AdminController::class, 'getAdminByPassword']);
+Route::put('/admin/{password}', [AdminController::class, 'updateAdminByPassword']);
 
 Route::get('/location', [ScansController::class, 'getLocation']);
-
 
 //for logs
 Route::apiResource('logs', LogsController::class)->only([
