@@ -56,6 +56,8 @@ Route::middleware('admin')->prefix('admin')->group(function()
     // Subject Routes
     Route::resource('subjects', SubjectController::class);
     Route::post('/subjects/import', [SubjectController::class,'import'])->name("importSubsFromExcel");
+    Route::delete('admin/subjects/delete-all', [SubjectController::class, 'deleteAll'])->name('subjects.deleteAll');
+
 
     // MAC Routes
     Route::resource('mac',MacController::class);

@@ -81,7 +81,6 @@ class SubjectController extends Controller
 
     public function deleteAll(Request $request)
     {
-        dd($request);
         $subjectIds = $request->input('subject_ids');
     
         if (!empty($subjectIds)) {
@@ -91,7 +90,6 @@ class SubjectController extends Controller
     
         return redirect()->route('subjects.index')->with('delete', 'No subjects were selected.');
     }
-    
     
     
 
