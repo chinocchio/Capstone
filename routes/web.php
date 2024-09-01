@@ -69,6 +69,11 @@ Route::middleware('admin')->prefix('admin')->group(function()
     // Student Route
     Route::get('/student',[StudentController::class, 'index'])->name('student_view');
     Route::post('/student/importExcel', [StudentController::class,'import'])->name("importStudentsFromExcel");
+    Route::view('/student/createStudent','admin.admins.createStudent')->name('create');
+    Route::post('/students', [StudentController::class, 'store'])->name('students.store');
+    Route::put('/students/{id}', [StudentController::class, 'update'])->name('students.update');
+    Route::delete('/students/{id}', [StudentController::class, 'destroy'])->name('students.destroy');
+    Route::get('/students/{id}/edit', [StudentController::class, 'edit'])->name('students.edit');
 });
 
 //Admin Login Routes

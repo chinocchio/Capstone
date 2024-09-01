@@ -189,4 +189,90 @@ class StudentController extends Controller
         return response()->json($student, Response::HTTP_CREATED);
     }
 
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        return view ('admin.admins.createStudent');
+    }
+
+    public function store(Request $request)
+    {
+        // Validate the incoming request data
+        $request->validate([
+            'student_number' => 'required|unique:students,student_number',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:students,email',
+            'section' => 'required|string|max:255',
+            'biometric_data' => 'nullable|file',
+        ]);
+
+        // Handle file upload for biometric data, if provided
+        $biometricData = null;
+        if ($request->hasFile('biometric_data')) {
+            $biometricData = file_get_contents($request->file('biometric_data')->getRealPath());
+        }
+
+        // Create a new student
+        $student = new Student();
+        $student->student_number = $request->student_number;
+        $student->name = $request->name;
+        $student->email = $request->email;
+        $student->section = $request->section;
+        $student->biometric_data = $biometricData;
+        $student->save();
+
+        // Redirect back with a success message
+        return redirect()->route('student_view')->with('success', 'Student added successfully.');
+    }
+
+        // Method to show the edit form
+        public function edit($id)
+        {
+            $student = Student::findOrFail($id);
+            return view('admin.admins.editStudent', compact('student'));
+        }
+    
+        // Method to update the student's data
+        public function update(Request $request, $id)
+        {
+            // Validate the incoming request data
+            $request->validate([
+                'student_number' => 'required|unique:students,student_number,' . $id,
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|unique:students,email,' . $id,
+                'section' => 'required|string|max:255',
+                'biometric_data' => 'nullable|file',
+            ]);
+    
+            // Find the student by ID
+            $student = Student::findOrFail($id);
+    
+            // Handle file upload for biometric data, if provided
+            if ($request->hasFile('biometric_data')) {
+                $student->biometric_data = file_get_contents($request->file('biometric_data')->getRealPath());
+            }
+    
+            // Update the student's data
+            $student->student_number = $request->student_number;
+            $student->name = $request->name;
+            $student->email = $request->email;
+            $student->section = $request->section;
+            $student->save();
+    
+            // Redirect back with a success message
+            return redirect()->route('student_view')->with('success', 'Student updated successfully.');
+        }
+    
+        // Method to delete a student
+        public function destroy($id)
+        {
+            // Find the student by ID and delete
+            $student = Student::findOrFail($id);
+            $student->delete();
+    
+            // Redirect back with a success message
+            return redirect()->route('student_view')->with('delete', 'Student deleted successfully.');
+        }
 }
