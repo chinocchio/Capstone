@@ -20,6 +20,7 @@ use App\Http\Controllers\StudentSubjectController;
 
 Route::post('/student-subject', [StudentSubjectController::class, 'store']);
 Route::get('/student-subject/{studentId}', [StudentSubjectController::class, 'show']);
+Route::get('/student-subjects', [StudentSubjectController::class, 'index']);
 
 //API for admin sa device
 Route::get('/admin/{password}', [AdminController::class, 'getAdminByPassword']);

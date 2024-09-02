@@ -9,6 +9,14 @@ use Illuminate\Support\Facades\Validator;
 
 class StudentSubjectController extends Controller
 {
+    public function index()
+    {
+        // Fetch all student-subject relationships with related student and subject details
+        $studentSubjects = Student::with('subjects')->get();
+
+        return response()->json($studentSubjects);
+    }
+    
     /**
      * Store a newly created student-subject association in storage.
      */
