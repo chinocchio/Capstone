@@ -52,5 +52,26 @@ class StudentSubjectController extends Controller
             'message' => 'Student successfully associated with the subject.',
         ], 201);
     }
+
+    public function show($studentId)
+    {
+        // Validate the student ID
+        $student = Student::find($studentId);
+
+        if (!$student) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Student not found.',
+            ], 404);
+        }
+
+        // Get the subjects associated with the student
+        $subjects = $student->subjects;
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $subjects,
+        ], 200);
+    }
 }
 
