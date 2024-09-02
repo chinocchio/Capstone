@@ -15,6 +15,10 @@ use App\Http\Controllers\MacController;
 use App\Http\Controllers\LogsController;
 use App\Http\Controllers\TemperatureController;
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\StudentSubjectController;
+
+
+Route::post('/student-subject', [StudentSubjectController::class, 'store']);
 
 //API for admin sa device
 Route::get('/admin/{password}', [AdminController::class, 'getAdminByPassword']);

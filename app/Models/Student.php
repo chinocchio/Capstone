@@ -32,4 +32,9 @@ class Student extends Model
         return $this->belongsToMany(Mac::class, 'mac_student')
                         ->withTimestamps();
     }
+
+    public function subjects()
+    {
+        return $this->belongsToMany(Subject::class, 'student_subject');
+    }
 }

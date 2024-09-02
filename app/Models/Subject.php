@@ -40,4 +40,9 @@ class Subject extends Model
     {
         return $this->hasMany(Scan::class);
     }
+
+    public function students()
+    {
+        return $this->belongsToMany(Student::class, 'student_subject');
+    }
 }
