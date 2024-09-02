@@ -4,12 +4,37 @@
     <div class="card mb-4">
         <h2 class="font-bold mb-4">Add a new subject</h2>
 
-        {{-- Session Messages --}}
-        @if (session('success'))
-            <x-flashMsg msg="{{ session('success') }}" />
-        @elseif (session('delete'))
-            <x-flashMsg msg="{{ session('delete') }}" bg="bg-red-500" />
-        @endif
+    {{-- Session Messages --}}
+    @if (session('success'))
+        <x-flashMsg msg="{{ session('success') }}" />
+    @elseif (session('delete'))
+        <x-flashMsg msg="{{ session('delete') }}" bg="bg-red-500" />
+    @endif
+
+    @if (session('duplicate_subjects'))
+    <div class="bg-yellow-200 text-yellow-800 p-4 rounded-md mb-4">
+        <h3 class="font-bold">Duplicate Subjects Detected</h3>
+        <table class="min-w-full bg-white border border-gray-300 rounded-md">
+            <thead class="bg-yellow-300">
+                <tr>
+                    <th class="px-4 py-2 border">Code</th>
+                    <th class="px-4 py-2 border">Day</th>
+                    <th class="px-4 py-2 border">Section</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (session('duplicate_subjects') as $duplicate)
+                    <tr>
+                        <td class="px-4 py-2 border">{{ $duplicate['code'] }}</td>
+                        <td class="px-4 py-2 border">{{ $duplicate['day'] }}</td>
+                        <td class="px-4 py-2 border">{{ $duplicate['section'] }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+        <p class="mt-4">These subjects were skipped due to duplication.</p>
+    </div>
+    @endif
 
         {{-- Create Post Form --}}
         <form action="{{ route('subjects.store') }}" method="post" enctype="multipart/form-data">

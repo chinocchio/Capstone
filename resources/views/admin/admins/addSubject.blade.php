@@ -12,6 +12,31 @@
         <x-flashMsg msg="{{ session('delete') }}" bg="bg-red-500" />
     @endif
 
+    @if (session('duplicate_subjects'))
+    <div class="bg-yellow-200 text-yellow-800 p-4 rounded-md mb-4">
+        <h3 class="font-bold">Duplicate Subjects Detected</h3>
+        <table class="min-w-full bg-white border border-gray-300 rounded-md">
+            <thead class="bg-yellow-300">
+                <tr>
+                    <th class="px-4 py-2 border">Code</th>
+                    <th class="px-4 py-2 border">Day</th>
+                    <th class="px-4 py-2 border">Section</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (session('duplicate_subjects') as $duplicate)
+                    <tr>
+                        <td class="px-4 py-2 border">{{ $duplicate['code'] }}</td>
+                        <td class="px-4 py-2 border">{{ $duplicate['day'] }}</td>
+                        <td class="px-4 py-2 border">{{ $duplicate['section'] }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+        <p class="mt-4">These subjects were skipped due to duplication.</p>
+    </div>
+    @endif
+
     <div class="card mb-4">
         {{-- Import Excel Form --}}
         <div class="mt-8">
@@ -61,22 +86,17 @@
         <div class="grid grid-cols-2 gap-6">
             @foreach ($subjects as $subject)
                 {{-- Subject card component --}}
-                <x-subjectCard :subject="$subject">
-                    <div class="flex items-center justify-between mt-6">
-                        <input type="checkbox" name="subject_ids[]" value="{{ $subject->id }}" class="subject-checkbox mr-2">
-                        <div class="flex items-center justify-end gap-4">
-                            {{-- Update post --}}
-                            <a href="{{ route('subjects.edit', $subject->id) }}" class="bg-green-500 text-white px-2 py-1 text-xs rounded-md">Update</a>
-
-                            {{-- Delete post --}}
-                            <form action="{{ route('subjects.destroy', $subject->id) }}" method="post">
-                                @csrf
-                                @method('DELETE')
-                                <button class="bg-red-500 text-white px-2 py-1 text-xs rounded-md">Delete</button>
-                            </form>
+                <label for="subject-checkbox-{{ $subject->id }}" class="cursor-pointer">
+                    <x-subjectCard :subject="$subject">
+                        <div class="flex items-center justify-between mt-6">
+                            <input type="checkbox" id="subject-checkbox-{{ $subject->id }}" name="subject_ids[]" value="{{ $subject->id }}" class="subject-checkbox mr-2">
+                            <div class="flex items-center justify-end gap-4">
+                                {{-- Update post --}}
+                                <a href="{{ route('subjects.edit', $subject->id) }}" class="bg-green-500 text-white px-2 py-1 text-xs rounded-md">Update</a>
+                            </div>
                         </div>
-                    </div>
-                </x-subjectCard>
+                    </x-subjectCard>
+                </label>
             @endforeach
         </div>
     </form>
