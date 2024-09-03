@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade;
+use PDF; 
 
 class DashboardController extends Controller
 {
@@ -97,7 +99,42 @@ class DashboardController extends Controller
         ]);
     }
     
-    
+    public function exportPdf()
+    {
+        $user = Auth::user();
+
+        $linkedSubjects = $user->subjects->pluck('id');
+
+        $scans = Scan::whereIn('subject_id', $linkedSubjects)
+                    ->where('fingerprint_verified', true)
+                    ->with('subject')
+                    ->orderBy('scanned_at', 'desc')
+                    ->get();
+
+        // Start a database transaction
+        DB::beginTransaction();
+
+        try {
+            $pdf = PDF::loadView('partials.scan-pdf', compact('scans'));
+
+            // Delete all scans after generating the PDF
+            Scan::whereIn('subject_id', $linkedSubjects)
+                ->where('fingerprint_verified', true)
+                ->delete();
+
+            // Commit the transaction
+            DB::commit();
+
+            // Return the PDF for download
+            return $pdf->download('scan.pdf');
+        } catch (\Exception $e) {
+            // Rollback the transaction if something went wrong
+            DB::rollBack();
+
+            // Handle the error as needed
+            return redirect()->back()->with('error', 'Failed to export PDF and delete scans: ' . $e->getMessage());
+        }
+    }
     
 
     public function fetchScans()

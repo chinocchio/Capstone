@@ -16,6 +16,7 @@ use App\Http\Controllers\LogsController;
 use App\Http\Controllers\TemperatureController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\StudentSubjectController;
+use App\Http\Controllers\DashboardController;
 
 Route::post('/update-fingerprint-verification', [ScansController::class, 'updateStatus']);
 
@@ -23,8 +24,6 @@ Route::post('/biometrics/register', [StudentController::class, 'register']);
 Route::post('/biometrics/verify', [StudentController::class, 'verify']);
 Route::get('/biometrics/get-template', [StudentController::class, 'getTemplate']);
 Route::get('/get-biometric-data/{id}', [StudentController::class, 'getBiometricData']);
-
-
 
 Route::post('/student-subject', [StudentSubjectController::class, 'store']);
 Route::get('/student-subject/{studentId}', [StudentSubjectController::class, 'show']);

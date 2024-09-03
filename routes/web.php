@@ -23,6 +23,8 @@ Route::get('/{user}/posts', [DashboardController::class, 'userPosts'])->name('po
 // Routes for authenticated users
 Route::middleware('auth')->group(function() {
 
+    Route::get('/scans/export-pdf', [DashboardController::class, 'exportPdf'])->name('scans.export.pdf');
+
     //AJAX Route
     Route::get('/scans/list', [DashboardController::class, 'fetchScans'])->name('scans.list');
 
