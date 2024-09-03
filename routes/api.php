@@ -17,6 +17,7 @@ use App\Http\Controllers\TemperatureController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\StudentSubjectController;
 
+Route::post('/update-fingerprint-verification', [ScansController::class, 'updateStatus']);
 
 Route::post('/biometrics/register', [StudentController::class, 'register']);
 Route::post('/biometrics/verify', [StudentController::class, 'verify']);

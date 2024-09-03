@@ -71,8 +71,7 @@ class DashboardController extends Controller
         $now = Carbon::now('Asia/Manila');
         $nowTime = $now->format('H:i:s');
         $today = $now->format('l'); // Get the current day of the week (e.g., 'Monday')
-
-        
+    
         // Fetch the user's subjects that are active today and within the current time
         $linkedSubjects = $user->subjects->filter(function($subject) use ($nowTime, $today) {
             $start_time = Carbon::parse($subject->start_time)->format('H:i:s');
@@ -83,8 +82,9 @@ class DashboardController extends Controller
             return $subjectDay === $today && $start_time <= $nowTime && $end_time >= $nowTime;
         });
     
-        // Fetch the scans related to the filtered subjects
+        // Fetch the scans related to the filtered subjects and where fingerprint_verified is true
         $scans = Scan::whereIn('subject_id', $linkedSubjects->pluck('id'))
+                    ->where('fingerprint_verified', true)
                     ->with('subject')
                     ->orderBy('scanned_at', 'desc')
                     ->get();
@@ -97,22 +97,26 @@ class DashboardController extends Controller
         ]);
     }
     
+    
+    
 
     public function fetchScans()
     {
         $user = Auth::user();
-
+    
         // Fetch the user's subjects
         $linkedSubjects = $user->subjects->pluck('id');
-
-        // Fetch the scans related to the user's subjects
+    
+        // Fetch the scans related to the user's subjects where fingerprint_verified is true
         $scans = Scan::whereIn('subject_id', $linkedSubjects)
+                    ->where('fingerprint_verified', true) // Only fetch scans where fingerprint_verified is true
                     ->with('subject')
                     ->orderBy('scanned_at', 'desc')
                     ->get();
-
+    
         return view('partials.scans-list', compact('scans'))->render();
     }
+    
 
     public function toSeatplan()
     {

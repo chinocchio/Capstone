@@ -17,10 +17,34 @@ use Illuminate\Support\Facades\Http;
 
 class ScansController extends Controller
 {
+
+    public function updateStatus(Request $request)
+    {
+        // Validate the incoming request data
+        $validatedData = $request->validate([
+            'username' => 'required|string', // The name of the user whose fingerprint was verified
+            'fingerprint_verified' => 'required|boolean',
+        ]);
+
+        // Find the scan entry by 'username' (adjust this to match your database schema)
+        $scan = Scan::where('scanned_by', $validatedData['username']) // Assuming 'scanned_by' stores the username
+                    ->where('fingerprint_verified', false) // Ensure you're updating only unverified scans
+                    ->orderBy('created_at', 'desc')
+                    ->firstOrFail();
+
+        // Update the fingerprint_verified status
+        $scan->fingerprint_verified = $validatedData['fingerprint_verified'];
+        $scan->save();
+
+        // Return a success response
+        return response()->json(['message' => 'Fingerprint verification status updated successfully'], 200);
+    }
+
+
     public function getLocation()
     {
         // Specific IP address
-        $ip = '122.3.156.198';
+        $ip = '49.149.135.20';
         
         // Replace with your actual IPregistry API key
         $apiKey = 'pid2gc6x3r0bw739';
@@ -32,8 +56,8 @@ class ScansController extends Controller
         if ($response->successful()) {
             $data = $response->json();
 
-            $customLatitude = 13.405642;
-            $customLongitude = 123.377085;
+            $customLatitude = 14.00982;
+            $customLongitude = 121.02407;
 
             return response()->json([
                 'ip' => $data['ip'],
@@ -73,6 +97,7 @@ class ScansController extends Controller
     
         return response()->json(['message' => 'Scan recorded successfully', 'scan' => $scan], 201);
     }
+
     
 
     /**

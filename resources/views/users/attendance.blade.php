@@ -25,7 +25,7 @@
         setInterval(function() {
             // Fetch the updated scans list via AJAX
             fetchScans();
-        }, 1000); // Poll every 5 seconds
+        }, 1000); // Poll every 1 second
 
         function fetchScans() {
             fetch('{{ route('scans.list') }}')
