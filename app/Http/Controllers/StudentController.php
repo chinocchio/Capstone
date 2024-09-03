@@ -275,4 +275,126 @@ class StudentController extends Controller
             // Redirect back with a success message
             return redirect()->route('student_view')->with('delete', 'Student deleted successfully.');
         }
+
+        public function getBiometricData($id)
+        {
+            // Fetch the student by ID
+            $student = Student::find($id);
+    
+            // Check if the student exists and has biometric data
+            if (!$student) {
+                return response()->json(['status' => 'fail', 'message' => 'Student not found'], 404);
+            }
+    
+            if (!$student->biometric_data) {
+                return response()->json(['status' => 'fail', 'message' => 'No biometric data available for this student'], 404);
+            }
+    
+            // Return the biometric data in a JSON response
+            return response()->json([
+                'status' => 'success',
+                'biometric_data' => base64_encode($student->biometric_data), // Encoding binary data to base64
+                'student' => [
+                    'name' => $student->name,
+                    'id' => $student->id,
+                ]
+            ]);
+        }
+
+        public function register(Request $request)
+        {
+            // Validate the request
+            $validator = Validator::make($request->all(), [
+                'username' => 'required|string',
+                'biometric_data' => 'required|string',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()], 400);
+            }
+
+            // Find the user by username
+            $student = Student::where('name', $request->input('username'))->first();
+
+            if (!$student) {
+                return response()->json(['error' => 'Student not found'], 404);
+            }
+
+            // Save the biometric data (fingerprint template)
+            $student->biometric_data = base64_decode($request->input('biometric_data'));
+            $student->save();
+
+            return response()->json(['message' => 'Biometric data registered successfully'], 200);
+        }
+
+
+
+        public function verify(Request $request)
+        {
+            // Validate the request to ensure biometric_data is provided
+            $validator = Validator::make($request->all(), [
+                'biometric_data' => 'required|string',
+            ]);
+        
+            if ($validator->fails()) {
+                return response()->json(['error' => $validator->errors()], 400);
+            }
+        
+            // Decode the incoming biometric data
+            $incomingBiometricData = base64_decode($request->input('biometric_data'));
+        
+            // Retrieve all students with biometric data
+            $students = Student::whereNotNull('biometric_data')->get();
+        
+            // Placeholder for result
+            $verified = false;
+            $username = null;
+        
+            // Iterate over each stored template and compare
+            foreach ($students as $student) {
+                // Retrieve and decode stored biometric data
+                $storedBiometricData = $student->biometric_data;
+        
+                // Compare the stored biometric data with the incoming biometric data
+                if ($this->compareBiometricData($storedBiometricData, $incomingBiometricData)) {
+                    $verified = true;
+                    $username = $student->name;
+                    break; // Exit loop on first match
+                }
+            }
+        
+            // Return the result of the verification
+            return response()->json([
+                'verified' => $verified,
+                'username' => $verified ? $username : null,
+            ], 200);
+        }
+        
+        // Placeholder for biometric comparison logic
+        private function compareBiometricData($storedData, $incomingData)
+        {
+            // Implement actual comparison logic
+            return $storedData === $incomingData;
+        }
+        
+
+
+        public function getTemplate(Request $request)
+        {
+            // Retrieve the student based on some identifier (e.g., ID, username, etc.)
+            $student = Student::where('name', $request->input('username'))->first();
+
+            if ($student && $student->biometric_data) {
+                return response()->json([
+                    'biometric_data' => base64_encode($student->biometric_data),
+                    'username' => $student->name,
+                ], 200);
+            }
+
+            return response()->json(['error' => 'Biometric data not found'], 404);
+        }
+
+
+
+
 }
