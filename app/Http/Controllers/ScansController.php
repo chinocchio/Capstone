@@ -44,7 +44,7 @@ class ScansController extends Controller
     public function getLocation()
     {
         // Specific IP address
-        $ip = '49.149.135.20';
+        $ip = '122.3.156.198';
         
         // Replace with your actual IPregistry API key
         $apiKey = 'pid2gc6x3r0bw739';
@@ -56,8 +56,8 @@ class ScansController extends Controller
         if ($response->successful()) {
             $data = $response->json();
 
-            $customLatitude = 14.00982;
-            $customLongitude = 121.02407;
+            $customLatitude = 13.4056369;
+            $customLongitude = 123.3771934;
 
             return response()->json([
                 'ip' => $data['ip'],
