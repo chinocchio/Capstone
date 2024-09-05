@@ -10,10 +10,65 @@ use App\Models\Subject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth; 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Carbon\Carbon;
 
 class AdminController extends Controller
 {
+    public function getAdminByPin($pin)
+    {
+        // Find the admin with the given PIN
+        $admin = DB::table('admins')
+            ->where('pin', $pin)
+            ->first();
+
+        if ($admin) {
+            return response()->json($admin, 200);
+        } else {
+            return response()->json(['message' => 'Admin not found or incorrect PIN'], 404);
+        }
+    }
+
+    public function getAdminByPassword($password)
+    {
+        // Fetch all admins
+        $admins = DB::table('admins')->get();
+    
+        // Iterate over each admin and check if the password matches
+        foreach ($admins as $admin) {
+            if (Hash::check($password, $admin->password)) {
+                return response()->json($admin, 200);
+            }
+        }
+    
+        return response()->json(['message' => 'Admin not found or incorrect password'], 404);
+    }
+
+    public function updateAdminByPassword(Request $request, $password)
+    {
+        // Fetch all admins
+        $admins = DB::table('admins')->get();
+
+        // Iterate over each admin and check if the password matches
+        foreach ($admins as $admin) {
+            if (Hash::check($password, $admin->password)) {
+                // Update the admin details
+                DB::table('admins')
+                    ->where('id', $admin->id)
+                    ->update([
+                        'pin' => $request->input('pin'),
+                        'finger_id' => $request->input('finger_id'),
+                        'fingerprint_template' => $request->input('fingerprint_template')
+                    ]);
+
+                return response()->json(['message' => 'Admin details updated successfully'], 200);
+            }
+        }
+
+        return response()->json(['message' => 'Admin not found or incorrect password'], 404);
+    }
+
+
     public function dashboard()
 {
     // Fetch instructors with pagination
@@ -35,9 +90,15 @@ class AdminController extends Controller
             ->select('subjects.*', 'users.username', 'users.email')
             ->get();
 
+                // Retrieve the latest temperature and humidity data
+                $latestTemperature = DB::table('temperature')
+                ->latest('created_at')
+                ->first();
+
         return view('admin.admins.dashboard', [
             'instructors' => $instructors,
             'subjects' => $subjects,
+            'latestTemperature' => $latestTemperature,
             'currentDate' => $now->format('l, F j, Y') // For display
         ]);
     }

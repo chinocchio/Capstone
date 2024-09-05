@@ -29,6 +29,16 @@
                 @enderror
             </div>
 
+                        {{-- Instructor Number --}}
+                        <div class="mb-4">
+                            <label for="instructor_number">Instructor Number:</label>
+                            <input type="text" name="instructor_number" value="{{ old('instructor_number')}}" 
+                            class="input @error('instructor_number') ring-red-500 @enderror">
+                            @error('instructor_number')
+                                <p class="error"> {{ $message }} </p>
+                            @enderror
+                        </div>
+
             {{-- Password --}}
             <div class="mb-4">
                 <label for="password">Password:</label>

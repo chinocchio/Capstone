@@ -15,10 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('username');
             $table->string('password');
+            $table->integer('pin')->nullable();
+            $table->integer('finger_id')->nullable();
+            $table->binary('fingerprint_template')->nullable();
             $table->timestamps();
         });
-
-        
     }
 
     /**

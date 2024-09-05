@@ -4,7 +4,12 @@
 
     <div class="grid grid-cols-12 gap-1">
         <div class="card mb-4 p-4 text-sm col-span-2 h-32">
-            Temperature display
+            @if ($latestTemperature)
+            <h2>Temperature: {{ $latestTemperature->temperature }}°C</h2>
+            <h2>Humidity: {{ $latestTemperature->humidity }}%</h2>
+        @else
+            <h2>No temperature data available.</h2>
+        @endif
         </div>
         <div class="card mb-4 p-6 col-span-10">
             <h1 class="font-bold mb-4 text-lg">({{ $currentDate }})</h1>
@@ -56,5 +61,11 @@
     <div>
         {{ $instructors->links() }}
     </div>
+
+    <script>
+        setInterval(function() {
+            location.reload(); // Reloads the page every 15 seconds
+        }, 15000); // 15 seconds
+    </script>
 
 </x-adminlayout>

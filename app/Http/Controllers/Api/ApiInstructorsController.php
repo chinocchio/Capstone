@@ -9,6 +9,7 @@ use App\Models\Subject;
 use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class ApiInstructorsController extends Controller
 {
@@ -26,12 +27,55 @@ class ApiInstructorsController extends Controller
     }
     public function store()
     {
-        
+
     }
-    public function show()
+
+    public function show($pin)
     {
+        // Check if the instructor exists
+        $user = User::where('pin', $pin)->first();
+    
+        if (!$user) {
+            return response()->json(['message' => 'Instructor not found'], 404);
+        }
+    
+        // Get the current time and day in Asia/Manila timezone
+        $now = Carbon::now('Asia/Manila');
+        $currentDay = $now->format('l'); // Get the full name of the day (e.g., "Monday")
+        $currentTime = $now->format('H:i:s'); // Get the current time in 24-hour format
+    
+        // Retrieve the instructor's details
+        $instructor = $user->only(['id', 'username', 'email', 'finger_id']); // Customize as needed
+    
+        // Retrieve and filter the instructor's subjects based on current day and time
+        $subjects = $user->subjects()
+                         ->where('day', $currentDay)
+                         ->where(function($query) use ($currentTime) {
+                             $query->where('start_time', '<=', $currentTime)
+                                   ->where('end_time', '>=', $currentTime);
+                         })
+                         ->get()
+                         ->map(function($subject) use ($instructor) {
+                             return array_merge($instructor, [
+                                 'name' => $subject->name,
+                                 'code' => $subject->code,
+                                 'description' => $subject->description,
+                                 'qr' => $subject->qr,
+                                 'start_time' => $subject->start_time,
+                                 'end_time' => $subject->end_time,
+                                 'section' => $subject->section,
+                                 'day' => $subject->day,
+                             ]);
+                         });
+    
+        // Format the response
+        $response = $subjects->toArray();
         
+        return response()->json($response, 200);
     }
+    
+    
+
     public function update(Request $request, $email)
     {
         // Validate the incoming request
@@ -108,6 +152,7 @@ class ApiInstructorsController extends Controller
         // Return the user data using the UserResource
         return new UserResource($user);
     }
+
     public function getByPinWithSubjects($pin, $day)
     {
         // Check if the instructor exists
@@ -133,4 +178,5 @@ class ApiInstructorsController extends Controller
 
         return response()->json($response, 200);
     }
+    
 }

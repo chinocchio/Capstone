@@ -18,7 +18,8 @@ class StudentSeeder extends Seeder
         $users = [
             [
                 'name' => 'Chino Noble ',
-                'section' => '2H',
+                'section' => 'BSIT 2H',
+                'student_number' => '635643456',
                 'email' => 'ch@my.cspc.edu.ph',
                 'password' => Hash::make('12345678'),
                 'created_at' => now(),
@@ -26,7 +27,8 @@ class StudentSeeder extends Seeder
             ],
             [
                 'name' => 'Edward Sarte ',
-                'section' => '2B',
+                'section' => 'BSIT 2B',
+                'student_number' => '612421456',
                 'email' => 'ed@my.cspc.edu.ph',
                 'password' => Hash::make('87654321'),
                 'created_at' => now(),
@@ -34,7 +36,8 @@ class StudentSeeder extends Seeder
             ],
             [
                 'name' => 'Juan Dela Cruz ',
-                'section' => '2C',
+                'section' => 'BSIT 2C',
+                'student_number' => '1241246',
                 'email' => 'ju@my.cspc.edu.ph',
                 'password' => Hash::make('12341234'),
                 'created_at' => now(),

@@ -5,18 +5,21 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use App\Models\Subject;
 use App\Models\User;
+use App\Models\Student;
 use App\Models\Scan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade;
+use PDF; 
 
 class DashboardController extends Controller
 {
     public function index()
     {
         $posts = Auth::user()->subjects()->latest()->paginate(6);
-
+    
         $now = Carbon::now('Asia/Manila');
         $currentDate = $now->format('Y-m-d'); // Format for SQL comparison
         $currentTime = $now->format('H:i:s'); // Format for SQL comparison
@@ -24,20 +27,27 @@ class DashboardController extends Controller
         
         // Retrieve subjects with optional instructor information
         $subjects = DB::table('subjects')
-        ->leftJoin('user_subject', 'subjects.id', '=', 'user_subject.subject_id')
-        ->leftJoin('users', 'user_subject.user_id', '=', 'users.id')
-        ->where('subjects.day', $today) // Ensure the subject is for the current day
-        ->whereTime('subjects.start_time', '<=', $currentTime) // Ensure the subject's start time is before or equal to the current time
-        ->whereTime('subjects.end_time', '>=', $currentTime) // Ensure the subject's end time is after or equal to the current time
-        ->select('subjects.*', 'users.username', 'users.email')
-        ->get();
-
+            ->leftJoin('user_subject', 'subjects.id', '=', 'user_subject.subject_id')
+            ->leftJoin('users', 'user_subject.user_id', '=', 'users.id')
+            ->where('subjects.day', $today) // Ensure the subject is for the current day
+            ->whereTime('subjects.start_time', '<=', $currentTime) // Ensure the subject's start time is before or equal to the current time
+            ->whereTime('subjects.end_time', '>=', $currentTime) // Ensure the subject's end time is after or equal to the current time
+            ->select('subjects.*', 'users.username', 'users.email')
+            ->get();
+    
+        // Retrieve the latest temperature and humidity data
+        $latestTemperature = DB::table('temperature')
+            ->latest('created_at')
+            ->first();
+    
         return view('users.dashboard', [
             'posts' => $posts,
             'subjects' => $subjects,
+            'latestTemperature' => $latestTemperature,
             'currentDate' => $now->format('l, F j, Y') // Format for display
         ]);
     }
+    
 
     public function userPosts(User $user) {
 
@@ -63,8 +73,7 @@ class DashboardController extends Controller
         $now = Carbon::now('Asia/Manila');
         $nowTime = $now->format('H:i:s');
         $today = $now->format('l'); // Get the current day of the week (e.g., 'Monday')
-
-        
+    
         // Fetch the user's subjects that are active today and within the current time
         $linkedSubjects = $user->subjects->filter(function($subject) use ($nowTime, $today) {
             $start_time = Carbon::parse($subject->start_time)->format('H:i:s');
@@ -75,8 +84,9 @@ class DashboardController extends Controller
             return $subjectDay === $today && $start_time <= $nowTime && $end_time >= $nowTime;
         });
     
-        // Fetch the scans related to the filtered subjects
+        // Fetch the scans related to the filtered subjects and where fingerprint_verified is true
         $scans = Scan::whereIn('subject_id', $linkedSubjects->pluck('id'))
+                    ->where('fingerprint_verified', true)
                     ->with('subject')
                     ->orderBy('scanned_at', 'desc')
                     ->get();
@@ -89,26 +99,132 @@ class DashboardController extends Controller
         ]);
     }
     
-
-    public function fetchScans()
+    public function exportPdf()
     {
         $user = Auth::user();
 
-        // Fetch the user's subjects
         $linkedSubjects = $user->subjects->pluck('id');
 
-        // Fetch the scans related to the user's subjects
         $scans = Scan::whereIn('subject_id', $linkedSubjects)
+                    ->where('fingerprint_verified', true)
                     ->with('subject')
                     ->orderBy('scanned_at', 'desc')
                     ->get();
 
+        // Start a database transaction
+        DB::beginTransaction();
+
+        try {
+            $pdf = PDF::loadView('partials.scan-pdf', compact('scans'));
+
+            // Delete all scans after generating the PDF
+            Scan::whereIn('subject_id', $linkedSubjects)
+                ->where('fingerprint_verified', true)
+                ->delete();
+
+            // Commit the transaction
+            DB::commit();
+
+            // Return the PDF for download
+            return $pdf->download('scan.pdf');
+        } catch (\Exception $e) {
+            // Rollback the transaction if something went wrong
+            DB::rollBack();
+
+            // Handle the error as needed
+            return redirect()->back()->with('error', 'Failed to export PDF and delete scans: ' . $e->getMessage());
+        }
+    }
+    
+
+    public function fetchScans()
+    {
+        $user = Auth::user();
+    
+        // Fetch the user's subjects
+        $linkedSubjects = $user->subjects->pluck('id');
+    
+        // Fetch the scans related to the user's subjects where fingerprint_verified is true
+        $scans = Scan::whereIn('subject_id', $linkedSubjects)
+                    ->where('fingerprint_verified', true) // Only fetch scans where fingerprint_verified is true
+                    ->with('subject')
+                    ->orderBy('scanned_at', 'desc')
+                    ->get();
+    
         return view('partials.scans-list', compact('scans'))->render();
     }
+    
 
-    public function toSeatplan(){
+    public function toSeatplan()
+    {
+        $posts = Auth::user()->subjects()->latest()->paginate(6);
 
-        return view('users.seatplan');
+        return view('users.seatplan', compact('posts'));
+    }
+
+    public function importStudents(Request $request)
+    {
+        // Get the subjects with the same section as the students
+        $section = $request->input('section');
+
+        $subjects = DB::table('subjects')
+        ->where('subjects.section', $section) // Ensure the subject is for the current day
+        ->get();
+
+        $students = DB::table('students')
+        ->where('students.section', $section) // Ensure the subject is for the current day
+        ->get();
+
+        // Check if there are any students for the given section
+        if ($students->isEmpty()) {
+            return redirect()->back()->with('warning', 'No students found for the specified section.');
+        }
+
+        // Check if there are subjects for the given section
+        if ($subjects->isEmpty()) {
+            return redirect()->back()->with('warning', 'No subjects found for the specified section.');
+        }
+
+        foreach ($students as $student) {
+            foreach ($subjects as $subject) {
+                // Insert into student_subject table
+                \DB::table('student_subject')->updateOrInsert(
+                    [
+                        'student_id' => $student->id,
+                        'subject_id' => $subject->id
+                    ],
+                    []
+                );
+            }
+        }
+
+        return redirect()->back()->with('success', 'Students and subjects imported successfully.');
+    }
+
+    public function checkStudents(Request $request)
+    {
+        $id = $request->input('subject_id');
+
+        // Fetch students enrolled in the given subject
+        $students = \DB::table('student_subject')
+        ->join('students', 'student_subject.student_id', '=', 'students.id')
+        ->where('student_subject.subject_id', $id)
+        ->select('students.id','students.student_number', 'students.name', 'students.email', 'students.biometric_data') // Adjust fields as necessary
+        ->get();
+
+        return view('users.enrolledStudentList', compact('students'));
+    }
+
+    public function unenroll($id)
+    {
+        // Find the student_subject entry and delete it
+        \DB::table('student_subject')
+            ->where('student_id', $id)
+            ->where('subject_id', request()->input('subject_id')) // Ensure to pass subject_id in your request
+            ->delete();
+
+        // Redirect back with a success message
+        return redirect()->back()->with('success', 'Student unenrolled successfully.');
     }
 
     public function toSubjects(){

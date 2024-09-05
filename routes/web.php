@@ -23,6 +23,8 @@ Route::get('/{user}/posts', [DashboardController::class, 'userPosts'])->name('po
 // Routes for authenticated users
 Route::middleware('auth')->group(function() {
 
+    Route::get('/scans/export-pdf', [DashboardController::class, 'exportPdf'])->name('scans.export.pdf');
+
     //AJAX Route
     Route::get('/scans/list', [DashboardController::class, 'fetchScans'])->name('scans.list');
 
@@ -38,6 +40,9 @@ Route::middleware('auth')->group(function() {
 
     // User seat plan Route
     Route::get('/seatplan', [DashboardController::class, 'toSeatplan'])->name('seatplan');
+    Route::post('/import-students', [DashboardController::class, 'importStudents'])->name('import.students');
+    Route::get('/check-students', [DashboardController::class, 'checkStudents'])->name('check.students');
+    Route::delete('/students/{id}/unenroll', [DashboardController::class, 'unenroll'])->name('students.unenroll');
 
     // User add subjects Route
     Route::get('/subjects', [DashboardController::class, 'toSubjects'])->name('subjects');
@@ -53,6 +58,8 @@ Route::middleware('admin')->prefix('admin')->group(function()
     // Subject Routes
     Route::resource('subjects', SubjectController::class);
     Route::post('/subjects/import', [SubjectController::class,'import'])->name("importSubsFromExcel");
+    Route::delete('admin/subjects/delete-all', [SubjectController::class, 'deleteAll'])->name('subjects.deleteAll');
+
 
     // MAC Routes
     Route::resource('mac',MacController::class);
@@ -66,6 +73,11 @@ Route::middleware('admin')->prefix('admin')->group(function()
     // Student Route
     Route::get('/student',[StudentController::class, 'index'])->name('student_view');
     Route::post('/student/importExcel', [StudentController::class,'import'])->name("importStudentsFromExcel");
+    Route::view('/student/createStudent','admin.admins.createStudent')->name('create');
+    Route::post('/students', [StudentController::class, 'store'])->name('students.store');
+    Route::put('/students/{id}', [StudentController::class, 'update'])->name('students.update');
+    Route::delete('/students/{id}', [StudentController::class, 'destroy'])->name('students.destroy');
+    Route::get('/students/{id}/edit', [StudentController::class, 'edit'])->name('students.edit');
 });
 
 //Admin Login Routes

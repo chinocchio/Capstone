@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('subject_id')->constrained()->onDelete('cascade');
             $table->string('scanned_by'); // Store the name or ID of the person who scanned
-            $table->timestamp('scanned_at')->useCurrent();
+            $table->time('scanned_at');
+            $table->boolean('fingerprint_verified')->default(false);
             $table->timestamps();
         });
     }

@@ -35,7 +35,7 @@
                         <a href="{{ route('dashboard') }}" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Dashboard</a>
                         <a href="{{ route('attendance') }}" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Attendance</a>
                         <a href="{{ route('user.dashboard') }}" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Subjects</a>
-                        <a href="{{ route('seatplan') }}" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Seat Plan</a>
+                        <a href="{{ route('seatplan') }}" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Students</a>
 
                         <form action="{{ route('logout') }}" method="post">
                             @csrf
@@ -58,6 +58,13 @@
     <main class="py-8 px-4 mx-auto max-w-screen-lg">
         {{ $slot }}
     </main>
+
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="//cdn.datatables.net/2.1.4/js/dataTables.min.js"></script>
+    <script>
+        let table = new DataTable('myTable');
+    </script>
     
 </body>
 </html>

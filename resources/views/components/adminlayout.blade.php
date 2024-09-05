@@ -56,6 +56,7 @@
     <main class="py-8 px-4 mx-auto max-w-screen-lg">
         {{ $slot }}
     </main>
+    
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="//cdn.datatables.net/2.1.4/js/dataTables.min.js"></script>
     <script>

@@ -18,6 +18,7 @@
             <div id="scans-list">
                 @include('partials.scans-list', ['scans' => $scans])
             </div>
+            <button id="export-btn" class="mt-4 p-2 bg-blue-500 text-white rounded">Export PDF</button>
         </div>
     </div>
 
@@ -25,7 +26,7 @@
         setInterval(function() {
             // Fetch the updated scans list via AJAX
             fetchScans();
-        }, 5000); // Poll every 5 seconds
+        }, 1000); // Poll every 1 second
 
         function fetchScans() {
             fetch('{{ route('scans.list') }}')
@@ -34,6 +35,15 @@
                     document.getElementById('scans-list').innerHTML = data;
                 })
                 .catch(error => console.error('Error fetching scans:', error));
+        }
+
+        document.getElementById('export-btn').addEventListener('click', function() {
+            exportScans();
+        });
+
+        function exportScans() {
+            // Redirect to the export PDF route to trigger the download
+            window.location.href = '{{ route('scans.export.pdf') }}';
         }
     </script>
 </x-layout>
