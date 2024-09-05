@@ -35,6 +35,15 @@
                 <span class="font-bold">{{ $post->section }}</span>
             </div>
 
+            {{-- School Year and Semester --}}
+            <div class="text-xs font-light mb-4">
+                <span class="font-medium">S.Y:</span> 
+                <span class="font-bold">{{ $post->school_year }}</span>
+                <br>
+                <span class="font-medium">Semester:</span> 
+                <span class="font-bold">{{ $post->semester }}</span>
+            </div>
+
             {{-- Description --}}
             @if ($full)
                 {{-- Show full description text in single post page --}}
@@ -51,7 +60,7 @@
 
             {{-- Linked Users --}}
             <div class="text-xs font-light mt-4">
-                <span class="font-medium">Intructor In Charge:</span>
+                <span class="font-medium">Instructor In Charge:</span>
                 <ul class="list-disc pl-4">
                     @forelse ($post->users as $user)
                         <li class="font-bold">{{ $user->username }}</li>

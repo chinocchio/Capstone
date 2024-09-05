@@ -7,7 +7,7 @@
             <ul class="list-disc pl-6 mb-8">
                 @foreach($linkedSubjects as $subject)
                     <li class="mb-2 text-lg">
-                        {{ $subject->name }} - 
+                        {{ $subject->name }} - {{ $subject->qr }}
                         {!! DNS2D::getBarcodeHTML("$subject->qr", 'QRCODE') !!}
                     </li>
                 @endforeach

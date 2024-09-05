@@ -12,17 +12,26 @@ use Illuminate\Validation\ValidationException;
 class SubjectImport implements ToCollection, WithHeadingRow
 {
     private $duplicateSubjects = [];
+    private $schoolYear;
+    private $semester;
+
+    public function __construct($schoolYear, $semester)
+    {
+        $this->schoolYear = $schoolYear;
+        $this->semester = $semester;
+    }
 
     /**
     * @param Collection $collection
     */
     public function collection(Collection $rows)
     {
-        foreach ($rows as $row) 
-        {
+        foreach ($rows as $row) {
             // Check for duplicates
             $existingSubject = Subject::where('day', $row['day'])
                                       ->where('section', $row['section'])
+                                      ->where('school_year', $this->schoolYear)
+                                      ->where('semester', $this->semester)
                                       ->first();
 
             if ($existingSubject) {
@@ -46,6 +55,8 @@ class SubjectImport implements ToCollection, WithHeadingRow
                 'end_time' => $this->formatTime($row['end_time']),
                 'day' => $row['day'],
                 'image' => $row['image'], // Ensure the index matches the actual column if used
+                'school_year' => $this->schoolYear,
+                'semester' => $this->semester,
             ]);
         }
     }

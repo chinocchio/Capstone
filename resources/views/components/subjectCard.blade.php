@@ -14,16 +14,15 @@
         <div class="w-4/5">
             {{-- Title --}}
             <h2 class="font-bold text-xl">{{ $subject->name }}</h2>
-
             {{-- Post Code --}}
             <div class="text-sm mb-4">
                 <span class="font-medium">Code:</span> {{ $subject->code }}
             </div>
 
-                        {{-- Post day --}}
-                        <div class="text-sm mb-4">
-                            <span class="font-medium">Every:</span> {{ $subject->day }}
-                        </div>
+            {{-- Post day --}}
+            <div class="text-sm mb-4">
+                <span class="font-medium">Every:</span> {{ $subject->day }}
+            </div>
 
             {{-- Section --}}
             @if ($subject->section)
@@ -34,6 +33,12 @@
             @if ($subject->start_time && $subject->end_time)
                 <p class="text-sm mb-2"><strong>Time:</strong> {{ \Carbon\Carbon::parse($subject->start_time)->format('g:i A') }} - {{ \Carbon\Carbon::parse($subject->end_time)->format('g:i A') }}</p>
             @endif
+
+            {{-- School Year and Semester --}}
+            <div class="text-sm mb-2">
+                <p class="mb-2"><strong>S.Y:</strong> {{ $subject->school_year }}</p>
+                <p class="mb-2"><strong>Semester:</strong> {{ $subject->semester }}</p>
+            </div>
 
             {{-- Description --}}
             @if ($full)

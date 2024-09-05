@@ -9,7 +9,8 @@
                     <span class="text-gray-600">{{ $subject->code }}</span> - 
                     <span class="font-bold">{{ $subject->start_time->format('g:i A') }}</span> to 
                     <span class="font-bold">{{ $subject->end_time->format('g:i A') }}</span> - 
-                    <span class="font-bold">Section: {{ $subject->section }}</span>
+                    <span class="font-bold">Section: {{ $subject->section }}</span>- 
+                    <span class="font-bold">Every: {{ $subject->day }}</span>
                 </li>
             @endforeach
         </ul>
@@ -27,7 +28,8 @@
                                 {{ $subject->code }} - 
                                 {{ $subject->start_time->format('g:i A') }} to 
                                 {{ $subject->end_time->format('g:i A') }} - 
-                                <strong>Section: {{ $subject->section }}</strong>
+                                <strong>Section: {{ $subject->section }}</strong> - 
+                                {{ $subject->day }} - 
                             </option>
                         @endforeach
                     </select>
@@ -51,7 +53,8 @@
                                 {{ $subject->code }} - 
                                 {{ $subject->start_time->format('g:i A') }} to 
                                 {{ $subject->end_time->format('g:i A') }} - 
-                                <strong>Section: {{ $subject->section }}</strong>
+                                <strong>Section: {{ $subject->section }}</strong> - 
+                                {{ $subject->day }} - 
                             </option>
                         @endforeach
                     </select>

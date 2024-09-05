@@ -23,6 +23,8 @@ class Subject extends Model
         'end_time',
         'day',
         'image',
+        'school_year',
+        'semester',
     ];
 
     // protected $casts = [

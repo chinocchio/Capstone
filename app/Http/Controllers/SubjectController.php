@@ -207,9 +207,14 @@ class SubjectController extends Controller
     {
         $request->validate([
             'file' => 'required|file|mimes:xls,xlsx',
+            'school_year' => 'required|string',
+            'semester' => 'required|string',
         ]);
     
-        $import = new SubjectImport;
+        $schoolYear = $request->input('school_year');
+        $semester = $request->input('semester');
+    
+        $import = new SubjectImport($schoolYear, $semester);
         Excel::import($import, $request->file('file'));
     
         $duplicateSubjects = $import->getDuplicateSubjects();

@@ -4,7 +4,7 @@
         <a href="{{ route('admin_dashboard') }}" class="text-xs text-blue-500">&larr; Go back to your dashboard</a>
         <a href="{{ route('subjects.create') }}" class="bg-blue-500 text-white px-2 py-1 text-xs rounded-md">Manually Add Subject</a>
     </div>
-        
+
     {{-- Session Messages --}}
     @if (session('success'))
         <x-flashMsg msg="{{ session('success') }}" />
@@ -45,13 +45,31 @@
                 @csrf
                 <div class="mb-4">
                     <label for="file" class="block mb-2">Select Excel File</label>
-                    <input type="file" name="file" id="file" accept=".xls,.xlsx"
-                        class="input @error('file') ring-red-500 @enderror">
-
+                    <input type="file" name="file" id="file" accept=".xls,.xlsx" class="input @error('file') ring-red-500 @enderror">
                     @error('file')
                         <p class="error">{{ $message }}</p>
                     @enderror
                 </div>
+
+                {{-- Dropdown for selecting school_year and semester --}}
+                <div class="mb-4">
+                    <label for="school_year" class="block mb-2">Select School Year</label>
+                    <select name="school_year" id="school_year" class="input">
+                        <option value="2023-2024">2023-2024</option>
+                        <option value="2024-2025">2024-2025</option>
+                        <!-- Add other school years as necessary -->
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label for="semester" class="block mb-2">Select Semester</label>
+                    <select name="semester" id="semester" class="input">
+                        <option value="1st Semester">1st Semester</option>
+                        <option value="2nd Semester">2nd Semester</option>
+                        <!-- Add other semesters if necessary -->
+                    </select>
+                </div>
+
                 <button type="submit" class="btn">Import</button>
             </form>
         </div>

@@ -22,6 +22,8 @@ return new class extends Migration
             $table->string('section');
             $table->string('day');
             $table->string('image')->nullable();
+            $table->string('school_year');
+            $table->string('semester');
             $table->timestamps();
         });
     }
