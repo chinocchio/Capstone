@@ -11,7 +11,7 @@
         <x-flashMsg msg="{{ session('delete') }}" bg="bg-red-500" />
     @endif
 
-    @if (session('duplicate_subjects'))
+    @if (session('duplicate_sections'))
     <div class="bg-yellow-200 text-yellow-800 p-4 rounded-md mb-4">
         <h3 class="font-bold">Duplicate Subjects Detected</h3>
         <table class="min-w-full bg-white border border-gray-300 rounded-md">
@@ -23,7 +23,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (session('duplicate_subjects') as $duplicate)
+                @foreach (session('duplicate_sections') as $duplicate)
                     <tr>
                         <td class="px-4 py-2 border">{{ $duplicate['code'] }}</td>
                         <td class="px-4 py-2 border">{{ $duplicate['day'] }}</td>
@@ -35,106 +35,172 @@
         <p class="mt-4">These subjects were skipped due to duplication.</p>
     </div>
     @endif
-        {{-- Edit Subject Form --}}
-        <form action="{{ route('subjects.update', $subject->id) }}" method="post" enctype="multipart/form-data">
-            @csrf
-            @method('PUT')
 
-            {{-- Subject Name --}}
-            <div class="mb-4">
-                <label for="name" class="block text-sm font-medium text-gray-700">Subject Name</label>
-                <input type="text" name="name" id="name" value="{{ old('name', $subject->name) }}"
-                    class="input mt-1 block w-full @error('name') border-red-500 @enderror" placeholder="Enter the subject name" required>
-                
-                @error('name')
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-
-            {{-- Subject Code --}}
-            <div class="mb-4">
-                <label for="code" class="block text-sm font-medium text-gray-700">Subject Code</label>
-                <input type="text" name="code" id="code" value="{{ old('code', $subject->code) }}"
-                    class="input mt-1 block w-full @error('code') border-red-500 @enderror" placeholder="Enter the subject code" required>
-
-                @error('code')
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-
-            {{-- Section --}}
-            <div class="mb-4">
-                <label for="section" class="block text-sm font-medium text-gray-700">Section</label>
-                <input type="text" name="section" id="section" value="{{ old('section', $subject->section) }}"
-                    class="input mt-1 block w-full @error('section') border-red-500 @enderror" placeholder="Enter the section" required>
-
-                @error('section')
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-
-            {{-- Description --}}
-            <div class="mb-4">
-                <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
-                <textarea name="description" id="description" rows="4" 
-                    class="input mt-1 block w-full @error('description') border-red-500 @enderror" placeholder="Enter a brief description" required>{{ old('description', $subject->description) }}</textarea>
-
-                @error('description')
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-
-            {{-- Start Time --}}
-            <div class="mb-4">
-                <label for="start_time" class="block text-sm font-medium text-gray-700">Start Time</label>
-                <input type="time" name="start_time" id="start_time" value="{{ old('start_time', $subject->start_time) }}"
-                    class="input mt-1 block w-full @error('start_time') border-red-500 @enderror" required>
-
-                @error('start_time')
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-
-            {{-- End Time --}}
-            <div class="mb-4">
-                <label for="end_time" class="block text-sm font-medium text-gray-700">End Time</label>
-                <input type="time" name="end_time" id="end_time" value="{{ old('end_time', $subject->end_time) }}"
-                    class="input mt-1 block w-full @error('end_time') border-red-500 @enderror" required>
-
-                @error('end_time')
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-
-            {{-- Subject Day --}}
-            <div class="mb-4">
-                <label for="day" class="block text-sm font-medium text-gray-700">Subject Day</label>
-                <select name="day" id="day" class="input mt-1 block w-full @error('day') border-red-500 @enderror" required>
-                    <option value="">Select a day</option>
-                    @foreach(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] as $day)
-                        <option value="{{ $day }}" {{ old('day', $subject->day) == $day ? 'selected' : '' }}>{{ $day }}</option>
-                    @endforeach
-                </select>
-
-                @error('day')
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-
-            {{-- Cover Photo --}}
-            <div class="mb-4">
-                <label for="image" class="block text-sm font-medium text-gray-700">Cover Photo</label>
-                <input type="file" name="image" id="image" class="mt-1 block w-full @error('image') border-red-500 @enderror">
-
-                @error('image')
-                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                @enderror
-            </div>
-
-            {{-- Submit Button --}}
-            <button type="submit" class="btn bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                Save Changes
-            </button>
-        </form>
+    @if (session('conflicting_subjects'))
+    <div class="bg-yellow-200 text-yellow-800 p-4 rounded-md mb-4">
+        <h3 class="font-bold">Conflicting Subjects Detected</h3>
+        <table class="min-w-full bg-white border border-gray-300 rounded-md">
+            <thead class="bg-yellow-300">
+                <tr>
+                    <th class="px-4 py-2 border">Code</th>
+                    <th class="px-4 py-2 border">Day</th>
+                    <th class="px-4 py-2 border">Section</th>
+                    <th class="px-4 py-2 border">Start Time</th>
+                    <th class="px-4 py-2 border">End Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (session('conflicting_subjects') as $conflict)
+                    <tr>
+                        <td class="px-4 py-2 border">{{ $conflict->code }}</td>
+                        <td class="px-4 py-2 border">{{ $conflict->day }}</td>
+                        <td class="px-4 py-2 border">{{ $conflict->section }}</td>
+                        <td class="px-4 py-2 border">{{ $conflict->start_time }}</td>
+                        <td class="px-4 py-2 border">{{ $conflict->end_time }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+        <p class="mt-4">The added subject's time is fully within the time range of these existing subjects. Please modify the time or day.</p>
     </div>
+@endif
+
+    {{-- Edit Subject Form --}}
+    <form action="{{ route('subjects.update', $subject->id) }}" method="post" enctype="multipart/form-data">
+        @csrf
+        @method('PUT')
+
+        {{-- Subject Name --}}
+        <div class="mb-4">
+            <label for="name" class="block text-sm font-medium text-gray-700">Subject Name</label>
+            <input type="text" name="name" id="name" value="{{ old('name', $subject->name) }}"
+                class="input mt-1 block w-full @error('name') border-red-500 @enderror" placeholder="Enter the subject name" required>
+            
+            @error('name')
+                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+            @enderror
+        </div>
+
+        {{-- Subject Code --}}
+        <div class="mb-4">
+            <label for="code" class="block text-sm font-medium text-gray-700">Subject Code</label>
+            <input type="text" name="code" id="code" value="{{ old('code', $subject->code) }}"
+                class="input mt-1 block w-full @error('code') border-red-500 @enderror" placeholder="Enter the subject code" required>
+
+            @error('code')
+                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+            @enderror
+        </div>
+
+        {{-- Section --}}
+        <div class="mb-4">
+            <label for="section" class="block text-sm font-medium text-gray-700">Section</label>
+            <input type="text" name="section" id="section" value="{{ old('section', $subject->section) }}"
+                class="input mt-1 block w-full @error('section') border-red-500 @enderror" placeholder="Enter the section" required>
+
+            @error('section')
+                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+            @enderror
+        </div>
+
+        {{-- Description --}}
+        <div class="mb-4">
+            <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+            <textarea name="description" id="description" rows="4" 
+                class="input mt-1 block w-full @error('description') border-red-500 @enderror" placeholder="Enter a brief description" required>{{ old('description', $subject->description) }}</textarea>
+
+            @error('description')
+                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+            @enderror
+        </div>
+
+        {{-- Start Time --}}
+        <div class="mb-4">
+            <label for="start_time" class="block text-sm font-medium text-gray-700">Start Time</label>
+            <input type="time" name="start_time" id="start_time" value="{{ old('start_time', $subject->start_time) }}"
+                class="input mt-1 block w-full @error('start_time') border-red-500 @enderror" required>
+
+            @error('start_time')
+                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+            @enderror
+        </div>
+
+        {{-- End Time --}}
+        <div class="mb-4">
+            <label for="end_time" class="block text-sm font-medium text-gray-700">End Time</label>
+            <input type="time" name="end_time" id="end_time" value="{{ old('end_time', $subject->end_time) }}"
+                class="input mt-1 block w-full @error('end_time') border-red-500 @enderror" required>
+
+            @error('end_time')
+                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+            @enderror
+        </div>
+
+        {{-- Subject Day --}}
+        <div class="mb-4">
+            <label for="day" class="block text-sm font-medium text-gray-700">Subject Day</label>
+            <select name="day" id="day" class="input mt-1 block w-full @error('day') border-red-500 @enderror" required>
+                <option value="">Select a day</option>
+                @foreach(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] as $day)
+                    <option value="{{ $day }}" {{ old('day', $subject->day) == $day ? 'selected' : '' }}>{{ $day }}</option>
+                @endforeach
+            </select>
+
+            @error('day')
+                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+            @enderror
+        </div>
+
+        {{-- School Year --}}
+        <div class="mb-4">
+            <label for="school_year" class="block text-sm font-medium text-gray-700">School Year</label>
+            <select name="school_year" id="school_year" class="input mt-1 block w-full @error('school_year') border-red-500 @enderror" required>
+                @php
+                    $currentYear = now()->year;
+                @endphp
+                @for ($i = 0; $i <= 5; $i++)
+                    @php
+                        $startYear = $currentYear + $i;
+                        $endYear = $startYear + 1;
+                    @endphp
+                    <option value="{{ $startYear }}-{{ $endYear }}" {{ old('school_year', $subject->school_year) == "$startYear-$endYear" ? 'selected' : '' }}>
+                        {{ $startYear }}-{{ $endYear }}
+                    </option>
+                @endfor
+            </select>
+
+            @error('school_year')
+                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+            @enderror
+        </div>
+
+        {{-- Semester --}}
+        <div class="mb-4">
+            <label for="semester" class="block text-sm font-medium text-gray-700">Semester</label>
+            <select name="semester" id="semester" class="input mt-1 block w-full @error('semester') border-red-500 @enderror" required>
+                <option value="1st Semester" {{ old('semester', $subject->semester) == '1st Semester' ? 'selected' : '' }}>1st Semester</option>
+                <option value="2nd Semester" {{ old('semester', $subject->semester) == '2nd Semester' ? 'selected' : '' }}>2nd Semester</option>
+            </select>
+
+            @error('semester')
+                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+            @enderror
+        </div>
+
+        {{-- Cover Photo --}}
+        <div class="mb-4">
+            <label for="image" class="block text-sm font-medium text-gray-700">Cover Photo</label>
+            <input type="file" name="image" id="image" class="mt-1 block w-full @error('image') border-red-500 @enderror">
+
+            @error('image')
+                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+            @enderror
+        </div>
+
+        {{-- Submit Button --}}
+        <button type="submit" class="btn bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            Save Changes
+        </button>
+    </form>
+</div>
 </x-adminlayout>

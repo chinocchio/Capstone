@@ -10,7 +10,9 @@
                     <span class="font-bold">{{ $subject->start_time->format('g:i A') }}</span> to 
                     <span class="font-bold">{{ $subject->end_time->format('g:i A') }}</span> - 
                     <span class="font-bold">Section: {{ $subject->section }}</span>- 
-                    <span class="font-bold">Every: {{ $subject->day }}</span>
+                    <span class="font-bold">Every: {{ $subject->day }}</span>- 
+                    <span class="font-bold">S.Y: {{ $subject->school_year }}</span>- 
+                    <span class="font-bold">Semester: {{ $subject->semester }}</span>
                 </li>
             @endforeach
         </ul>
@@ -30,6 +32,8 @@
                                 {{ $subject->end_time->format('g:i A') }} - 
                                 <strong>Section: {{ $subject->section }}</strong> - 
                                 {{ $subject->day }} - 
+                                {{ $subject->school_year }} - 
+                                {{ $subject->semester }} - 
                             </option>
                         @endforeach
                     </select>
@@ -55,6 +59,8 @@
                                 {{ $subject->end_time->format('g:i A') }} - 
                                 <strong>Section: {{ $subject->section }}</strong> - 
                                 {{ $subject->day }} - 
+                                {{ $subject->school_year }} - 
+                                {{ $subject->semester }} - 
                             </option>
                         @endforeach
                     </select>

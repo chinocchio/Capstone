@@ -49,8 +49,10 @@ class SubjectController extends Controller
             'description' => ['required'],
             'section' => 'required|string|max:255',
             'start_time' => 'required|date_format:H:i',
-            'end_time' => 'required|date_format:H:i',
+            'end_time' => 'required|date_format:H:i|after:start_time', // Ensure end_time is after start_time
             'day' => 'required|string',
+            'school_year' => 'required|string',
+            'semester' => 'required|string',
             'image' => ['nullable', 'image'], // Optional image validation
         ]);
     
@@ -58,23 +60,38 @@ class SubjectController extends Controller
         $startTime = \Carbon\Carbon::createFromFormat('H:i', $request->start_time);
         $endTime = \Carbon\Carbon::createFromFormat('H:i', $request->end_time);
     
-        // Check for overlapping schedules
-        $existingSubjects = Subject::where('day', $request->day)
-                                   ->where(function ($query) use ($startTime, $endTime) {
-                                       $query->whereBetween('start_time', [$startTime, $endTime])
-                                             ->orWhereBetween('end_time', [$startTime, $endTime])
-                                             ->orWhere(function ($query) use ($startTime, $endTime) {
-                                                 $query->where('start_time', '<=', $startTime)
-                                                       ->where('end_time', '>=', $endTime);
-                                             });
-                                   })
-                                   ->where('section', $request->section)
-                                   ->get();
+        // Step 1: Check for duplicate sections on the same day, school year, and semester
+        $duplicateSections = Subject::where('day', $request->day)
+            ->where('section', $request->section)
+            ->where('school_year', $request->school_year)
+            ->where('semester', $request->semester)
+            ->first();
     
-        if ($existingSubjects->isNotEmpty()) {
+        // If duplicate sections exist, prevent the addition
+        if ($duplicateSections) {
             return redirect()->back()
-                             ->with('delete', 'A subject with overlapping time already exists.')
-                             ->withInput(); // To preserve the input values on the form
+                             ->with('duplicate_sections', [$duplicateSections])
+                             ->withInput();
+        }
+    
+        // Step 2: Check for overlapping time schedules within the same day, school year, and semester
+        $conflictingSubjects = Subject::where('day', $request->day)
+            ->where('school_year', $request->school_year)
+            ->where('semester', $request->semester)
+            ->where(function ($query) use ($startTime, $endTime) {
+                // Check if the new subject's time conflicts with existing subjects
+                $query->where(function ($query) use ($startTime, $endTime) {
+                    $query->where('start_time', '<', $endTime) // Check if an existing subject's start time is before the new end time
+                          ->where('end_time', '>', $startTime); // And the existing subject's end time is after the new start time
+                });
+            })
+            ->get();
+    
+        // If conflicting subjects exist, prevent the addition
+        if ($conflictingSubjects->isNotEmpty()) {
+            return redirect()->back()
+                             ->with('conflicting_subjects', $conflictingSubjects)
+                             ->withInput();
         }
     
         // Store image if exists
@@ -85,7 +102,7 @@ class SubjectController extends Controller
     
         $generatedCode = mt_rand(11111111111, 99999999999);
     
-        // Create a subject
+        // Create the subject
         Subject::create([
             'name' => $request->name,
             'code' => $request->code,
@@ -95,10 +112,12 @@ class SubjectController extends Controller
             'start_time' => $request->start_time, // Directly use the 24-hour format from the input
             'end_time' => $request->end_time,     // Directly use the 24-hour format from the input
             'day' => $request->day,
+            'school_year' => $request->school_year,
+            'semester' => $request->semester,
             'image' => $path,
         ]);
     
-        // Redirect to dashboard
+        // Redirect to subjects list
         return redirect()->route('subjects.index')->with('success', 'You added a schedule.');
     }
 
@@ -163,57 +182,75 @@ class SubjectController extends Controller
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time', // Ensure end_time is after start_time
             'day' => 'required|string',
+            'school_year' => 'required|string',
+            'semester' => 'required|string',
             'image' => ['nullable', 'image'], // Optional image validation
         ]);
-
+    
         // Find the subject by ID
         $subject = Subject::findOrFail($id);
-
-        // Check for overlapping schedules
-        $overlappingSubjects = Subject::where('day', $request->day)
+    
+        // Step 1: Check for duplicate sections on the same day, school year, and semester
+        $duplicateSections = Subject::where('day', $request->day)
             ->where('section', $request->section)
-            ->where('id', '!=', $id) // Exclude the current subject
+            ->where('school_year', $request->school_year)
+            ->where('semester', $request->semester)
+            ->where('id', '!=', $id) // Exclude the current subject being edited
+            ->first();
+    
+        // If a duplicate section exists, prevent the update
+        if ($duplicateSections) {
+            return redirect()->back()->with('duplicate_sections', [$duplicateSections])->withInput();
+        }
+    
+        // Step 2: Check if the new subject’s time falls between the start and end time of any other subjects on the same day, school year, and semester
+        $conflictingSubjects = Subject::where('day', $request->day)
+            ->where('school_year', $request->school_year)
+            ->where('semester', $request->semester)
+            ->where('id', '!=', $id) // Exclude the current subject being edited
             ->where(function ($query) use ($request) {
-                $query->whereBetween('start_time', [$request->start_time, $request->end_time])
-                    ->orWhereBetween('end_time', [$request->start_time, $request->end_time])
-                    ->orWhere(function ($query) use ($request) {
-                        $query->where('start_time', '<=', $request->start_time)
-                                ->where('end_time', '>=', $request->end_time);
-                    });
+                // Check if the new subject's time falls within the time of any existing subjects
+                $query->where(function ($query) use ($request) {
+                    $query->where('start_time', '<', $request->end_time) // Check if any existing subject's start time is before the new end time
+                          ->where('end_time', '>', $request->start_time); // And the existing subject's end time is after the new start time
+                });
             })
             ->get();
-
-        if ($overlappingSubjects->isNotEmpty()) {
-            return redirect()->back()->with('duplicate_subjects', $overlappingSubjects)->withInput();
+    
+        // If conflicting subjects exist, prevent the update
+        if ($conflictingSubjects->isNotEmpty()) {
+            return redirect()->back()->with('conflicting_subjects', $conflictingSubjects)->withInput();
         }
-
+    
         // Handle image upload if provided
         if ($request->hasFile('image')) {
             // Store the new image and delete the old one if necessary
             $path = $request->file('image')->store('posts_images', 'public');
             $subject->image = $path;
         }
-
+    
         // Update the subject with validated data
         $subject->update($request->except('image'));
-
+    
         // Redirect back to the subjects index with success message
         return redirect()->route('subjects.index')->with('success', 'Subject updated successfully.');
     }
-
     
     
+    
+     
     public function import(Request $request)
     {
         $request->validate([
             'file' => 'required|file|mimes:xls,xlsx',
             'school_year' => 'required|string',
-            'semester' => 'required|string',
+            'semester' => 'required|string',  // Add validation for semester
         ]);
     
         $schoolYear = $request->input('school_year');
         $semester = $request->input('semester');
     
+        // Pass both school_year and semester to the import class
         $import = new SubjectImport($schoolYear, $semester);
         Excel::import($import, $request->file('file'));
     
@@ -227,6 +264,7 @@ class SubjectController extends Controller
     
         return redirect()->back()->with('success', 'Subjects imported successfully!');
     }
+    
 
     public function getScheduleByDay(Request $request, string $day)
     {

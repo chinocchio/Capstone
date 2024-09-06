@@ -27,13 +27,14 @@ class SubjectImport implements ToCollection, WithHeadingRow
     public function collection(Collection $rows)
     {
         foreach ($rows as $row) {
-            // Check for duplicates
+            // Check for duplicates based on day, section, school_year, and semester
             $existingSubject = Subject::where('day', $row['day'])
                                       ->where('section', $row['section'])
                                       ->where('school_year', $this->schoolYear)
                                       ->where('semester', $this->semester)
                                       ->first();
 
+            // If a duplicate exists, skip it and add to duplicateSubjects array
             if ($existingSubject) {
                 $this->duplicateSubjects[] = [
                     'code' => $row['code'],
@@ -43,8 +44,10 @@ class SubjectImport implements ToCollection, WithHeadingRow
                 continue;
             }
 
+            // Generate a QR code or use the existing one
             $generatedCode = mt_rand(11111111111,99999999999);
 
+            // Create the subject with the provided school_year and semester
             Subject::create([
                 'name' => $row['name'],
                 'code' => $row['code'],

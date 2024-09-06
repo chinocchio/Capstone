@@ -55,20 +55,30 @@
                 <div class="mb-4">
                     <label for="school_year" class="block mb-2">Select School Year</label>
                     <select name="school_year" id="school_year" class="input">
-                        <option value="2023-2024">2023-2024</option>
-                        <option value="2024-2025">2024-2025</option>
-                        <!-- Add other school years as necessary -->
+                        @php
+                            $currentYear = now()->year;  // Or use Carbon\Carbon::now()->year
+                            $yearsInFuture = 5; // Set how many years ahead you want to show
+                        @endphp
+                
+                        @for ($i = 0; $i <= $yearsInFuture; $i++)
+                            @php
+                                $startYear = $currentYear + $i;
+                                $endYear = $startYear + 1;
+                            @endphp
+                            <option value="{{ $startYear }}-{{ $endYear }}">{{ $startYear }}-{{ $endYear }}</option>
+                        @endfor
                     </select>
                 </div>
+                
 
                 <div class="mb-4">
                     <label for="semester" class="block mb-2">Select Semester</label>
                     <select name="semester" id="semester" class="input">
                         <option value="1st Semester">1st Semester</option>
                         <option value="2nd Semester">2nd Semester</option>
-                        <!-- Add other semesters if necessary -->
                     </select>
                 </div>
+                
 
                 <button type="submit" class="btn">Import</button>
             </form>
