@@ -25,6 +25,8 @@ class Subject extends Model
         'image',
         'school_year',
         'semester',
+        'specific_date', // Add this field
+        'type', 
     ];
 
     // protected $casts = [

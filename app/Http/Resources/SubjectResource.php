@@ -29,6 +29,8 @@ class SubjectResource extends JsonResource
             'end_time' => $this->end_time, // Added end_time
             'school_year' => $this->schoolYear,
             'semester' => $this->semester,
+            'type' => $this->type,
+            'specific_date' => $this->specific_date,
         ];
     }
 

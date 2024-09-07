@@ -114,13 +114,20 @@
         <div class="grid grid-cols-2 gap-6">
             @foreach ($subjects as $subject)
                 {{-- Subject card component --}}
-                <label for="subject-checkbox-{{ $subject->id }}" class="cursor-pointer">
+                <label for="subject-checkbox-{{ $subject->id }}" class="cursor-pointer relative">
                     <x-subjectCard :subject="$subject">
+                        {{-- Display "Makeup Class" label if the subject type is 'makeup' --}}
+                        @if($subject->type === 'makeup')
+                            <span class="absolute top-0 right-0 bg-red-500 text-white px-2 py-1 text-xs rounded-bl-md">Makeup Class</span>
+                        @endif
                         <div class="flex items-center justify-between mt-6">
                             <input type="checkbox" id="subject-checkbox-{{ $subject->id }}" name="subject_ids[]" value="{{ $subject->id }}" class="subject-checkbox mr-2">
                             <div class="flex items-center justify-end gap-4">
                                 {{-- Update post --}}
                                 <a href="{{ route('subjects.edit', $subject->id) }}" class="bg-green-500 text-white px-2 py-1 text-xs rounded-md">Update</a>
+
+                                {{-- Makeup Class button --}}
+                                <a href="{{ route('makeupClass', $subject->id) }}" class="bg-purple-500 text-white px-2 py-1 text-xs rounded-md">Set Makeup Class</a>
                             </div>
                         </div>
                     </x-subjectCard>

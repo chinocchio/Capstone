@@ -55,6 +55,9 @@ Route::middleware('auth')->group(function() {
 // Routes for admin Dashboard
 Route::middleware('admin')->prefix('admin')->group(function() 
 {
+    Route::get('/subjects/{id}/makeup-class/select', [SubjectController::class, 'selectMakeupClassTime'])->name('makeupClass');
+    Route::post('/subjects/{id}/makeup-class/store', [SubjectController::class, 'storeMakeupClass'])->name('makeupClass.store');
+
     // Subject Routes
     Route::resource('subjects', SubjectController::class);
     Route::post('/subjects/import', [SubjectController::class,'import'])->name("importSubsFromExcel");

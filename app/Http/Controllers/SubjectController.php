@@ -6,7 +6,10 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\SubjectImport;
 use Illuminate\Http\Request;
 use App\Models\Subject;
+use App\Models\Student;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+
 
 
 class SubjectController extends Controller
@@ -281,4 +284,93 @@ class SubjectController extends Controller
     {
         
     }
+
+    public function selectMakeupClassTime($id)
+    {
+        $subject = Subject::findOrFail($id);
+
+            // Fetch enrolled students
+        $students = DB::table('student_subject')
+        ->join('students', 'student_subject.student_id', '=', 'students.id')
+        ->where('student_subject.subject_id', $id)
+        ->select('students.id', 'students.name', 'students.email')
+        ->get();
+
+        // Fetch linked instructors (select username and email from users)
+        $instructors = DB::table('user_subject')
+            ->join('users', 'user_subject.user_id', '=', 'users.id')
+            ->where('user_subject.subject_id', $id)
+            ->select('users.id', 'users.username', 'users.email')
+            ->get();
+
+        return view('admin.admins.makeup_class_time', compact('subject', 'students', 'instructors'));
+    }
+
+    public function storeMakeupClass(Request $request, $id)
+    {
+        // Validate the request
+        $request->validate([
+            'date' => 'required|date',
+            'start_time' => 'required',
+            'end_time' => 'required|after:start_time',
+        ]);
+    
+        // Find the existing subject by ID (this is used as a template for the new entry)
+        $existingSubject = Subject::findOrFail($id);
+    
+        // Convert the specific date to a Carbon instance to get the day of the week
+        $specificDate = Carbon::parse($request->date);
+        $specificDayOfWeek = $specificDate->format('l'); // Day of the week (e.g., "Monday", "Tuesday")
+    
+        // Create a new subject record for the makeup class with the updated day of the week
+        $newSubject = Subject::create([
+            'name' => $existingSubject->name,
+            'code' => $existingSubject->code,
+            'description' => $existingSubject->description,
+            'qr' => $existingSubject->qr,
+            'section' => $existingSubject->section,
+            'day' => $specificDayOfWeek, // Set this to the day of the week based on the specific_date
+            'image' => $existingSubject->image,
+            'type' => 'makeup', // Set this as a makeup class
+            'school_year' => $existingSubject->school_year,
+            'semester' => $existingSubject->semester,
+            'specific_date' => $request->date, // New specific date for the makeup class
+            'start_time' => $request->start_time,
+            'end_time' => $request->end_time,
+        ]);
+    
+        // Fetch the instructor(s) linked to the existing subject
+        $instructors = DB::table('user_subject')
+            ->where('subject_id', $existingSubject->id)
+            ->pluck('user_id');
+    
+        // Link the new makeup class to the same instructor(s)
+        foreach ($instructors as $userId) {
+            DB::table('user_subject')->insert([
+                'user_id' => $userId,
+                'subject_id' => $newSubject->id,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+    
+        // Fetch the students linked to the existing subject
+        $students = DB::table('student_subject')
+            ->where('subject_id', $existingSubject->id)
+            ->pluck('student_id');
+    
+        // Link the new makeup class to the same student(s)
+        foreach ($students as $studentId) {
+            DB::table('student_subject')->insert([
+                'student_id' => $studentId,
+                'subject_id' => $newSubject->id,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+    
+        // Redirect back with a success message
+        return redirect()->route('subjects.index')->with('success', 'New makeup class scheduled for ' . $specificDayOfWeek . ' and linked to instructor(s) and student(s) successfully.');
+    }
+    
 }

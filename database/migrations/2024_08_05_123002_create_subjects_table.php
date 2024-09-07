@@ -13,17 +13,19 @@ return new class extends Migration
     {
         Schema::create('subjects', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('code');
-            $table->text('description');
-            $table->string('qr');
-            $table->time('start_time');
-            $table->time('end_time');
-            $table->string('section');
-            $table->string('day');
+            $table->string('name')->nullable();
+            $table->string('code')->nullable();
+            $table->text('description')->nullable();
+            $table->string('qr')->nullable();
+            $table->time('start_time')->nullable();
+            $table->time('end_time')->nullable();
+            $table->string('section')->nullable();
+            $table->string('day')->nullable();
             $table->string('image')->nullable();
-            $table->string('school_year');
-            $table->string('semester');
+            $table->string('type')->nullable();
+            $table->string('specific_date')->nullable();;
+            $table->string('school_year')->nullable();
+            $table->string('semester')->nullable();
             $table->timestamps();
         });
     }
