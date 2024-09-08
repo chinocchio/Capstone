@@ -372,5 +372,39 @@ class SubjectController extends Controller
         // Redirect back with a success message
         return redirect()->route('subjects.index')->with('success', 'New makeup class scheduled for ' . $specificDayOfWeek . ' and linked to instructor(s) and student(s) successfully.');
     }
+
+
+    public function showCalendar()
+    {
+        $subjects = Subject::all();
+        $events = [];
+    
+        foreach ($subjects as $subject) {
+            if ($subject->type === 'makeup') {
+                $events[] = [
+                    'title' => $subject->name . ' (Makeup Class)',
+                    'start' => Carbon::parse($subject->specific_date . ' ' . $subject->start_time)->format('Y-m-d\TH:i:s'),
+                    'end' => Carbon::parse($subject->specific_date . ' ' . $subject->end_time)->format('Y-m-d\TH:i:s'),
+                    'color' => 'red',
+                ];
+            } else {
+                $dayOfWeek = $subject->day;
+                $startTime = $subject->start_time;
+                $endTime = $subject->end_time;
+    
+                $startDateTime = Carbon::now()->next($dayOfWeek)->setTimeFromTimeString($startTime)->format('Y-m-d\TH:i:s');
+                $endDateTime = Carbon::now()->next($dayOfWeek)->setTimeFromTimeString($endTime)->format('Y-m-d\TH:i:s');
+    
+                $events[] = [
+                    'title' => $subject->name,
+                    'start' => $startDateTime,
+                    'end' => $endDateTime,
+                    'color' => 'blue',
+                ];
+            }
+        }
+    
+        return view('admin.admins.calendar', compact('events'));
+    }
     
 }

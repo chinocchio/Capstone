@@ -55,6 +55,8 @@ Route::middleware('auth')->group(function() {
 // Routes for admin Dashboard
 Route::middleware('admin')->prefix('admin')->group(function() 
 {
+    Route::get('/calendar', [SubjectController::class, 'showCalendar'])->name('subjects.calendar');
+
     Route::get('/subjects/{id}/makeup-class/select', [SubjectController::class, 'selectMakeupClassTime'])->name('makeupClass');
     Route::post('/subjects/{id}/makeup-class/store', [SubjectController::class, 'storeMakeupClass'])->name('makeupClass.store');
 
