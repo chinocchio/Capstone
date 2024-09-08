@@ -23,6 +23,8 @@ Route::get('/{user}/posts', [DashboardController::class, 'userPosts'])->name('po
 // Routes for authenticated users
 Route::middleware('auth')->group(function() {
 
+    Route::get('/calendar/user', [DashboardController::class, 'showUserCalendar'])->name('subjects.userCalendar');
+
     Route::get('/scans/export-pdf', [DashboardController::class, 'exportPdf'])->name('scans.export.pdf');
 
     //AJAX Route

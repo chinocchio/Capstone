@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//cdn.datatables.net/2.1.4/css/dataTables.dataTables.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet" />
     <title>LockUp</title>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -11,7 +14,7 @@
 <body class="bg-slate-100 text-slate-900">
     <header class="bg-slate-800 shadow-lg">
         <nav>
-            <a href="{{ route('posts.index') }}" class="nav-link">
+            <a href="{{ route('subjects.userCalendar') }}" class="nav-link">
                 <img src="{{ asset('storage/posts_images/1jeEWgOagO3eBPcjAJT4eDAgunLMKawi9kwGlYaN.png') }}"
                 alt="LockUp Logo"
                 class="h-1/auto w-1/2">
@@ -28,7 +31,7 @@
 
                     {{-- Dropdown menu--}}
                     <div x-show="open" @click.outside="open =false" 
-                    class="bg-white shadow-lg absolute top-10 right-0 rounded-lg overflow-hidden font-light">
+                    class="bg-white shadow-lg absolute top-10 right-0 rounded-lg overflow-hidden z-50 font-light">
 
                         <p class="username">{{ auth('web')->user()->username }}</p>
 
@@ -65,6 +68,12 @@
     <script>
         let table = new DataTable('myTable');
     </script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales-all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/daygrid.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/timegrid.min.js"></script>
     
 </body>
 </html>

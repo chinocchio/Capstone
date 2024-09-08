@@ -9,6 +9,7 @@ use App\Models\Subject;
 use App\Models\Student;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 
 
@@ -380,30 +381,45 @@ class SubjectController extends Controller
         $events = [];
     
         foreach ($subjects as $subject) {
+            // Fetch the section of the subject
+            $section = $subject->section;
+    
+            // Fetch linked instructors (select username and email from users)
+            $instructors = DB::table('user_subject')
+                ->join('users', 'user_subject.user_id', '=', 'users.id')
+                ->where('user_subject.subject_id', $subject->id)
+                ->pluck('users.username'); // Assuming 'username' is the instructor's name
+    
+            // Convert the instructors into a string (comma-separated if multiple)
+            $instructorNames = $instructors->isEmpty() ? 'No instructor' : implode(', ', $instructors->toArray());
+    
             if ($subject->type === 'makeup') {
+                // If it's a makeup class, use the specific_date for the start
                 $events[] = [
-                    'title' => $subject->name . ' (Makeup Class)',
+                    'title' => $subject->name . ' (Makeup Class) - Section: ' . $section . ' - Instructor(s): ' . $instructorNames,
                     'start' => Carbon::parse($subject->specific_date . ' ' . $subject->start_time)->format('Y-m-d\TH:i:s'),
                     'end' => Carbon::parse($subject->specific_date . ' ' . $subject->end_time)->format('Y-m-d\TH:i:s'),
                     'color' => 'red',
                 ];
             } else {
+                // If it's a regular subject, use the day of the week and combine it with the time
                 $dayOfWeek = $subject->day;
                 $startTime = $subject->start_time;
                 $endTime = $subject->end_time;
     
+                // Find the next occurrence of the day in this week
                 $startDateTime = Carbon::now()->next($dayOfWeek)->setTimeFromTimeString($startTime)->format('Y-m-d\TH:i:s');
                 $endDateTime = Carbon::now()->next($dayOfWeek)->setTimeFromTimeString($endTime)->format('Y-m-d\TH:i:s');
     
                 $events[] = [
-                    'title' => $subject->name,
+                    'title' => $subject->name . ' - Section: ' . $section . ' - Instructor(s): ' . $instructorNames,
                     'start' => $startDateTime,
                     'end' => $endDateTime,
                     'color' => 'blue',
                 ];
             }
         }
-    
+        
         return view('admin.admins.calendar', compact('events'));
     }
     

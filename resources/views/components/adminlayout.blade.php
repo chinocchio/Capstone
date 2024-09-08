@@ -13,7 +13,7 @@
 </head>
 <body class="bg-slate-100 text-slate-900">
     <header class="bg-slate-800 shadow-lg">
-        <nav>
+        <nav class="d-flex justify-content-between align-items-center px-4 py-2">
             <a href="{{ route('subjects.calendar') }}" class="nav-link">
                 <img src="{{ asset('storage/posts_images/1jeEWgOagO3eBPcjAJT4eDAgunLMKawi9kwGlYaN.png') }}"
                 alt="LockUp Logo"
@@ -22,34 +22,32 @@
 
             {{-- ADMIN --}}
             @auth('admin')
-                <div class="relative grid place-items-center" x-data="{ open: false }">
-
-                    {{-- Dropdown menu button --}}
-                    <button @click="open = !open" type="button" class="round-btn">
-                        <img src="https://picsum.photos/200" alt="">
-                    </button>
-
-                    {{-- Dropdown menu--}}
-                    <div x-show="open" @click.outside="open =false" 
-                    class="bg-white shadow-lg absolute top-10 right-0 rounded-lg overflow-hidden font-light">
-
-                        <p class="username">{{ auth('admin')->user()->username }}</p>
-
-                        <a href="{{ route('admin_dashboard') }}" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Dashboard</a>
-                        <a href="{{ route('subjects.index') }}" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Subject</a>
-                        <a href="{{ route('mac.index') }}" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">MAC PCs</a>
-                        <a href="{{ route('student_view') }}" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Students</a>
-                        <a href="#" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Reports</a>
-                        <a href="#" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Door Lock</a>
-                        
-
-                        <form action="{{ route('admin_logout') }}" method="post">
-                            @csrf
-                            <button class="block w-full text-left hover:bg-slate-100 pl-4 pr-8 py-2">Logout</button>
-                        </form>
-
-                    </div>
+            <div class="relative grid place-items-center" x-data="{ open: false }">
+                {{-- Dropdown menu button --}}
+                <button @click="open = !open" type="button" class="rounded-circle border-0 bg-transparent round-btn">
+                    <img src="https://picsum.photos/200" alt="Profile Image" class="rounded-circle">
+                </button>
+            
+                {{-- Dropdown menu --}}
+                <div x-show="open" @click.outside="open = false"
+                    class="bg-white shadow-lg absolute top-10 right-0 rounded-lg overflow-hidden z-50 font-light"
+                    >
+                    <p class="username">{{ auth('admin')->user()->username }}</p>
+            
+                    <a href="{{ route('admin_dashboard') }}" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Dashboard</a>
+                    <a href="{{ route('subjects.index') }}" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Subject</a>
+                    <a href="{{ route('mac.index') }}" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">MAC PCs</a>
+                    <a href="{{ route('student_view') }}" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Students</a>
+                    <a href="#" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Reports</a>
+                    <a href="#" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Door Lock</a>
+            
+                    <form action="{{ route('admin_logout') }}" method="post">
+                        @csrf
+                        <button class="block w-full text-left hover:bg-slate-100 pl-4 pr-8 py-2">Logout</button>
+                    </form>
                 </div>
+            </div>
+            
             @endauth
         </nav>
     </header>
