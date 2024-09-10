@@ -28,7 +28,7 @@ Route::post('/biometrics/verify', [StudentController::class, 'verify']);
 Route::get('/biometrics/get-template', [StudentController::class, 'getTemplate']);
 Route::get('/get-biometric-data/{id}', [StudentController::class, 'getBiometricData']);
 
-Route::post('/student-subject', [StudentSubjectController::class, 'store']);
+Route::post('student-subjects', [StudentSubjectController::class, 'store']);
 Route::get('/student-subject/{studentId}', [StudentSubjectController::class, 'show']);
 Route::get('/student-subjects', [StudentSubjectController::class, 'index']);
 
