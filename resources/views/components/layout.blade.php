@@ -49,12 +49,12 @@
                 </div>
             @endauth
 
-            @guest
+            {{-- @guest
                 <div class="flex items-center gap-4">
                         <a href="{{ route('login') }}" class="nav-link">Login</a>
                         <a href="{{ route('register') }}" class="nav-link">Register</a>
                 </div>
-            @endguest
+            @endguest --}}
         </nav>
     </header>
 

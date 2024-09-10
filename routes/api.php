@@ -13,10 +13,13 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\FingerprintController;
 use App\Http\Controllers\MacController;
 use App\Http\Controllers\LogsController;
+use App\Http\Controllers\PostController;
 use App\Http\Controllers\TemperatureController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\StudentSubjectController;
 use App\Http\Controllers\DashboardController;
+
+Route::get('posts', [PostController::class, 'getManuals']);
 
 Route::post('/update-fingerprint-verification', [ScansController::class, 'updateStatus']);
 

@@ -377,24 +377,25 @@ class SubjectController extends Controller
 
     public function showCalendar()
     {
+        // Fetch all subjects from the database
         $subjects = Subject::all();
         $events = [];
-    
+
         foreach ($subjects as $subject) {
-            // Fetch the section of the subject
+            // Fetch subject details
             $section = $subject->section;
-    
+
             // Fetch linked instructors (select username and email from users)
             $instructors = DB::table('user_subject')
-                ->join('users', 'user_subject.user_id', '=', 'users.id')
-                ->where('user_subject.subject_id', $subject->id)
-                ->pluck('users.username'); // Assuming 'username' is the instructor's name
-    
+            ->join('users', 'user_subject.user_id', '=', 'users.id')
+            ->where('user_subject.subject_id', $subject->id)
+            ->pluck('users.username'); // Assuming 'username' is the instructor's name
+
             // Convert the instructors into a string (comma-separated if multiple)
             $instructorNames = $instructors->isEmpty() ? 'No instructor' : implode(', ', $instructors->toArray());
-    
+
             if ($subject->type === 'makeup') {
-                // If it's a makeup class, use the specific_date for the start
+                // Makeup class: Use specific date for start and end
                 $events[] = [
                     'title' => $subject->name . ' (Makeup Class) - Section: ' . $section . ' - Instructor(s): ' . $instructorNames,
                     'start' => Carbon::parse($subject->specific_date . ' ' . $subject->start_time)->format('Y-m-d\TH:i:s'),
@@ -402,25 +403,52 @@ class SubjectController extends Controller
                     'color' => 'red',
                 ];
             } else {
-                // If it's a regular subject, use the day of the week and combine it with the time
+                // Regular class: Use day of the week for recurrence
                 $dayOfWeek = $subject->day;
                 $startTime = $subject->start_time;
                 $endTime = $subject->end_time;
-    
-                // Find the next occurrence of the day in this week
-                $startDateTime = Carbon::now()->next($dayOfWeek)->setTimeFromTimeString($startTime)->format('Y-m-d\TH:i:s');
-                $endDateTime = Carbon::now()->next($dayOfWeek)->setTimeFromTimeString($endTime)->format('Y-m-d\TH:i:s');
-    
+
+                // Add today's event explicitly if the day matches
+                if (Carbon::now()->isoFormat('dddd') === $dayOfWeek) {
+                    $events[] = [
+                        'title' => $subject->name . ' - Section: ' . $section . ' - Instructor(s): ' . $instructorNames,
+                        'start' => Carbon::today()->format('Y-m-d') . 'T' . Carbon::parse($startTime)->format('H:i:s'),
+                        'end' => Carbon::today()->format('Y-m-d') . 'T' . Carbon::parse($endTime)->format('H:i:s'),
+                        'color' => 'blue',
+                    ];
+                }
+
+                // Recurrence: Repeat for the rest of the days in the month
                 $events[] = [
                     'title' => $subject->name . ' - Section: ' . $section . ' - Instructor(s): ' . $instructorNames,
-                    'start' => $startDateTime,
-                    'end' => $endDateTime,
+                    'startTime' => Carbon::createFromFormat('H:i:s', $startTime)->format('H:i'),
+                    'endTime' => Carbon::createFromFormat('H:i:s', $endTime)->format('H:i'),
+                    'daysOfWeek' => [$this->convertDayToNumber($dayOfWeek)], // Convert day name to day number
+                    'startRecur' => Carbon::tomorrow()->format('Y-m-d'), // Recurrence starting tomorrow
+                    'endRecur' => Carbon::now()->endOfMonth()->format('Y-m-d'), // Recurrence till the end of the month
                     'color' => 'blue',
                 ];
             }
         }
-        
+
+        // Pass the events to the calendar view
         return view('admin.admins.calendar', compact('events'));
+    }
+
+    // Helper function to convert day names to FullCalendar day numbers
+    private function convertDayToNumber($dayOfWeek)
+    {
+        $days = [
+            'Sunday' => 0,
+            'Monday' => 1,
+            'Tuesday' => 2,
+            'Wednesday' => 3,
+            'Thursday' => 4,
+            'Friday' => 5,
+            'Saturday' => 6,
+        ];
+
+        return $days[$dayOfWeek] ?? 0; // Default to Sunday if not found
     }
     
 }

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('section');
+            $table->string("google_id")->nullable();
             $table->string('password')->nullable();
             $table->binary('biometric_data')->nullable();
             $table->timestamps();
