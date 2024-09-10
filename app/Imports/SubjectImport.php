@@ -12,19 +12,29 @@ use Illuminate\Validation\ValidationException;
 class SubjectImport implements ToCollection, WithHeadingRow
 {
     private $duplicateSubjects = [];
+    private $schoolYear;
+    private $semester;
+
+    public function __construct($schoolYear, $semester)
+    {
+        $this->schoolYear = $schoolYear;
+        $this->semester = $semester;
+    }
 
     /**
     * @param Collection $collection
     */
     public function collection(Collection $rows)
     {
-        foreach ($rows as $row) 
-        {
-            // Check for duplicates
+        foreach ($rows as $row) {
+            // Check for duplicates based on day, section, school_year, and semester
             $existingSubject = Subject::where('day', $row['day'])
                                       ->where('section', $row['section'])
+                                      ->where('school_year', $this->schoolYear)
+                                      ->where('semester', $this->semester)
                                       ->first();
 
+            // If a duplicate exists, skip it and add to duplicateSubjects array
             if ($existingSubject) {
                 $this->duplicateSubjects[] = [
                     'code' => $row['code'],
@@ -34,8 +44,10 @@ class SubjectImport implements ToCollection, WithHeadingRow
                 continue;
             }
 
+            // Generate a QR code or use the existing one
             $generatedCode = mt_rand(11111111111,99999999999);
 
+            // Create the subject with the provided school_year and semester
             Subject::create([
                 'name' => $row['name'],
                 'code' => $row['code'],
@@ -46,6 +58,8 @@ class SubjectImport implements ToCollection, WithHeadingRow
                 'end_time' => $this->formatTime($row['end_time']),
                 'day' => $row['day'],
                 'image' => $row['image'], // Ensure the index matches the actual column if used
+                'school_year' => $this->schoolYear,
+                'semester' => $this->semester,
             ]);
         }
     }

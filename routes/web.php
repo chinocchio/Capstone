@@ -23,6 +23,8 @@ Route::get('/{user}/posts', [DashboardController::class, 'userPosts'])->name('po
 // Routes for authenticated users
 Route::middleware('auth')->group(function() {
 
+    Route::get('/calendar/user', [DashboardController::class, 'showUserCalendar'])->name('subjects.userCalendar');
+
     Route::get('/scans/export-pdf', [DashboardController::class, 'exportPdf'])->name('scans.export.pdf');
 
     //AJAX Route
@@ -55,6 +57,11 @@ Route::middleware('auth')->group(function() {
 // Routes for admin Dashboard
 Route::middleware('admin')->prefix('admin')->group(function() 
 {
+    Route::get('/calendar', [SubjectController::class, 'showCalendar'])->name('subjects.calendar');
+
+    Route::get('/subjects/{id}/makeup-class/select', [SubjectController::class, 'selectMakeupClassTime'])->name('makeupClass');
+    Route::post('/subjects/{id}/makeup-class/store', [SubjectController::class, 'storeMakeupClass'])->name('makeupClass.store');
+
     // Subject Routes
     Route::resource('subjects', SubjectController::class);
     Route::post('/subjects/import', [SubjectController::class,'import'])->name("importSubsFromExcel");

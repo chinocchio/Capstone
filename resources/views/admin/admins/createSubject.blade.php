@@ -11,7 +11,7 @@
         <x-flashMsg msg="{{ session('delete') }}" bg="bg-red-500" />
     @endif
 
-    @if (session('duplicate_subjects'))
+    @if (session('duplicate_sections'))
     <div class="bg-yellow-200 text-yellow-800 p-4 rounded-md mb-4">
         <h3 class="font-bold">Duplicate Subjects Detected</h3>
         <table class="min-w-full bg-white border border-gray-300 rounded-md">
@@ -23,7 +23,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (session('duplicate_subjects') as $duplicate)
+                @foreach (session('duplicate_sections') as $duplicate)
                     <tr>
                         <td class="px-4 py-2 border">{{ $duplicate['code'] }}</td>
                         <td class="px-4 py-2 border">{{ $duplicate['day'] }}</td>
@@ -36,7 +36,36 @@
     </div>
     @endif
 
-        {{-- Create Post Form --}}
+    @if (session('conflicting_subjects'))
+    <div class="bg-yellow-200 text-yellow-800 p-4 rounded-md mb-4">
+        <h3 class="font-bold">Conflicting Subjects Detected</h3>
+        <table class="min-w-full bg-white border border-gray-300 rounded-md">
+            <thead class="bg-yellow-300">
+                <tr>
+                    <th class="px-4 py-2 border">Code</th>
+                    <th class="px-4 py-2 border">Day</th>
+                    <th class="px-4 py-2 border">Section</th>
+                    <th class="px-4 py-2 border">Start Time</th>
+                    <th class="px-4 py-2 border">End Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (session('conflicting_subjects') as $conflict)
+                    <tr>
+                        <td class="px-4 py-2 border">{{ $conflict->code }}</td>
+                        <td class="px-4 py-2 border">{{ $conflict->day }}</td>
+                        <td class="px-4 py-2 border">{{ $conflict->section }}</td>
+                        <td class="px-4 py-2 border">{{ $conflict->start_time }}</td>
+                        <td class="px-4 py-2 border">{{ $conflict->end_time }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+        <p class="mt-4">The added subject's time is fully within the time range of these existing subjects. Please modify the time or day.</p>
+    </div>
+@endif
+
+        {{-- Create Subject Form --}}
         <form action="{{ route('subjects.store') }}" method="post" enctype="multipart/form-data">
             @csrf
 
@@ -83,6 +112,7 @@
                 @enderror
             </div>
 
+            {{-- Start Time --}}
             <div class="mb-4">
                 <label for="start_time">Start Time</label>
                 <input type="time" name="start_time" value="{{ old('start_time') }}"
@@ -93,6 +123,7 @@
                 @enderror
             </div>
             
+            {{-- End Time --}}
             <div class="mb-4">
                 <label for="end_time">End Time</label>
                 <input type="time" name="end_time" value="{{ old('end_time') }}"
@@ -118,6 +149,42 @@
                 </select>
 
                 @error('day')
+                    <p class="error">{{ $message }}</p>
+                @enderror
+            </div>
+
+            {{-- School Year --}}
+            <div class="mb-4">
+                <label for="school_year">School Year</label>
+                <select name="school_year" class="input @error('school_year') ring-red-500 @enderror" required>
+                    @php
+                        $currentYear = now()->year;
+                    @endphp
+                    @for ($i = 0; $i <= 5; $i++)
+                        @php
+                            $startYear = $currentYear + $i;
+                            $endYear = $startYear + 1;
+                        @endphp
+                        <option value="{{ $startYear }}-{{ $endYear }}" {{ old('school_year') == "$startYear-$endYear" ? 'selected' : '' }}>
+                            {{ $startYear }}-{{ $endYear }}
+                        </option>
+                    @endfor
+                </select>
+
+                @error('school_year')
+                    <p class="error">{{ $message }}</p>
+                @enderror
+            </div>
+
+            {{-- Semester --}}
+            <div class="mb-4">
+                <label for="semester">Semester</label>
+                <select name="semester" class="input @error('semester') ring-red-500 @enderror" required>
+                    <option value="1st Semester" {{ old('semester') == '1st Semester' ? 'selected' : '' }}>1st Semester</option>
+                    <option value="2nd Semester" {{ old('semester') == '2nd Semester' ? 'selected' : '' }}>2nd Semester</option>
+                </select>
+
+                @error('semester')
                     <p class="error">{{ $message }}</p>
                 @enderror
             </div>

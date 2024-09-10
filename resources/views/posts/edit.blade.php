@@ -1,5 +1,5 @@
 <x-layout>
-    <a href="{{ route('dashboard') }}" class="block mb-2 text-xs text-blue-500">&larr; Go back to your dashboard</a>
+    <a href="{{ route('admin_dashboard') }}" class="block mb-2 text-xs text-blue-500">&larr; Go back to your dashboard</a>
 
     {{-- Update form card --}}
     <div class="card">

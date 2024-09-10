@@ -4,16 +4,16 @@
 
     <div class="mx-auto max-w-screen-sm card">
 
-        <form action="{{ route('login') }}" method="post">
+        <form action="{{ route('admin_login_submit') }}" method="post">
 
             @csrf
 
-            {{-- Email --}}
-            <div class="mb-4">
-                <label for="email">Email:</label>
-                <input type="text" name="email" value="{{ old('email')}}" 
-                class="input @error('email') ring-red-500 @enderror">
-                @error('email')
+             {{-- Email --}}
+             <div class="mb-4">
+                <label for="username">Username:</label>
+                <input type="text" name="username" value="{{ old('username')}}" 
+                class="input @error('username') ring-red-500 @enderror">
+                @error('username')
                     <p class="error"> {{ $message }} </p>
                 @enderror
             </div>
@@ -26,12 +26,6 @@
                 @error('password')
                     <p class="error"> {{ $message }} </p>
                 @enderror
-            </div>
-
-            {{-- Remember checkbox --}}
-            <div class="mb-4 flex items-center">
-                <input type="checkbox" name="remember" id="remember" class="mr-2">
-                <label for="remember">Remember Me</label>
             </div>
 
             @error('failed')
