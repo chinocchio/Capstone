@@ -8,6 +8,8 @@ use App\Models\Subject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\InstructorsImport;
 
 class UserController extends Controller
 {
@@ -160,5 +162,71 @@ class UserController extends Controller
 
         // Return the user resource
         return new UserResource($user);
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:xlsx,xls',
+            'school_year' => 'required',
+            'semester' => 'required',
+        ]);
+    
+        // Get the school year and semester from the form
+        $schoolYear = $request->input('school_year');
+        $semester = $request->input('semester');
+    
+        // Create a new instance of the InstructorsImport class with the selected school year and semester
+        $import = new InstructorsImport($schoolYear, $semester);
+    
+        // Import the file
+        Excel::import($import, $request->file('file'));
+    
+        // Return success or handle duplicates as needed
+        return redirect()->back()->with('success', 'Instructors imported successfully.');
+    }
+
+    public function userShow(Request $request)
+    {
+        // Get query parameters for search, school_year, and semester
+        $search = $request->input('search');
+        $schoolYear = $request->input('school_year');
+        $semester = $request->input('semester');
+
+        // Query to fetch users with optional search and filters
+        $query = User::query();
+
+        if ($search) {
+            $query->where('username', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%")
+                ->orWhere('instructor_number', 'like', "%{$search}%");
+        }
+
+        if ($schoolYear) {
+            $query->where('school_year', $schoolYear);
+        }
+
+        if ($semester) {
+            $query->where('semester', $semester);
+        }
+
+        $users = $query->paginate(10); // Adjust pagination as needed
+
+        return view('admin.admins.addInstructors', compact('users', 'search', 'schoolYear', 'semester'));
+    }
+
+    // For bulk deletion
+    public function deleteSelected(Request $request)
+    {
+        $userIds = $request->input('selected_users');
+    
+        if ($userIds) {
+            // Delete the selected users
+            User::whereIn('id', $userIds)->delete();
+    
+            return redirect()->back()->with('success', 'Selected users deleted successfully.');
+        }
+    
+        return redirect()->back()->with('error', 'No users selected for deletion.');
     }
 }

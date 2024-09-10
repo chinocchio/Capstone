@@ -23,6 +23,8 @@ class UserResource extends JsonResource
             'fingerprint_template' => base64_encode($this->fingerprint_template),
             'pin' => $this->pin,
             'subjects' => SubjectResource::collection($this->whenLoaded('subjects')),
+            'school_year' => $this->school_year,
+            'semester' => $this->semester,
         ];
     }
 }
