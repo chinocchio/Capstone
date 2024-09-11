@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('logs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('status');
-            $table->time('time');
-            $table->string('day');
+            $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
+            $table->string('status')->nullable();
+            $table->time('time')->nullable();
+            $table->string('day')->nullable();
             $table->timestamps();
         });
     }

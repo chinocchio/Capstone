@@ -45,9 +45,8 @@ class LogsController extends Controller
      */
     public function store(Request $request)
     {
-        // Validate the request
         $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
+            'user_id' => 'nullable|exists:users,id',  // Allow null for user_id
             'status' => 'required|string|max:255',
             'time' => 'required|date_format:H:i',
             'day' => 'required|string|max:255',
