@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 use App\Models\Subject;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Auth;
@@ -168,7 +168,11 @@ class PostController extends Controller
 
     public function getManuals()
     {
-        $posts = Post::all();
+        $posts = Post::all()->map(function ($post) {
+            $post->image_url = $post->image ? Storage::url('post_images/' . $post->image) : null;
+            return $post;
+        });
+    
         return response()->json($posts, Response::HTTP_OK);
     }
 }
