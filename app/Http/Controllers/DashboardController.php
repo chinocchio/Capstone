@@ -220,7 +220,6 @@ class DashboardController extends Controller
         // Find the student_subject entry and delete it
         \DB::table('student_subject')
             ->where('student_id', $id)
-            ->where('subject_id', request()->input('subject_id')) // Ensure to pass subject_id in your request
             ->delete();
 
         // Redirect back with a success message
