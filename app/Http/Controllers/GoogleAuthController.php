@@ -26,6 +26,7 @@ class GoogleAuthController extends Controller
                 // If a user is found, update the user with google_id if not set
                 if (!$user->google_id) {
                     $user->google_id = $googleUser->getId();
+                    $user->avatar = $googleUser->getAvatar(); // Save Google profile picture
                     $user->save();
                 }
     

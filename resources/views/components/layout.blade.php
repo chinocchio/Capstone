@@ -26,7 +26,14 @@
 
                     {{-- Dropdown menu button --}}
                     <button @click="open = !open" type="button" class="round-btn">
-                        <img src="https://picsum.photos/200" alt="">
+                        {{-- <img src="https://picsum.photos/200" alt=""> I WANT TO PUT THE GOOGLE PROFILE HERE --}}
+                        @if(auth('web')->user()->avatar)
+                            <img src="{{ auth('web')->user()->avatar }}" alt="Profile Picture" class="profile-picture">
+                        @else
+                            <div class="initials-circle">
+                                {{ strtoupper(substr(auth('web')->user()->name, 0, 1)) }}
+                            </div>
+                        @endif
                     </button>
 
                     {{-- Dropdown menu--}}
