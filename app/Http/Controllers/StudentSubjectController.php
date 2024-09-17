@@ -14,8 +14,9 @@ class StudentSubjectController extends Controller
     {
         // Fetch all student-subject relationships with related student and subject details
         $studentSubjects = Student::with('subjects')->get();
-
-        return response()->json($studentSubjects);
+    
+        // Encode and handle JSON with UTF-8
+        return response()->json($studentSubjects, 200, [], JSON_UNESCAPED_UNICODE);
     }
     
     /**
