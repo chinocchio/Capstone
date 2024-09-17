@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Mac_Student;
+use App\Models\StudentSubject;
+use App\Models\UserSubject;
 use App\Models\Logs;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\DB;
 
 class LogsController extends Controller
 {
@@ -90,5 +94,30 @@ class LogsController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function dataRecords()
+    {
+        // Fetch data from the student_subject table using DB facade
+        $studentSubjects = DB::table('student_subject')
+        ->join('students', 'student_subject.student_id', '=', 'students.id')
+        ->join('subjects', 'student_subject.subject_id', '=', 'subjects.id')
+        ->select('student_subject.id', 'students.name as student_name', 'subjects.name as subject_name', 'student_subject.created_at')
+        ->get();
+
+        // You can still fetch other data from different tables if necessary
+        $macStudents = DB::table('mac_student')
+        ->join('students', 'mac_student.student_id', '=', 'students.id')
+        ->select('mac_student.id', 'students.name as student_name', 'mac_student.mac_id', 'mac_student.created_at')
+        ->get();
+
+        $logs = DB::table('logs')
+        ->leftJoin('users', 'logs.user_id', '=', 'users.id')
+        ->select('logs.*', 'users.username as user_name')
+        ->get();
+
+
+        // Pass the data to the view
+        return view('admin.admins.dataViewer', compact('studentSubjects', 'macStudents', 'logs'));
     }
 }

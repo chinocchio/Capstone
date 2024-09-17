@@ -1,12 +1,14 @@
 <?php
 
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\LogsController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MacController;
 use App\Http\Controllers\GoogleAuthController;
+use App\Http\Controllers\ScansController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\AdminController;
 use Illuminate\Support\Facades\Route;
@@ -22,6 +24,8 @@ Route::get('/{user}/posts', [DashboardController::class, 'userPosts'])->name('po
 
 // Routes for authenticated users
 Route::middleware('auth')->group(function() {
+
+    Route::get('/biometrics/getFinger', [ScansController::class, 'runCSharpApp'])->name('biometrics.runApp');
 
     Route::get('/calendar/user', [DashboardController::class, 'showUserCalendar'])->name('subjects.userCalendar');
 
@@ -57,6 +61,11 @@ Route::middleware('auth')->group(function() {
 // Routes for admin Dashboard
 Route::middleware('admin')->prefix('admin')->group(function() 
 {
+    Route::get('instructors/create', [UserController::class,'create'])->name('add_instructors');
+    Route::post('instructors/create', [UserController::class,'store'])->name('store_instructors');
+
+    Route::get('/data-view', [LogsController::class, 'dataRecords'])->name('dataViewer');
+
     Route::post('/users/import', [UserController::class,'import'])->name("importUsersFromExcel");
     Route::get('instructors', [UserController::class, 'userShow'])->name('user.show');
     Route::delete('admin/instructors/deleteSelected', [UserController::class, 'deleteSelected'])->name('instructors.deleteSelected');

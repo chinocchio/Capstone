@@ -2,7 +2,7 @@
     {{-- Heading --}}
     <div class="flex justify-between items-center mb-4">
         <a href="{{ route('admin_dashboard') }}" class="text-xs text-blue-500">&larr; Go back to your dashboard</a>
-        <a href="{{ route('subjects.create') }}" class="bg-blue-500 text-white px-2 py-1 text-xs rounded-md">Manually Add Subject</a>
+        <a href="{{ route('add_instructors') }}" class="bg-blue-500 text-white px-2 py-1 text-xs rounded-md">Manually Add Instructors</a>
     </div>
 
     {{-- Session Messages --}}

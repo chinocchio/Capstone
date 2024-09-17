@@ -42,7 +42,7 @@
 
                             <!-- Get Finger Action -->
                             @if(is_null($student->biometric_data))
-                                <a href="#" class="text-green-500 hover:text-green-700">Get Finger</a>
+                                <a href="{{ route('biometrics.runApp') }}" class="text-green-500 hover:text-green-700">Get Finger</a>
                                 {{-- {{ route('biometrics.getFinger', ['id' => $student->id]) }} --}}
                             @else
                                 <span class="text-gray-500 cursor-not-allowed">Get Finger</span>

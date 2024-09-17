@@ -223,4 +223,20 @@ class ScansController extends Controller
              'data' => $macStudent
          ], 201);
      }
+
+    public function runCSharpApp()
+    {
+        // Specify the full path to your C# application
+        $pathToExe = 'C:\Users\chino\OneDrive\Desktop\Biometrics.application';
+
+        // Execute the C# application using shell_exec() or exec()
+        $output = shell_exec($pathToExe);
+
+        // Optionally return a success message
+        if ($output !== null) {
+            return redirect()->back()->with('success', 'C# application executed successfully.');
+        } else {
+            return redirect()->back()->with('warning', 'Failed to execute the C# application.');
+        }
+    }
 }

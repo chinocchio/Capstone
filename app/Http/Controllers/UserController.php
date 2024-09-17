@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\InstructorsImport;
+use Illuminate\Support\Facades\Validator;
+
 
 class UserController extends Controller
 {
@@ -27,7 +29,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        // Return view for creating a new user
+        return view('admin.admins.createInstructors');
     }
 
     /**
@@ -35,7 +37,40 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        // Validate and store a new user
+        // Validate the form input
+        $validator = Validator::make($request->all(), [
+            'instructor_number' => 'required|unique:users,instructor_number|max:255',
+            'name' => 'required|max:255',
+            'email' => 'required|email|unique:users,email',
+            'school_year' => 'required',
+            'semester' => 'required',
+            'image' => 'nullable|image|max:2048', // Optional image field
+        ]);
+
+        // If validation fails, return with errors
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        // Handle file upload if an image is uploaded
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('users', 'public');
+        }
+
+        // Create and save the user
+        User::create([
+            'instructor_number' => $request->instructor_number,
+            'username' => $request->name,
+            'email' => $request->email,
+            'school_year' => $request->school_year,
+            'semester' => $request->semester,
+            'image' => $request->hasFile('image') ? $imagePath : null,
+        ]);
+
+        // Redirect with a success message
+        return redirect()->route('users.show')->with('success', 'User added successfully!');
     }
 
     /**
@@ -43,7 +78,7 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        // Display details of a specific user
+        
     }
 
     /**
