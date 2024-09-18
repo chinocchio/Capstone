@@ -41,7 +41,7 @@
     <div class="grid grid-cols-2 gap-6">
         @foreach ($posts as $post)
             {{-- Post card component --}}
-            <x-postCard :post="$post"></x-postCard>
+            <x-userSubjectCard :post="$post"></x-userSubjectCard>
         @endforeach
     </div>
 

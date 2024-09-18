@@ -15,9 +15,19 @@ class StudentSubjectController extends Controller
         // Fetch all student-subject relationships with related student and subject details
         $studentSubjects = Student::with('subjects')->get();
     
-        // Encode and handle JSON with UTF-8
+        // Apply utf8_encode to ensure proper encoding
+        $studentSubjects = $studentSubjects->map(function ($student) {
+            $student->name = utf8_encode($student->name);
+            $student->subjects->map(function ($subject) {
+                $subject->name = utf8_encode($subject->name);
+                return $subject;
+            });
+            return $student;
+        });
+    
         return response()->json($studentSubjects, 200, [], JSON_UNESCAPED_UNICODE);
     }
+    
     
     /**
      * Store a newly created student-subject association in storage.
