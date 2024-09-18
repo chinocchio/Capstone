@@ -12,14 +12,16 @@ class StudentSubjectController extends Controller
 {
     public function index()
     {
-        // Fetch all student-subject relationships
-        $studentSubjects = Student::with('subjects')->get();
+        // Fetch all student-subject relationships, excluding 'biometric_data'
+        $studentSubjects = Student::with('subjects')->get()->makeHidden('biometric_data');
     
         // Log the data on the server for inspection
         \Log::info('Student Subjects Data:', $studentSubjects->toArray());
     
+        // Return the response as JSON, excluding 'biometric_data'
         return response()->json($studentSubjects, 200, [], JSON_UNESCAPED_UNICODE);
     }
+    
     
     
     
