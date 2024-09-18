@@ -12,21 +12,15 @@ class StudentSubjectController extends Controller
 {
     public function index()
     {
-        // Fetch all student-subject relationships with related student and subject details
+        // Fetch all student-subject relationships
         $studentSubjects = Student::with('subjects')->get();
     
-        // Apply utf8_encode to ensure proper encoding
-        $studentSubjects = $studentSubjects->map(function ($student) {
-            $student->name = utf8_encode($student->name);
-            $student->subjects->map(function ($subject) {
-                $subject->name = utf8_encode($subject->name);
-                return $subject;
-            });
-            return $student;
-        });
+        // Log the data on the server for inspection
+        \Log::info('Student Subjects Data:', $studentSubjects->toArray());
     
         return response()->json($studentSubjects, 200, [], JSON_UNESCAPED_UNICODE);
     }
+    
     
     
     /**
