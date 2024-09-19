@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('scanned_by'); // Store the name or ID of the person who scanned
             $table->time('scanned_at');
             $table->boolean('fingerprint_verified')->default(false);
+            $table->time('verified_at')->nullable();
             $table->timestamps();
         });
     }

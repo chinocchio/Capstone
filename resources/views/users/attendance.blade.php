@@ -14,7 +14,6 @@
             </ul>
         </div>
         <div class="card">
-            <span>List</span>
             <div id="scans-list">
                 @include('partials.scans-list', ['scans' => $scans])
             </div>

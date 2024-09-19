@@ -25,17 +25,22 @@ class ScansController extends Controller
             'username' => 'required|string', // The name of the user whose fingerprint was verified
             'fingerprint_verified' => 'required|boolean',
         ]);
-
+    
         // Find the scan entry by 'username' (adjust this to match your database schema)
         $scan = Scan::where('scanned_by', $validatedData['username']) // Assuming 'scanned_by' stores the username
-                    ->where('fingerprint_verified', false) // Ensure you're updating only unverified scans
+                    ->where('fingerprint_verified', false) // Update only unverified scans
                     ->orderBy('created_at', 'desc')
                     ->firstOrFail();
-
+    
         // Update the fingerprint_verified status
         $scan->fingerprint_verified = $validatedData['fingerprint_verified'];
+    
+        // Automatically set the 'verified_at' field to the current time in the Asia/Manila timezone
+        $scan->verified_at = Carbon::now('Asia/Manila')->format('H:i:s');
+    
+        // Save the scan
         $scan->save();
-
+    
         // Return a success response
         return response()->json(['message' => 'Fingerprint verification status updated successfully'], 200);
     }
