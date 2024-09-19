@@ -450,5 +450,36 @@ class SubjectController extends Controller
 
         return $days[$dayOfWeek] ?? 0; // Default to Sunday if not found
     }
+
+    public function getAllSubjects()
+    {
+        $subjects = Subject::with(['students' => function ($query) {
+            // Select only the required fields from students, specifying the table
+            $query->select('students.id', 'students.name', 'students.student_number', 'students.email');
+        }])
+            ->select(
+                'subjects.id', 
+                'subjects.name', 
+                'subjects.code', 
+                'subjects.description', 
+                'subjects.start_time', 
+                'subjects.end_time', 
+                'subjects.section', 
+                'subjects.day', 
+                'subjects.image', 
+                'subjects.type', 
+                'subjects.specific_date', 
+                'subjects.school_year', 
+                'subjects.semester'
+            )
+            ->get()
+            ->map(function ($subject) {
+                // Modify the type field based on its value
+                $subject->type = $subject->type ?? 'regular';
+                return $subject;
+            });
+    
+        return response()->json($subjects);
+    }
     
 }

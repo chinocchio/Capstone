@@ -13,6 +13,13 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\AdminController;
 use Illuminate\Support\Facades\Route;
 
+use App\Exports\ScansExport;
+use Maatwebsite\Excel\Facades\Excel;
+
+Route::get('/export/scans/excel', function () {
+    return Excel::download(new ScansExport, 'scans.xlsx');
+})->name('scans.export.excel');
+
 Route::redirect('/', 'posts');
 
 // Posts Routes

@@ -42,7 +42,7 @@
 
         function exportScans() {
             // Redirect to the export PDF route to trigger the download
-            window.location.href = '{{ route('scans.export.pdf') }}';
+            window.location.href = '{{ route('scans.export.excel') }}';
         }
     </script>
 </x-layout>

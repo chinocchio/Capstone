@@ -16,7 +16,7 @@
 <body class="bg-slate-100 text-slate-900">
     <header class="bg-slate-800 shadow-lg">
         <nav class="d-flex justify-content-between align-items-center px-4 py-2">
-            <a href="{{ route('subjects.calendar') }}" class="nav-link">
+            <a href="{{ route('admin_dashboard') }}" class="nav-link">
                 <img src="{{ asset('storage/posts_images/1jeEWgOagO3eBPcjAJT4eDAgunLMKawi9kwGlYaN.png') }}"
                 alt="LockUp Logo"
                 class="h-1/auto w-1/2">
@@ -36,8 +36,8 @@
                     >
                     <p class="username">{{ auth('admin')->user()->username }}</p>
             
-                    <a href="{{ route('admin_dashboard') }}" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Dashboard</a>
-                    <a href="{{ route('subjects.index') }}" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Subject</a>
+                    <a href="{{ route('subjects.calendar') }}" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Calendar</a>
+                    <a href="{{ route('subjects.index') }}" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Courses</a>
                     <a href="{{ route('mac.index') }}" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">MAC PCs</a>
                     <a href="{{ route('student_view') }}" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Students</a>
                     <a href="{{ route('user.show') }}" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Instructors</a>

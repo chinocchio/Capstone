@@ -22,6 +22,13 @@ class Scan extends Model
         'scanned_at' => 'datetime',
     ];
 
+        // Define the relationship with the Student model
+        public function student()
+        {
+            // Assuming 'scanned_by' is the student's name and matches the 'name' column in the students table
+            return $this->belongsTo(Student::class, 'scanned_by', 'name');
+        }
+
     public function subject()
     {
         return $this->belongsTo(Subject::class);

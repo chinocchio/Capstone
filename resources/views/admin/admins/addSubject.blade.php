@@ -91,7 +91,7 @@
     {{-- Search Filter --}}
     <div class="mb-4">
         <form action="{{ route('subjects.index') }}" method="GET" class="flex">
-            <input type="text" name="search" value="{{ request()->query('search') }}" placeholder="Enter Subject Code or Subject Name"
+            <input type="text" name="search" value="{{ request()->query('search') }}" placeholder="Enter Course Code or Course Name"
                 class="input rounded-l-md border border-gray-300 focus:ring-blue-500 focus:border-blue-500 flex-grow">
             <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Search</button>
         </form>

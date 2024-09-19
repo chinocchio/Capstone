@@ -19,6 +19,8 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\StudentSubjectController;
 use App\Http\Controllers\DashboardController;
 
+Route::get('/subjectsNgStudent', [SubjectController::class, 'getAllSubjects']);
+
 Route::get('posts', [PostController::class, 'getManuals']);
 
 Route::post('/update-fingerprint-verification', [ScansController::class, 'updateStatus']);

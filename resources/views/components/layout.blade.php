@@ -14,7 +14,7 @@
 <body class="bg-slate-100 text-slate-900">
     <header class="bg-slate-800 shadow-lg">
         <nav>
-            <a href="{{ route('subjects.userCalendar') }}" class="nav-link">
+            <a href="{{ route('dashboard') }}" class="nav-link">
                 <img src="{{ asset('storage/posts_images/1jeEWgOagO3eBPcjAJT4eDAgunLMKawi9kwGlYaN.png') }}"
                 alt="LockUp Logo"
                 class="h-1/auto w-1/2">
@@ -42,9 +42,9 @@
 
                         <p class="username">{{ auth('web')->user()->username }}</p>
 
-                        <a href="{{ route('dashboard') }}" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Dashboard</a>
+                        <a href="{{ route('subjects.userCalendar') }}" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Calendar</a>
                         <a href="{{ route('attendance') }}" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Attendance</a>
-                        <a href="{{ route('user.dashboard') }}" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Subjects</a>
+                        <a href="{{ route('user.dashboard') }}" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Courses</a>
                         <a href="{{ route('seatplan') }}" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Students</a>
 
                         <form action="{{ route('logout') }}" method="post">
