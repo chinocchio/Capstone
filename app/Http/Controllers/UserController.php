@@ -124,19 +124,22 @@ class UserController extends Controller
         $user = Auth::user();
         
         // Subjects currently linked to the user
-        $linkedSubjects = $user->subjects->map(function($subject) {
+        $linkedSubjects = $user->subjects->map(function ($subject) {
             $subject->start_time = Carbon::parse($subject->start_time);
             $subject->end_time = Carbon::parse($subject->end_time);
             return $subject;
         });
-
-        // All subjects that are not linked to any user
-        $availableSubjects = Subject::whereDoesntHave('users')->get()->map(function($subject) {
-            $subject->start_time = Carbon::parse($subject->start_time);
-            $subject->end_time = Carbon::parse($subject->end_time);
-            return $subject;
-        });
-
+    
+        // All subjects that are not linked to any user and have 'type' as null (regular classes)
+        $availableSubjects = Subject::whereDoesntHave('users')
+            ->whereNull('type') // Filter to include only subjects where 'type' is null
+            ->get()
+            ->map(function ($subject) {
+                $subject->start_time = Carbon::parse($subject->start_time);
+                $subject->end_time = Carbon::parse($subject->end_time);
+                return $subject;
+            });
+    
         return view('users.subjects', compact('linkedSubjects', 'availableSubjects'));
     }
 
@@ -263,5 +266,16 @@ class UserController extends Controller
         }
     
         return redirect()->back()->with('error', 'No users selected for deletion.');
+    }
+
+    public function getAllInstructorsWithSubjects()
+    {
+        // Fetch all instructors with their linked subjects
+        $instructors = User::with(['subjects' => function ($query) {
+            // Optional: Select specific fields if needed
+            $query->select('id', 'name', 'code', 'description', 'start_time', 'end_time', 'section', 'day', 'type', 'school_year', 'semester');
+        }])->get(['id', 'instructor_number', 'username', 'email', 'school_year', 'semester']);
+
+        return response()->json($instructors);
     }
 }

@@ -19,6 +19,8 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\StudentSubjectController;
 use App\Http\Controllers\DashboardController;
 
+Route::get('/instructors-subs-linked', [UserController::class, 'getAllInstructorsWithSubjects']);
+
 Route::get('/subjectsNgStudent', [SubjectController::class, 'getAllSubjects']);
 
 Route::get('posts', [PostController::class, 'getManuals']);
