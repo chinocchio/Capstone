@@ -12,6 +12,7 @@ use App\Http\Controllers\ScansController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\AdminController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ReportController;
 
 use App\Exports\ScansExport;
 use Maatwebsite\Excel\Facades\Excel;
@@ -68,6 +69,8 @@ Route::middleware('auth')->group(function() {
 // Routes for admin Dashboard
 Route::middleware('admin')->prefix('admin')->group(function() 
 {
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+
     Route::get('instructors/create', [UserController::class,'create'])->name('add_instructors');
     Route::post('instructors/create', [UserController::class,'store'])->name('store_instructors');
 

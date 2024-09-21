@@ -41,7 +41,7 @@
                     <a href="{{ route('mac.index') }}" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">MAC PCs</a>
                     <a href="{{ route('student_view') }}" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Students</a>
                     <a href="{{ route('user.show') }}" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Instructors</a>
-                    <a href="#" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Reports</a>
+                    <a href="{{ route('reports.index') }}" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Reports</a>
                     <a href="{{ route('posts.index') }}" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Manual</a>
                     <a href="{{ route('dataViewer') }}" class="block hover:bg-slate-100 pl-4 pr-8 py-2 mb-1">Logs</a>
             

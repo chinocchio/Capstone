@@ -18,6 +18,17 @@ use App\Http\Controllers\TemperatureController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\StudentSubjectController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ReportController;
+
+
+// Route to change PIN using PUT
+Route::put('/user/change-pin', [UserController::class, 'changePin']);
+
+// Route to get old PIN
+Route::get('/user/get-old-pin', [UserController::class, 'getOldPin']);
+
+Route::post('/reports', [ReportController::class, 'store']);
+Route::get('/reports/confirm/{id}', [ReportController::class, 'confirm']);
 
 Route::get('/instructors-subs-linked', [UserController::class, 'getAllInstructorsWithSubjects']);
 

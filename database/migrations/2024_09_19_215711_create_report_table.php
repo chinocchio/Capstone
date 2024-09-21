@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('report', function (Blueprint $table) {
             $table->id();
-            $table->string("from")->nullable();
-            $table->string("email")->nullable();
-            $table->string("type")->nulalble();
-            $table->string("body")->nullable();
-            $table->string("image")->nullable();
+            $table->string('from_email');
+            $table->string('to_email');
+            $table->string('subject')->nullable();
+            $table->text('message')->nullable();
+            $table->string('attachment_path')->nullable();
+            $table->enum('status', ['Pending', 'Confirmed'])->default('Pending');
             $table->timestamps();
         });
     }

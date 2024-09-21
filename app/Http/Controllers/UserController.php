@@ -278,4 +278,44 @@ class UserController extends Controller
 
         return response()->json($instructors);
     }
+
+    // Method to change PIN using PUT
+    public function changePin(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'old_pin' => 'required|integer',
+            'new_pin' => 'required|integer|digits:4|unique:users,pin',
+        ]);
+
+        $user = User::find($request->user_id);
+
+        // Check if the old PIN matches
+        if ($user->pin !== $request->old_pin) {
+            return response()->json(['message' => 'Old PIN does not match. Please try again.'], 400);
+        }
+
+        // Update with the new PIN
+        $user->pin = $request->new_pin;
+        $user->save();
+
+        return response()->json(['message' => 'PIN updated successfully.']);
+    }
+
+    // Method to get the old PIN
+    public function getOldPin(Request $request)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+        ]);
+
+        $user = User::find($request->user_id);
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found.'], 404);
+        }
+
+        // Return the current PIN securely
+        return response()->json(['pin' => $user->pin]);
+    }
 }
