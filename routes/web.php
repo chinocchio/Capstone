@@ -13,6 +13,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin\AdminController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\PlotController;
+
 
 use App\Exports\ScansExport;
 use Maatwebsite\Excel\Facades\Excel;
@@ -32,6 +34,11 @@ Route::get('/{user}/posts', [DashboardController::class, 'userPosts'])->name('po
 
 // Routes for authenticated users
 Route::middleware('auth')->group(function() {
+
+    Route::get('/user/change-pin', [UserController::class, 'showChangePinForm'])->name('user.showChangePinForm');
+    Route::put('/user/change-pin', [UserController::class, 'changePinUser'])->name('user.changePin');
+
+    Route::get('/mac-lab', [PlotController::class, 'show'])->name('mac.plot');
 
     Route::get('/biometrics/getFinger', [ScansController::class, 'runCSharpApp'])->name('biometrics.runApp');
 
@@ -69,6 +76,11 @@ Route::middleware('auth')->group(function() {
 // Routes for admin Dashboard
 Route::middleware('admin')->prefix('admin')->group(function() 
 {
+    Route::get('/admin/change-pin', [AdminController::class, 'showChangePinForm'])->name('admin.showChangePinForm');
+
+    // Route to handle the PIN change submission for admin
+    Route::put('/admin/change-pin', [AdminController::class, 'changePin'])->name('admin.changePin');
+
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
 
     Route::get('instructors/create', [UserController::class,'create'])->name('add_instructors');

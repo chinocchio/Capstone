@@ -318,4 +318,32 @@ class UserController extends Controller
         // Return the current PIN securely
         return response()->json(['pin' => $user->pin]);
     }
+
+    public function changePinUser(Request $request)
+    {
+        // Validate the request data
+        $request->validate([
+            'old_pin' => 'required|digits:4',
+            'new_pin' => 'required|digits:4|confirmed',
+        ]);
+
+        // Get the currently authenticated user
+        $user = Auth::user();
+
+        // Check if the old PIN matches the current one (plain text comparison)
+        if ($request->old_pin != $user->pin) {
+            return back()->withErrors(['old_pin' => 'Old PIN does not match. Please try again.']);
+        }
+
+        // Update the user's PIN
+        $user->pin = $request->new_pin;
+        $user->save();
+
+        return back()->with('success', 'Your PIN has been successfully changed.');
+    }
+
+    public function showChangePinForm()
+    {
+        return view('users.ChangePin'); // Make sure this matches your actual view file path
+    }
 }

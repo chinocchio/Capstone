@@ -40,10 +40,18 @@
 
     <div class="grid grid-cols-2 gap-6">
         @foreach ($posts as $post)
-            {{-- Post card component --}}
-            <x-userSubjectCard :post="$post"></x-userSubjectCard>
+            <div class="relative">
+                {{-- Display "Makeup Class" label if the post type is 'makeup' --}}
+                @if($post->type === 'makeup')
+                    <span class="absolute top-0 right-0 bg-red-500 text-white px-2 py-1 text-xs rounded-bl-md">Makeup Class</span>
+                @endif
+                
+                {{-- Post card component --}}
+                <x-userSubjectCard :post="$post"></x-userSubjectCard>
+            </div>
         @endforeach
     </div>
+    
 
     {{-- Pagination links --}}
     <div>

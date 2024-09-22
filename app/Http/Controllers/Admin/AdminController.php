@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-
+use App\Models\Admin;
 use App\Models\User;
 use App\Models\Post;
 use App\Http\Controllers\Controller;
@@ -153,5 +153,36 @@ class AdminController extends Controller
     {
         dd($instructors);
         return view('admin.admins.aEdit', ['instructor' => $instructors]);
+    }
+
+    // Method to show the change PIN form for admin
+    public function showChangePinForm()
+    {
+        // Ensure this view path matches your Blade file location
+        return view('admin.admins.ChangePinAdmin');
+    }
+
+    // Method to handle the change PIN request for admin
+    public function changePin(Request $request)
+    {
+        // Validate the request data
+        $request->validate([
+            'old_pin' => 'required|digits:4',
+            'new_pin' => 'required|digits:4|confirmed',
+        ]);
+
+        // Get the currently authenticated admin user
+        $admin = Auth::guard('admin')->user();
+
+        // Check if the old PIN matches the current one (plain text comparison)
+        if ($request->old_pin != $admin->pin) {
+            return back()->withErrors(['old_pin' => 'Old PIN does not match. Please try again.']);
+        }
+
+        // Update the admin's PIN
+        $admin->pin = $request->new_pin;
+        $admin->save();
+
+        return back()->with('success', 'Your PIN has been successfully changed.');
     }
 }

@@ -1,75 +1,32 @@
 @props(['post', 'full' => false])
 
-<div class="card">
-    <div class="flex gap-6">
-        {{-- Cover photo --}}
-        <div class="h-auto w-1/5 rounded-md overflow-hidden self-start">
-            @if ($post->image)
-                <img src="{{ asset('storage/' . $post->image) }}" alt="Post Image">
-            @else
-                <img class="object-cover object-center rounded-md" src="{{ asset('storage/posts_images/default.jpg') }}" alt="Default Image">
-            @endif
-        </div>
+<div class="card" style="display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 20px; border: 1px solid #ddd; border-radius: 8px; background-color: #fff;">
+    {{-- Cover photo --}}
+    <div style="display: flex; justify-content: center; width: 100%;">
+        @if ($post->image)
+            <img src="{{ asset('storage/' . $post->image) }}" alt="Post Image" style="max-width: 100%; height: auto; object-fit: cover; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+        @else
+            <img src="{{ asset('storage/posts_images/default.jpg') }}" alt="Default Image" style="max-width: 100%; height: auto; object-fit: cover; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+        @endif
+    </div>
 
-        <div class="w-4/5">
-            {{-- Post Name --}}
-            <h2 class="font-bold text-xl">{{ $post->title }}</h2>
+    <div style="width: 100%; text-align: left;">
+        {{-- Post Name --}}
+        <h2 style="font-weight: bold; font-size: 1.25rem; text-align: center;">{{ $post->title }}</h2>
 
-            {{-- Post Code --}}
-            {{-- <div class="text-sm mb-4">
-                <span class="font-medium">Code:</span> {{ $post->code }}
-            </div> --}}
-
-            {{-- Post day --}}
-            {{-- <div class="text-sm mb-4">
-                <span class="font-medium">Every:</span> {{ $post->day }}
-            </div> --}}
-
-            {{-- Time and Section --}}
-            {{-- <div class="text-xs font-light mb-4">
-                <span class="font-medium">Time:</span> 
-                <span class="font-bold">{{ \Carbon\Carbon::parse($post->start_time)->format('g:i A') }}</span> to 
-                <span class="font-bold">{{ \Carbon\Carbon::parse($post->end_time)->format('g:i A') }}</span>
-                <br>
-                <span class="font-medium">Section:</span> 
-                <span class="font-bold">{{ $post->section }}</span>
-            </div> --}}
-
-            {{-- School Year and Semester --}}
-            {{-- <div class="text-xs font-light mb-4">
-                <span class="font-medium">S.Y:</span> 
-                <span class="font-bold">{{ $post->school_year }}</span>
-                <br>
-                <span class="font-medium">Semester:</span> 
-                <span class="font-bold">{{ $post->semester }}</span>
-            </div> --}}
-
-            {{-- Description --}}
-            @if ($full)
-                {{-- Show full description text in single post page --}}
-                <div class="text-sm">
-                    <span>{{ $post->body }}</span>
-                </div>
-            @else
-                {{-- Show limited description text in single post page --}}
-                <div class="text-sm">
-                    <span>{{ Str::words($post->body, 15) }}</span>
-                    <a href="{{ route('posts.show', $post) }}" class="text-blue-500 ml-2">Read more &rarr;</a>
-                </div>
-            @endif
-
-            {{-- Linked Users --}}
-            {{-- <div class="text-xs font-light mt-4">
-                <span class="font-medium">Instructor In Charge:</span>
-                <ul class="list-disc pl-4">
-                    @forelse ($post->users as $user)
-                        <li class="font-bold">{{ $user->username }}</li>
-                    @empty
-                        <li class="text-gray-500">No Instructors Available</li>
-                    @endforelse
-                </ul>
-            </div> --}}
-        </div>
+        {{-- Description --}}
+        @if ($full)
+            {{-- Show full description text in single post page --}}
+            <div style="font-size: 0.875rem; line-height: 1.6; margin-top: 8px;">
+                <span>{!! nl2br(e($post->body)) !!}</span>
+            </div>
+        @else
+            {{-- Show limited description text in single post page --}}
+            <div style="font-size: 0.875rem; line-height: 1.6; margin-top: 8px;">
+                <span>{!! nl2br(e(Str::words($post->body, 15))) !!}</span>
+                <a href="{{ route('posts.show', $post) }}" style="color: #3b82f6; margin-left: 0.5rem;">Read more &rarr;</a>
+            </div>
+        @endif
     </div>
 
     {{-- Placeholder for extra elements used in user dashboard --}}
