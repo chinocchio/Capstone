@@ -4,7 +4,7 @@
         <div class="card">
             <!-- Correct path to the logo -->
             <div class="card-header text-center">
-                <img src="{{ asset('storage/posts_images/ccs_logo.png') }}" 
+                <img src="{{ asset('storage/posts_images/cEODQPn9vLGe6GLqz8b96hb2Qd43ujYb5SLWmAz9.png') }}" 
                      alt="College Logo" style="width: 100px; margin-bottom: 10px;">
                 <h3>{{ $report->subject ?? 'No Subject' }}</h3>
             </div>
