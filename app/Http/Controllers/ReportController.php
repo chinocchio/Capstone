@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Reports;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade;
+use PDF; 
 
 class ReportController extends Controller
 {
@@ -47,6 +49,24 @@ class ReportController extends Controller
 
         // Send back confirmation to the mobile app
         return response()->json(['message' => 'Report confirmed successfully']);
+    }
+
+     // Generate and download the PDF
+     public function printPdf($id)
+     {
+         $report = Reports::findOrFail($id);
+         $pdf = PDF::loadView('reports.pdf', compact('report'));
+         return $pdf->download('incident_report.pdf');
+     }
+
+      // View a specific report
+    public function show($id)
+    {
+        // Fetch the report by its ID
+        $report = Reports::findOrFail($id);
+
+        // Return the view with the report data
+        return view('admin.admins.showReport ', compact('report'));
     }
 }
 

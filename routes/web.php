@@ -82,6 +82,9 @@ Route::middleware('admin')->prefix('admin')->group(function()
     Route::put('/admin/change-pin', [AdminController::class, 'changePin'])->name('admin.changePin');
 
     Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('/reports/confirm/{id}', [ReportController::class, 'confirm'])->name('reports.confirm');
+    Route::get('/reports/print/{id}', [ReportController::class, 'printPdf'])->name('reports.print');
+    Route::get('/reports/{id}', [ReportController::class, 'show'])->name('reports.show');
 
     Route::get('instructors/create', [UserController::class,'create'])->name('add_instructors');
     Route::post('instructors/create', [UserController::class,'store'])->name('store_instructors');

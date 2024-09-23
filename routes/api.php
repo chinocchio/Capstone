@@ -28,7 +28,6 @@ Route::put('/user/change-pin', [UserController::class, 'changePin']);
 Route::get('/user/get-old-pin', [UserController::class, 'getOldPin']);
 
 Route::post('/reports', [ReportController::class, 'store']);
-Route::get('/reports/confirm/{id}', [ReportController::class, 'confirm']);
 
 Route::get('/instructors-subs-linked', [UserController::class, 'getAllInstructorsWithSubjects']);
 
