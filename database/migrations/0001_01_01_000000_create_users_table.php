@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('avatar')->nullable();
             $table->string('password')->nullable();
             $table->string("google_id")->nullable();
-            $table->integer('finger_id')->nullable();
+            $table->integer('finger_id')->nullable();   
             $table->binary('fingerprint_template')->nullable();
             $table->string('school_year')->nullable();
             $table->string('semester')->nullable();

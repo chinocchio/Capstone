@@ -103,8 +103,30 @@ class UserController extends Controller
     public function update(Request $request, $instructorId)
     {
         $instructor = User::findOrFail($instructorId);
-        $instructor->update($request->all());
-        return redirect()->route('admin_dashboard');
+
+        // Validate the request
+        $validated = $request->validate([
+            'instructor_number' => 'nullable|string|unique:users,instructor_number,' . $instructorId,
+            'username' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $instructorId,
+            'pin' => 'nullable|integer',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'school_year' => 'nullable|string',
+            'semester' => 'nullable|string',
+        ]);
+    
+        // Check if avatar is uploaded
+        if ($request->hasFile('avatar')) {
+            $avatarName = time().'.'.$request->avatar->extension();  
+            $request->avatar->move(public_path('avatars'), $avatarName);
+            $validated['avatar'] = $avatarName;
+        }
+    
+        // Update the instructor data
+        $instructor->update($validated);
+    
+        // Redirect back
+        return redirect()->route('admin_dashboard')->with('success', 'Instructor updated successfully');
     }
 
     /**
