@@ -8,8 +8,10 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Response;
 use App\Imports\StudentImport;
+use App\Exports\DuplicatesExport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Student;
+use Illuminate\Support\Facades\Session;
 
 class StudentController extends Controller
 {
@@ -61,17 +63,29 @@ class StudentController extends Controller
         ]);
     }
 
-    //Import Student
-    public function import(Request $request)
-    {
-        $request->validate([
-            'file' => 'required|file|mimes:xls,xlsx',
-        ]);
+ // Import Student
+ public function import(Request $request)
+ {
+     $request->validate([
+         'file' => 'required|file|mimes:xls,xlsx',
+     ]);
 
-        Excel::import(new StudentImport, $request->file('file'));
+     // Perform the import
+     $studentImport = new StudentImport();
+     Excel::import($studentImport, $request->file('file'));
 
-        return redirect()->back()->with('success', 'Students imported successfully!');
-    }
+     // Check if there are duplicates or error data in the session
+     if (Session::has('duplicate_students') && Session::get('duplicate_students')->isNotEmpty()) {
+         // If there are duplicates, trigger the automatic download
+         $duplicates = Session::get('duplicate_students');
+         Session::forget('duplicate_students'); // Clear session after use
+
+         return Excel::download(new DuplicatesExport($duplicates), 'duplicated_students.xlsx');
+     }
+
+     // If no duplicates, proceed normally
+     return redirect()->back()->with('success', 'Students imported successfully!');
+ }
 
 
     public function registerBiometrics(Request $request)

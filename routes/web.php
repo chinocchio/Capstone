@@ -118,6 +118,7 @@ Route::middleware('admin')->prefix('admin')->group(function()
     // Student Route
     Route::get('/student',[StudentController::class, 'index'])->name('student_view');
     Route::post('/student/importExcel', [StudentController::class,'import'])->name("importStudentsFromExcel");
+    Route::get('/students/download-duplicates', [StudentController::class, 'downloadDuplicates'])->name('students.download.duplicates');
     Route::view('/student/createStudent','admin.admins.createStudent')->name('create');
     Route::post('/students', [StudentController::class, 'store'])->name('students.store');
     Route::put('/students/{id}', [StudentController::class, 'update'])->name('students.update');
