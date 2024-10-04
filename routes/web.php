@@ -14,7 +14,7 @@ use App\Http\Controllers\Admin\AdminController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\PlotController;
-
+use App\Exports\LogsExport;
 
 use App\Exports\ScansExport;
 use Maatwebsite\Excel\Facades\Excel;
@@ -76,6 +76,12 @@ Route::middleware('auth')->group(function() {
 // Routes for admin Dashboard
 Route::middleware('admin')->prefix('admin')->group(function() 
 {
+    Route::get('/export/logs', function () {
+        return Excel::download(new LogsExport, 'logs.xlsx');
+    })->name('export.logs');
+
+    Route::post('/set-semester-year', [AdminController::class, 'setSemesterAndYear'])->name('setSemesterAndYear');
+
     Route::get('/admin/change-pin', [AdminController::class, 'showChangePinForm'])->name('admin.showChangePinForm');
 
     // Route to handle the PIN change submission for admin

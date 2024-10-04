@@ -8,6 +8,7 @@ use App\Models\Subject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use App\Models\Setting;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\InstructorsImport;
 use Illuminate\Support\Facades\Validator;
@@ -228,20 +229,19 @@ class UserController extends Controller
     {
         $request->validate([
             'file' => 'required|file|mimes:xlsx,xls',
-            'school_year' => 'required',
-            'semester' => 'required',
         ]);
-    
-        // Get the school year and semester from the form
-        $schoolYear = $request->input('school_year');
-        $semester = $request->input('semester');
-    
-        // Create a new instance of the InstructorsImport class with the selected school year and semester
+
+        // Get the current school year and semester from settings
+        $currentSettings = Setting::first();
+        $schoolYear = $currentSettings->academic_year;
+        $semester = $currentSettings->current_semester;
+
+        // Create a new instance of the InstructorsImport class with the current school year and semester
         $import = new InstructorsImport($schoolYear, $semester);
-    
+
         // Import the file
         Excel::import($import, $request->file('file'));
-    
+
         // Return success or handle duplicates as needed
         return redirect()->back()->with('success', 'Instructors imported successfully.');
     }

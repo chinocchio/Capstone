@@ -5,16 +5,15 @@ namespace App\Imports;
 use App\Models\Subject;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
-use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Illuminate\Validation\ValidationException;
 
 class SubjectImport implements ToCollection, WithHeadingRow
 {
-    private $duplicateSubjects = [];
     private $schoolYear;
     private $semester;
+    private $duplicateSubjects = [];
 
+    // Constructor to receive the school year and semester from the settings
     public function __construct($schoolYear, $semester)
     {
         $this->schoolYear = $schoolYear;
@@ -22,8 +21,8 @@ class SubjectImport implements ToCollection, WithHeadingRow
     }
 
     /**
-    * @param Collection $collection
-    */
+     * @param Collection $collection
+     */
     public function collection(Collection $rows)
     {
         foreach ($rows as $row) {
@@ -45,9 +44,9 @@ class SubjectImport implements ToCollection, WithHeadingRow
             }
 
             // Generate a QR code or use the existing one
-            $generatedCode = mt_rand(11111111111,99999999999);
+            $generatedCode = mt_rand(11111111111, 99999999999);
 
-            // Create the subject with the provided school_year and semester
+            // Create the subject with the provided school_year and semester from settings
             Subject::create([
                 'name' => $row['name'],
                 'code' => $row['code'],
@@ -64,11 +63,20 @@ class SubjectImport implements ToCollection, WithHeadingRow
         }
     }
 
+    /**
+     * Return the list of duplicate subjects.
+     */
     public function getDuplicateSubjects()
     {
         return $this->duplicateSubjects;
     }
 
+    /**
+     * Convert decimal time to H:i:s format.
+     *
+     * @param float|null $decimal
+     * @return string|null
+     */
     private function formatTime($decimal)
     {
         // Check if the value is null or empty
@@ -84,5 +92,4 @@ class SubjectImport implements ToCollection, WithHeadingRow
         // Format and return the time string in 'H:i:s' format
         return sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
     }
-
 }

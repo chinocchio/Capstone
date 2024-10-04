@@ -6,7 +6,6 @@ use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use App\Models\User;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Illuminate\Support\Facades\Hash;
 
 class InstructorsImport implements ToCollection, WithHeadingRow
 {
@@ -35,9 +34,10 @@ class InstructorsImport implements ToCollection, WithHeadingRow
                 continue; // Skip the row if email is not valid
             }
 
-            // Check if the instructor already exists based on either instructor_number or email
+            // Check if the instructor already exists for the same semester
             $existingInstructor = User::where('instructor_number', $row['instructor_number'])
-                                    ->orWhere('email', $row['email'])
+                                    ->where('email', $row['email'])
+                                    ->where('semester', $this->semester)
                                     ->first();
 
             if ($existingInstructor) {
@@ -46,11 +46,12 @@ class InstructorsImport implements ToCollection, WithHeadingRow
                     'instructor_number' => $row['instructor_number'],
                     'username' => $row['username'],
                     'email' => $row['email'],
+                    'semester' => $this->semester,
                 ];
-                continue; // Skip duplicates
+                continue; // Skip duplicates for the same semester
             }
 
-            // If no duplicate, create the instructor entry
+            // If no duplicate for this semester, create the instructor entry
             User::create([
                 'instructor_number' => $row['instructor_number'],
                 'username' => $row['username'],

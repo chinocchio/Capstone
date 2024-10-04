@@ -25,30 +25,6 @@
                     @enderror
                 </div>
             
-                <div class="mb-4">
-                    <label for="school_year" class="block mb-2">Select School Year</label>
-                    <select name="school_year" id="school_year" class="input">
-                        @php
-                            $currentYear = now()->year;
-                            $yearsInFuture = 5;
-                        @endphp
-                        @for ($i = 0; $i <= $yearsInFuture; $i++)
-                            @php
-                                $startYear = $currentYear + $i;
-                                $endYear = $startYear + 1;
-                            @endphp
-                            <option value="{{ $startYear }}-{{ $endYear }}">{{ $startYear }}-{{ $endYear }}</option>
-                        @endfor
-                    </select>
-                </div>
-            
-                <div class="mb-4">
-                    <label for="semester" class="block mb-2">Select Semester</label>
-                    <select name="semester" id="semester" class="input">
-                        <option value="1st Semester">1st Semester</option>
-                        <option value="2nd Semester">2nd Semester</option>
-                    </select>
-                </div>
             
                 <button type="submit" class="btn">Import</button>
             </form>

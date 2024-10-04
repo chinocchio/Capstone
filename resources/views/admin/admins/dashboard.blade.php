@@ -2,6 +2,49 @@
     {{-- Heading --}}
     <h1 class="title text-2xl mb-6">ADMIN DASHBOARD</h1>
 
+    @if(session('success'))
+    <div class="alert alert-success">
+        {{ session('success') }}
+    </div>
+@endif
+
+    @php
+    // Fetch current semester and academic year settings
+    $currentSettings = App\Models\Setting::first();
+@endphp
+
+<!-- Display current settings as indicators -->
+<div>
+    <h3>Current Semester: {{ $currentSettings->current_semester }}</h3>
+    <h3>Current Academic Year: {{ $currentSettings->academic_year }}</h3>
+</div>
+
+    <form method="POST" action="{{ route('setSemesterAndYear') }}">
+        @csrf
+        <label for="current_semester">Semester:</label>
+        <select name="current_semester" id="current_semester">
+            <option value="1st Semester">1st Semester</option>
+            <option value="2nd Semester">2nd Semester</option>
+        </select>
+    
+        <label for="academic_year">Academic Year:</label>
+        <select name="academic_year" id="academic_year">
+            @php
+                $startYear = 2024;  // Starting from 2024
+                $maxYears = 5;     // Display options for the next 10 years
+            @endphp
+    
+            <!-- Loop to create academic year options starting from 2024-2025 -->
+            @for ($year = $startYear; $year <= $startYear + $maxYears; $year++)
+                <option value="{{ $year }}-{{ $year + 1 }}">{{ $year }}-{{ $year + 1 }}</option>
+            @endfor
+        </select>
+    
+        <button type="submit">Save</button>
+    </form>
+    
+    
+
     <div class="grid grid-cols-12 gap-1">
         <div class="card mb-4 p-4 text-sm col-span-2 h-32">
             @if ($latestTemperature)
@@ -121,4 +164,27 @@
 
     </script>
 
+<script>
+    // JavaScript to detect changes and show the Save button when changes are made
+    document.addEventListener('DOMContentLoaded', function() {
+        const semesterSelect = document.getElementById('current_semester');
+        const yearSelect = document.getElementById('academic_year');
+        const saveButton = document.getElementById('saveButton');
+        
+        const originalSemester = "{{ $currentSettings->current_semester }}";
+        const originalYear = "{{ $currentSettings->academic_year }}";
+    
+        // Show the Save button if the user changes the selected semester or academic year
+        function checkForChanges() {
+            if (semesterSelect.value !== originalSemester || yearSelect.value !== originalYear) {
+                saveButton.style.display = 'block';
+            } else {
+                saveButton.style.display = 'none';
+            }
+        }
+    
+        semesterSelect.addEventListener('change', checkForChanges);
+        yearSelect.addEventListener('change', checkForChanges);
+    });
+    </script>
 </x-adminlayout>

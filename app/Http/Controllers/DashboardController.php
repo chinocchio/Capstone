@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use App\Models\Subject;
+use App\Models\Setting;
 use App\Models\User;
 use App\Models\Student;
 use App\Models\Scan;
@@ -17,36 +18,49 @@ use PDF;
 class DashboardController extends Controller
 {
     public function index()
-    {
-        $posts = Auth::user()->subjects()->latest()->paginate(6);
+{
+    // Fetch the posts for the authenticated user with pagination
+    $posts = Auth::user()->subjects()->latest()->paginate(6);
+
+    // Fetch the current semester and academic year from the settings
+    $currentSettings = Setting::first();
+    $schoolYear = $currentSettings->academic_year;
+    $semester = $currentSettings->current_semester;
+
+    // Get the current date and time in the Asia/Manila timezone
+    $now = Carbon::now('Asia/Manila');
+    $currentDate = $now->format('Y-m-d'); // Format for SQL comparison
+    $currentTime = $now->format('H:i:s'); // Format for SQL comparison
+    $today = $now->format('l'); // Day of the week (e.g., Monday, Tuesday)
+
+    // Retrieve subjects excluding "Pending" and "Vacant" subjects, and filter by current day, time, semester, and school year
+    $subjects = DB::table('subjects')
+        ->leftJoin('user_subject', 'subjects.id', '=', 'user_subject.subject_id')
+        ->leftJoin('users', 'user_subject.user_id', '=', 'users.id')
+        ->where('subjects.day', $today) // Ensure the subject is for the current day
+        ->where('subjects.school_year', $schoolYear) // Filter by the current school year
+        ->where('subjects.semester', $semester) // Filter by the current semester
+        ->whereNotIn('subjects.name', ['Vacant', 'Pending']) // Exclude "Vacant" and "Pending" subjects
+        ->whereTime('subjects.start_time', '<=', $currentTime) // Ensure the subject's start time is before or equal to the current time
+        ->whereTime('subjects.end_time', '>=', $currentTime) // Ensure the subject's end time is after or equal to the current time
+        ->select('subjects.*', 'users.username', 'users.email')
+        ->get();
+
+    // Retrieve the latest temperature and humidity data
+    $latestTemperature = DB::table('temperature')
+        ->latest('created_at')
+        ->first();
+
+    // Return the view with the data
+    return view('users.dashboard', [
+        'posts' => $posts,
+        'subjects' => $subjects,
+        'latestTemperature' => $latestTemperature,
+        'currentDate' => $now->format('l, F j, Y') // Format for display
+    ]);
+}
+
     
-        $now = Carbon::now('Asia/Manila');
-        $currentDate = $now->format('Y-m-d'); // Format for SQL comparison
-        $currentTime = $now->format('H:i:s'); // Format for SQL comparison
-        $today = $now->format('l'); // For day name comparison
-        
-        // Retrieve subjects with optional instructor information
-        $subjects = DB::table('subjects')
-            ->leftJoin('user_subject', 'subjects.id', '=', 'user_subject.subject_id')
-            ->leftJoin('users', 'user_subject.user_id', '=', 'users.id')
-            ->where('subjects.day', $today) // Ensure the subject is for the current day
-            ->whereTime('subjects.start_time', '<=', $currentTime) // Ensure the subject's start time is before or equal to the current time
-            ->whereTime('subjects.end_time', '>=', $currentTime) // Ensure the subject's end time is after or equal to the current time
-            ->select('subjects.*', 'users.username', 'users.email')
-            ->get();
-    
-        // Retrieve the latest temperature and humidity data
-        $latestTemperature = DB::table('temperature')
-            ->latest('created_at')
-            ->first();
-    
-        return view('users.dashboard', [
-            'posts' => $posts,
-            'subjects' => $subjects,
-            'latestTemperature' => $latestTemperature,
-            'currentDate' => $now->format('l, F j, Y') // Format for display
-        ]);
-    }
     
 
     public function userPosts(User $user) {

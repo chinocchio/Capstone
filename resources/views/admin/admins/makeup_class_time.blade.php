@@ -7,32 +7,25 @@
     <h2 class="font-bold text-2xl text-gray-700 mb-6">Create Makeup Class for: <span class="text-blue-500">{{ $subject->name }}</span></h2>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {{-- Form for selecting date and time --}}
+        {{-- Form for selecting pending or vacant date and time --}}
         <div class="bg-white shadow-lg rounded-lg p-6">
             <h3 class="font-semibold text-lg text-gray-700 mb-4">Makeup Class Details</h3>
+
             <form action="{{ route('makeupClass.store', $subject->id) }}" method="POST" class="space-y-4">
                 @csrf
 
+                {{-- Dropdown for selecting available slots (Pending or Vacant) --}}
                 <div>
-                    <label for="date" class="block mb-2 font-semibold text-gray-600">Select Date</label>
-                    <input type="date" name="date" id="date" class="w-full p-3 border rounded-md @error('date') ring-red-500 @enderror" required>
-                    @error('date')
-                        <p class="text-red-500 text-sm">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div>
-                    <label for="start_time" class="block mb-2 font-semibold text-gray-600">Start Time</label>
-                    <input type="time" name="start_time" id="start_time" class="w-full p-3 border rounded-md @error('start_time') ring-red-500 @enderror" required>
-                    @error('start_time')
-                        <p class="text-red-500 text-sm">{{ $message }}</p>
-                    @enderror
-                </div>
-
-                <div>
-                    <label for="end_time" class="block mb-2 font-semibold text-gray-600">End Time</label>
-                    <input type="time" name="end_time" id="end_time" class="w-full p-3 border rounded-md @error('end_time') ring-red-500 @enderror" required>
-                    @error('end_time')
+                    <label for="slot" class="block mb-2 font-semibold text-gray-600">Select Available Slot</label>
+                    <select name="slot" id="slot" class="w-full p-3 border rounded-md @error('slot') ring-red-500 @enderror" required>
+                        <option value="" disabled selected>Select a Pending or Vacant Slot</option>
+                        @foreach ($availableSlots as $slot)
+                            <option value="{{ $slot->id }}">
+                                {{ \Carbon\Carbon::parse($slot->start_time)->format('g:i A') }} - {{ \Carbon\Carbon::parse($slot->end_time)->format('g:i A') }} ({{ $slot->day }})
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('slot')
                         <p class="text-red-500 text-sm">{{ $message }}</p>
                     @enderror
                 </div>

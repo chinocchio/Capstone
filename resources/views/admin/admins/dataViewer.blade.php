@@ -3,6 +3,11 @@
     <div class="container my-5">
         <h1 class="mb-4 text-center">Data Overview</h1>
 
+        <!-- Add Export Button for Logs -->
+        <div class="mb-4 text-right">
+            <a href="{{ route('export.logs') }}" class="btn btn-success">Export Logs to Excel</a>
+        </div>
+
         <!-- Student-Subject Data Table -->
         <div class="card mb-4">
             <div class="card-header">

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Admin;
 use App\Models\User;
 use App\Models\Post;
+use App\Models\Setting;
 use App\Http\Controllers\Controller;
 use App\Models\Subject;
 use Illuminate\Http\Request;
@@ -15,6 +16,24 @@ use Carbon\Carbon;
 
 class AdminController extends Controller
 {
+    public function setSemesterAndYear(Request $request)
+    {
+        // Validate the input
+        $request->validate([
+            'current_semester' => 'required|string',
+            'academic_year' => 'required|string',
+        ]);
+    
+        // Update or create the current semester and academic year setting
+        Setting::updateOrCreate([], [
+            'current_semester' => $request->input('current_semester'),
+            'academic_year' => $request->input('academic_year'),
+        ]);
+    
+        // Redirect back with a success message
+        return redirect()->back()->with('success', 'Semester and Academic Year updated successfully!');
+    }
+
     public function getAdminByPin($pin)
     {
         // Find the admin with the given PIN
@@ -70,39 +89,83 @@ class AdminController extends Controller
 
 
     public function dashboard()
-{
-    // Fetch instructors with pagination
-    $instructors = User::paginate(6);
-
-    if (Auth::guard('admin')->check()) {
-        $now = Carbon::now('Asia/Manila');
-        $currentDate = $now->format('Y-m-d'); // Format for SQL comparison
-        $currentTime = $now->format('H:i:s'); // Format for SQL comparison
-        $today = $now->format('l'); // For day name comparison
-        
-        // Retrieve subjects with optional instructor information
-        $subjects = DB::table('subjects')
-            ->leftJoin('user_subject', 'subjects.id', '=', 'user_subject.subject_id')
-            ->leftJoin('users', 'user_subject.user_id', '=', 'users.id')
-            ->where('subjects.day', $today)
-            ->where('subjects.start_time', '<=', $currentTime)
-            ->where('subjects.end_time', '>=', $currentTime)
-            ->select('subjects.*', 'users.username', 'users.email')
-            ->get();
-
-                // Retrieve the latest temperature and humidity data
-                $latestTemperature = DB::table('temperature')
+    {
+        // Fetch the current semester and academic year from the settings
+        $currentSettings = Setting::first();
+        $schoolYear = $currentSettings->academic_year;
+        $semester = $currentSettings->current_semester;
+    
+        // Fetch instructors with pagination
+        $instructors = User::paginate(6);
+    
+        if (Auth::guard('admin')->check()) {
+            $now = Carbon::now('Asia/Manila');
+            $currentDate = $now->format('Y-m-d'); // Format for SQL comparison
+            $currentTime = $now->format('H:i:s'); // Format for SQL comparison
+            $today = $now->format('l'); // For day name comparison
+    
+            // Retrieve subjects, excluding "Pending" and "Vacant" subjects
+            $subjects = DB::table('subjects')
+                ->leftJoin('user_subject', 'subjects.id', '=', 'user_subject.subject_id')
+                ->leftJoin('users', 'user_subject.user_id', '=', 'users.id')
+                ->where('subjects.day', $today)
+                ->where('subjects.start_time', '<=', $currentTime)
+                ->where('subjects.end_time', '>=', $currentTime)
+                ->where('subjects.school_year', $schoolYear) // Filter by current school year
+                ->where('subjects.semester', $semester)      // Filter by current semester
+                ->whereNotIn('subjects.name', ['Vacant', 'Pending']) // Exclude "Vacant" and "Pending" subjects
+                ->select('subjects.*', 'users.username', 'users.email')
+                ->get();
+    
+            // Retrieve the latest temperature and humidity data
+            $latestTemperature = DB::table('temperature')
                 ->latest('created_at')
                 ->first();
-
-        return view('admin.admins.dashboard', [
-            'instructors' => $instructors,
-            'subjects' => $subjects,
-            'latestTemperature' => $latestTemperature,
-            'currentDate' => $now->format('l, F j, Y') // For display
-        ]);
+    
+            return view('admin.admins.dashboard', [
+                'instructors' => $instructors,
+                'subjects' => $subjects,
+                'latestTemperature' => $latestTemperature,
+                'currentDate' => $now->format('l, F j, Y') // For display
+            ]);
+        }
     }
-}
+    
+
+//     public function dashboard()
+// {
+//     // Fetch instructors with pagination
+//     $instructors = User::paginate(6);
+
+//     if (Auth::guard('admin')->check()) {
+//         $now = Carbon::now('Asia/Manila');
+//         $currentDate = $now->format('Y-m-d'); // Format for SQL comparison
+//         $currentTime = $now->format('H:i:s'); // Format for SQL comparison
+//         $today = $now->format('l'); // For day name comparison
+        
+//         // Retrieve subjects with optional instructor information
+//         $subjects = DB::table('subjects')
+//             ->leftJoin('user_subject', 'subjects.id', '=', 'user_subject.subject_id')
+//             ->leftJoin('users', 'user_subject.user_id', '=', 'users.id')
+//             ->where('subjects.day', $today)
+//             ->where('subjects.start_time', '<=', $currentTime)
+//             ->where('subjects.end_time', '>=', $currentTime)
+//             ->select('subjects.*', 'users.username', 'users.email')
+//             ->get();
+
+//                 // Retrieve the latest temperature and humidity data
+//                 $latestTemperature = DB::table('temperature')
+//                 ->latest('created_at')
+//                 ->first();
+
+//         return view('admin.admins.dashboard', [
+//             'instructors' => $instructors,
+//             'subjects' => $subjects,
+//             'latestTemperature' => $latestTemperature,
+//             'currentDate' => $now->format('l, F j, Y') // For display
+//         ]);
+//     }
+// }
 
     public function userPosts(User $user) {
 
