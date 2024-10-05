@@ -76,10 +76,13 @@ class SubjectController extends Controller
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time', // Ensure end_time is after start_time
             'day' => 'required|string',
-            'school_year' => 'required|string',
-            'semester' => 'required|string',
             'image' => ['nullable', 'image'], // Optional image validation
         ]);
+    
+        // Fetch the current semester and academic year from the settings
+        $currentSettings = Setting::first();
+        $schoolYear = $currentSettings->academic_year ?? 'Default Year';
+        $semester = $currentSettings->current_semester ?? 'Default Semester';
     
         // Convert times to Carbon instances for comparison
         $startTime = \Carbon\Carbon::createFromFormat('H:i', $request->start_time);
@@ -88,8 +91,8 @@ class SubjectController extends Controller
         // Step 1: Check for duplicate sections on the same day, school year, and semester
         $duplicateSections = Subject::where('day', $request->day)
             ->where('section', $request->section)
-            ->where('school_year', $request->school_year)
-            ->where('semester', $request->semester)
+            ->where('school_year', $schoolYear)
+            ->where('semester', $semester)
             ->first();
     
         // If duplicate sections exist, prevent the addition
@@ -101,8 +104,8 @@ class SubjectController extends Controller
     
         // Step 2: Check for overlapping time schedules within the same day, school year, and semester
         $conflictingSubjects = Subject::where('day', $request->day)
-            ->where('school_year', $request->school_year)
-            ->where('semester', $request->semester)
+            ->where('school_year', $schoolYear)
+            ->where('semester', $semester)
             ->where(function ($query) use ($startTime, $endTime) {
                 // Check if the new subject's time conflicts with existing subjects
                 $query->where(function ($query) use ($startTime, $endTime) {
@@ -137,14 +140,15 @@ class SubjectController extends Controller
             'start_time' => $request->start_time, // Directly use the 24-hour format from the input
             'end_time' => $request->end_time,     // Directly use the 24-hour format from the input
             'day' => $request->day,
-            'school_year' => $request->school_year,
-            'semester' => $request->semester,
+            'school_year' => $schoolYear, // Use the dynamically fetched school year
+            'semester' => $semester,      // Use the dynamically fetched semester
             'image' => $path,
         ]);
     
         // Redirect to subjects list
         return redirect()->route('subjects.index')->with('success', 'You added a schedule.');
     }
+    
 
     /**
      * Remove the specified resource from storage.
@@ -491,16 +495,15 @@ class SubjectController extends Controller
                 'startTime' => Carbon::createFromFormat('H:i:s', $startTime)->format('H:i'),
                 'endTime' => Carbon::createFromFormat('H:i:s', $endTime)->format('H:i'),
                 'daysOfWeek' => [$dayOfWeek], // Use the correct day of the week for recurrence
-                'startRecur' => Carbon::now()->startOfMonth()->format('Y-m-d'), // Recurrence starting from the start of the month
-                'endRecur' => Carbon::now()->endOfMonth()->format('Y-m-d'), // Recurrence till the end of the month
+                'startRecur' => Carbon::createFromFormat('Y', substr($schoolYear, 0, 4))->startOfYear()->format('Y-m-d'), // Start from beginning of school year
+                'endRecur' => Carbon::createFromFormat('Y', substr($schoolYear, 5, 4))->endOfYear()->format('Y-m-d'), // End at the end of the school year
                 'color' => $color,
             ];
         }
     
-        // Pass the events to the calendar view
-        return view('admin.admins.calendar', compact('events'));
+        // Pass the events and the start year to the calendar view
+        return view('admin.admins.calendar', compact('events', 'schoolYear'));
     }
-    
     
     
     private function convertDayToNumber($day)

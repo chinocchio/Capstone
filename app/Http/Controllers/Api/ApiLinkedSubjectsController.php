@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Resources\LinkedSubjectsResource;
 use App\Models\User;
+use App\Models\Setting;
 use App\Models\User_Subject;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -13,14 +14,25 @@ class ApiLinkedSubjectsController extends Controller
 {
     public function index()
     {
-        $linkedSubs = User_Subject::get();
+        // Fetch the current semester and academic year from the settings
+        $settings = Setting::first();
+        $currentSemester = $settings->current_semester;
+        $currentSchoolYear = $settings->academic_year;
+    
+            // Fetch linked subjects filtered by the current school year and semester
+            $linkedSubs = User_Subject::join('subjects', 'user_subject.subject_id', '=', 'subjects.id')
+            ->where('subjects.school_year', $currentSchoolYear)
+            ->where('subjects.semester', $currentSemester)
+            ->select('user_subject.*', 'subjects.name', 'subjects.code') // Customize the fields as needed
+            ->get();
+            
         if($linkedSubs->count() > 0)
         {
             return LinkedSubjectsResource::collection($linkedSubs);
         }
         else
         {
-            return response()->json(['message' => 'No subjects Recorde'], 200);
+            return response()->json(['message' => 'No subjects recorded for the current semester and school year'], 200);
         }
     }
     public function store(Request $request)

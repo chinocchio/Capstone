@@ -304,13 +304,13 @@ class DashboardController extends Controller
              'startTime' => Carbon::createFromFormat('H:i:s', $startTime)->format('H:i'),
              'endTime' => Carbon::createFromFormat('H:i:s', $endTime)->format('H:i'),
              'daysOfWeek' => [$dayOfWeek], // Use the correct day of the week for recurrence
-             'startRecur' => Carbon::now()->startOfMonth()->format('Y-m-d'), // Recurrence starting from the start of the month
-             'endRecur' => Carbon::now()->endOfMonth()->format('Y-m-d'), // Recurrence till the end of the month
+             'startRecur' => Carbon::createFromFormat('Y', substr($schoolYear, 0, 4))->startOfYear()->format('Y-m-d'), // Start from beginning of school year
+             'endRecur' => Carbon::createFromFormat('Y', substr($schoolYear, 5, 4))->endOfYear()->format('Y-m-d'), // End at the end of the school year
              'color' => $color,
          ];
      }
 
-        return view('users.userCalendar', compact('events'));
+        return view('users.userCalendar', compact('events', 'schoolYear'));
     }
 
     private function convertDayToNumber($day)

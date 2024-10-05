@@ -1,6 +1,6 @@
 <x-layout>
     <div class="container">
-        <h1 class="title">All Scheduled Subjects</h1>
+        <h1 class="title">All Scheduled Subjects for the Week</h1>
         <div id="calendar"></div>
     </div>
 
@@ -16,26 +16,30 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-        var calendarEl = document.getElementById('calendar');
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'timeGridWeek', // Set initial view as week
-            headerToolbar: {
-                left: 'prev,next today',
-                center: 'title',
-                right: 'dayGridMonth,timeGridWeek,timeGridDay'
-            },
-            events: @json($events), // Load events from Laravel
-            editable: false, // Prevent editing of events
-            droppable: false, // Disable dragging external events
-            allDaySlot: false, // Disable all-day events
-            nowIndicator: true, // Show current time indicator
-            timeZone: 'local', // Use local timezone
-            height: 'auto', // Auto height
-            slotMinTime: '07:00:00', // Show only from 7 AM
-            slotMaxTime: '19:00:00', // Show until 7 PM (adjust based on latest class)
-        });
+            var calendarEl = document.getElementById('calendar');
+            var schoolYear = @json($schoolYear); // Get the school year from the settings
 
-        calendar.render();
+            var startYear = schoolYear.split('-')[0]; // Extract the start year
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'timeGridWeek', // Set initial view as week
+                initialDate: startYear + '-08-01', // Automatically set the calendar to the correct academic year (e.g., August of that year)
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'timeGridWeek' // Only show week view
+                },
+                events: @json($events), // Load events from Laravel
+                editable: false, // Prevent editing of events
+                droppable: false, // Disable dragging external events
+                allDaySlot: false, // Disable all-day events
+                nowIndicator: true, // Show current time indicator
+                timeZone: 'local', // Use local timezone
+                height: 'auto', // Auto height
+                slotMinTime: '07:00:00', // Show only from 7 AM
+                slotMaxTime: '19:00:00', // Show until 7 PM (adjust based on latest class)
+            });
+
+            calendar.render();
         });
     </script>
 

@@ -153,42 +153,6 @@
                 @enderror
             </div>
 
-            {{-- School Year --}}
-            <div class="mb-4">
-                <label for="school_year">School Year</label>
-                <select name="school_year" class="input @error('school_year') ring-red-500 @enderror" required>
-                    @php
-                        $currentYear = now()->year;
-                    @endphp
-                    @for ($i = 0; $i <= 5; $i++)
-                        @php
-                            $startYear = $currentYear + $i;
-                            $endYear = $startYear + 1;
-                        @endphp
-                        <option value="{{ $startYear }}-{{ $endYear }}" {{ old('school_year') == "$startYear-$endYear" ? 'selected' : '' }}>
-                            {{ $startYear }}-{{ $endYear }}
-                        </option>
-                    @endfor
-                </select>
-
-                @error('school_year')
-                    <p class="error">{{ $message }}</p>
-                @enderror
-            </div>
-
-            {{-- Semester --}}
-            <div class="mb-4">
-                <label for="semester">Semester</label>
-                <select name="semester" class="input @error('semester') ring-red-500 @enderror" required>
-                    <option value="1st Semester" {{ old('semester') == '1st Semester' ? 'selected' : '' }}>1st Semester</option>
-                    <option value="2nd Semester" {{ old('semester') == '2nd Semester' ? 'selected' : '' }}>2nd Semester</option>
-                </select>
-
-                @error('semester')
-                    <p class="error">{{ $message }}</p>
-                @enderror
-            </div>
-
             {{-- Cover Photo --}}
             <div class="mb-4">
                 <label for="image">Cover Photo</label>

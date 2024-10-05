@@ -2,7 +2,7 @@
     {{-- Heading --}}
     <div class="flex justify-between items-center mb-4">
         <a href="{{ route('admin_dashboard') }}" class="text-xs text-blue-500">&larr; Go back to your dashboard</a>
-        {{-- <a href="{{ route('subjects.create') }}" class="bg-blue-500 text-white px-2 py-1 text-xs rounded-md">Manually Add Subject</a> --}}
+        <a href="{{ route('subjects.create') }}" class="bg-blue-500 text-white px-2 py-1 text-xs rounded-md">Manually Add Subject</a>
     </div>
 
     @if (session('duplicate_subjects'))
@@ -130,7 +130,7 @@
                         <td class="px-4 py-2 border">
                             <div class="flex space-x-2">
                                 {{-- Update --}}
-                                {{-- <a href="{{ route('subjects.edit', $subject->id) }}" class="bg-green-500 text-white px-3 py-1 text-xs rounded-md">Update</a> --}}
+                                <a href="{{ route('subjects.edit', $subject->id) }}" class="bg-green-500 text-white px-3 py-1 text-xs rounded-md">Update</a>
                                 {{-- Set Makeup Class --}}
                                 <a href="{{ route('makeupClass', $subject->id) }}" class="bg-purple-500 text-white px-3 py-1 text-xs rounded-md">Set Makeup</a>
                             </div>
