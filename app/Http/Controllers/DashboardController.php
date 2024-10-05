@@ -85,39 +85,147 @@ class DashboardController extends Controller
         ]);
     }
 
-    //Gawa gawa ko to 
-    public function toAttendance()
+    // Gawa gawa ko to gumagana 
+    // public function toAttendance(Request $request)
+    // {
+    //     $user = Auth::user();
+    //     $now = Carbon::now('Asia/Manila');
+    //     $nowTime = $now->format('H:i:s');
+    //     $today = $now->format('l'); // Get the current day of the week (e.g., 'Monday')
+    
+    //     // Fetch the current semester and academic year from the settings
+    //     $currentSettings = Setting::first();
+    //     $schoolYear = $currentSettings->academic_year;
+    //     $semester = $currentSettings->current_semester;
+    
+    //     // Fetch the user's subjects that are active today and within the current time, filtered by current semester and academic year
+    //     $linkedSubjects = $user->subjects()
+    //         ->where('school_year', $schoolYear)
+    //         ->where('semester', $semester)
+    //         ->get()
+    //         ->filter(function($subject) use ($nowTime, $today) {
+    //             $start_time = Carbon::parse($subject->start_time)->format('H:i:s');
+    //             $end_time = Carbon::parse($subject->end_time)->format('H:i:s');
+    //             $subjectDay = $subject->day;
+    
+    //             // Check if current day and time are within the subject's schedule
+    //             return $subjectDay === $today && $start_time <= $nowTime && $end_time >= $nowTime;
+    //         });
+    
+    //     // Check if a QR code was provided
+    //     $qrCode = $request->input('qr_code');
+    //     if ($qrCode) {
+    //         // Fetch the subject by QR code, also filter by current semester and academic year
+    //         $subject = Subject::where('qr', $qrCode)
+    //                           ->where('school_year', $schoolYear)
+    //                           ->where('semester', $semester)
+    //                           ->first();
+    
+    //         if ($subject) {
+    //             // Fetch the scans related to this subject where fingerprint_verified is true
+    //             $scans = Scan::where('subject_id', $subject->id)
+    //                 ->where('fingerprint_verified', true)
+    //                 ->orderBy('scanned_at', 'desc')
+    //                 ->get();
+    //         } else {
+    //             $scans = collect(); // Return an empty collection if no subject found
+    //         }
+    //     } else {
+    //         // Fetch the scans related to the filtered subjects where fingerprint_verified is true
+    //         $scans = Scan::whereIn('subject_id', $linkedSubjects->pluck('id'))
+    //             ->where('fingerprint_verified', true)
+    //             ->with('subject')
+    //             ->orderBy('scanned_at', 'desc')
+    //             ->get();
+    //     }
+    
+    //     // Pass both the filtered subjects and scans to the view
+    //     return view('users.attendance', [
+    //         'linkedSubjects' => $linkedSubjects,
+    //         'scans' => $scans,
+    //         'currentDate' => $now->format('l, F j, Y') 
+    //     ]);
+    // }
+
+    public function toAttendance(Request $request)
     {
         $user = Auth::user();
         $now = Carbon::now('Asia/Manila');
         $nowTime = $now->format('H:i:s');
         $today = $now->format('l'); // Get the current day of the week (e.g., 'Monday')
     
+        // Fetch the current semester and academic year from the settings
+        $currentSettings = Setting::first();
+        $schoolYear = $currentSettings->academic_year;
+        $semester = $currentSettings->current_semester;
+    
         // Fetch the user's subjects that are active today and within the current time
-        $linkedSubjects = $user->subjects->filter(function($subject) use ($nowTime, $today) {
-            $start_time = Carbon::parse($subject->start_time)->format('H:i:s');
-            $end_time = Carbon::parse($subject->end_time)->format('H:i:s');
-            $subjectDay = $subject->day;
+        $linkedSubjects = $user->subjects()
+            ->where('school_year', $schoolYear)
+            ->where('semester', $semester)
+            ->get()
+            ->filter(function ($subject) use ($nowTime, $today) {
+                $start_time = Carbon::parse($subject->start_time)->format('H:i:s');
+                $end_time = Carbon::parse($subject->end_time)->format('H:i:s');
+                $subjectDay = $subject->day;
     
-            // Check if current day and time are within the subject's schedule
-            return $subjectDay === $today && $start_time <= $nowTime && $end_time >= $nowTime;
-        });
+                // Check if current day and time are within the subject's schedule
+                return $subjectDay === $today && $start_time <= $nowTime && $end_time >= $nowTime;
+            });
     
-        // Fetch the scans related to the filtered subjects and where fingerprint_verified is true
-        $scans = Scan::whereIn('subject_id', $linkedSubjects->pluck('id'))
+        // Check if a QR code was provided
+        $qrCode = $request->input('qr_code');
+        if ($qrCode) {
+            // Fetch the subject by QR code
+            $subject = Subject::where('qr', $qrCode)
+                              ->where('school_year', $schoolYear)
+                              ->where('semester', $semester)
+                              ->first();
+    
+            if ($subject) {
+                // Fetch the scans related to this subject where fingerprint_verified is true
+                $scans = Scan::where('subject_id', $subject->id)
                     ->where('fingerprint_verified', true)
-                    ->with('subject')
                     ->orderBy('scanned_at', 'desc')
                     ->get();
+                    
+                // Fetch all students enrolled in this subject
+                $students = DB::table('student_subject')
+                    ->join('students', 'student_subject.student_id', '=', 'students.id')
+                    ->where('student_subject.subject_id', $subject->id)
+                    ->select('students.id', 'students.name', 'students.email')
+                    ->get();
+            } else {
+                $scans = collect(); // Return an empty collection if no subject is found
+                $students = collect(); // Return an empty collection for students
+            }
+        } else {
+            // Fetch the scans related to the filtered subjects where fingerprint_verified is true
+            $scans = Scan::whereIn('subject_id', $linkedSubjects->pluck('id'))
+                ->where('fingerprint_verified', true)
+                ->with('subject')
+                ->orderBy('scanned_at', 'desc')
+                ->get();
     
-        // Pass both the filtered subjects and scans to the view
+            // Fetch all students enrolled in the linked subjects
+            $students = DB::table('student_subject')
+                ->join('students', 'student_subject.student_id', '=', 'students.id')
+                ->whereIn('student_subject.subject_id', $linkedSubjects->pluck('id'))
+                ->select('students.id', 'students.name', 'students.email')
+                ->get();
+        }
+    
+        // Pass both the filtered subjects, scans, and students to the view
         return view('users.attendance', [
             'linkedSubjects' => $linkedSubjects,
             'scans' => $scans,
-            'currentDate' => $now->format('l, F j, Y')
+            'students' => $students,
+            'currentDate' => $now->format('l, F j, Y') 
         ]);
     }
     
+    
+     
     public function exportPdf()
     {
         $user = Auth::user();
@@ -155,23 +263,134 @@ class DashboardController extends Controller
         }
     }
     
+    // gumagana
+    // public function fetchScans(Request $request)
+    // {
+    //     $user = Auth::user();
+    //     $now = Carbon::now('Asia/Manila');
+    //     $nowTime = $now->format('H:i:s');
+    //     $today = $now->format('l'); // Get the current day of the week (e.g., 'Monday')
+    
+    //     // Fetch the current semester and academic year from the settings
+    //     $currentSettings = Setting::first();
+    //     $schoolYear = $currentSettings->academic_year;
+    //     $semester = $currentSettings->current_semester;
+    
+    //     // Fetch the user's subjects that are active today and within the current time
+    //     $linkedSubjects = $user->subjects()
+    //         ->where('school_year', $schoolYear)
+    //         ->where('semester', $semester)
+    //         ->get()
+    //         ->filter(function ($subject) use ($nowTime, $today) {
+    //             $start_time = Carbon::parse($subject->start_time)->format('H:i:s');
+    //             $end_time = Carbon::parse($subject->end_time)->format('H:i:s');
+    //             $subjectDay = $subject->day;
+    
+    //             // Check if current day and time are within the subject's schedule
+    //             return $subjectDay === $today && $start_time <= $nowTime && $end_time >= $nowTime;
+    //         });
+    
+    //     // Check if a QR code was provided via GET query parameter
+    //     $qrCode = $request->query('qr_code');
+    //     if ($qrCode) {
+    //         // Fetch the subject by QR code
+    //         $subject = Subject::where('qr', $qrCode)
+    //             ->where('school_year', $schoolYear)
+    //             ->where('semester', $semester)
+    //             ->first();
+    
+    //         if ($subject) {
+    //             // Fetch the scans related to this subject
+    //             $scans = Scan::where('subject_id', $subject->id)
+    //                 ->where('fingerprint_verified', true)
+    //                 ->orderBy('scanned_at', 'desc')
+    //                 ->with('subject')
+    //                 ->get();
+    //         } else {
+    //             $scans = collect(); // Return an empty collection if no subject is found
+    //         }
+    //     } else {
+    //         // Fetch the scans related to the filtered subjects
+    //         $scans = Scan::whereIn('subject_id', $linkedSubjects->pluck('id'))
+    //             ->where('fingerprint_verified', true)
+    //             ->with('subject')
+    //             ->orderBy('scanned_at', 'desc')
+    //             ->get();
+    //     }
+    
+    //     // Return the rendered view with the scans
+    //     return view('partials.scans-list', compact('scans'))->render();
+    // }
 
-    public function fetchScans()
-    {
-        $user = Auth::user();
-    
-        // Fetch the user's subjects
-        $linkedSubjects = $user->subjects->pluck('id');
-    
-        // Fetch the scans related to the user's subjects where fingerprint_verified is true
-        $scans = Scan::whereIn('subject_id', $linkedSubjects)
-                    ->where('fingerprint_verified', true) // Only fetch scans where fingerprint_verified is true
-                    ->with('subject')
-                    ->orderBy('scanned_at', 'desc')
-                    ->get();
-    
-        return view('partials.scans-list', compact('scans'))->render();
+
+public function fetchScans(Request $request)
+{
+    $user = Auth::user();
+    $now = Carbon::now('Asia/Manila');
+    $nowTime = $now->format('H:i:s');
+    $today = $now->format('l'); // Get the current day of the week (e.g., 'Monday')
+
+    // Fetch the current semester and academic year from the settings
+    $currentSettings = Setting::first();
+    $schoolYear = $currentSettings->academic_year;
+    $semester = $currentSettings->current_semester;
+
+    // Fetch the user's subjects that are active today and within the current time
+    $linkedSubjects = $user->subjects()
+        ->where('school_year', $schoolYear)
+        ->where('semester', $semester)
+        ->get()
+        ->filter(function ($subject) use ($nowTime, $today) {
+            $start_time = Carbon::parse($subject->start_time)->format('H:i:s');
+            $end_time = Carbon::parse($subject->end_time)->format('H:i:s');
+            $subjectDay = $subject->day;
+
+            // Check if current day and time are within the subject's schedule
+            return $subjectDay === $today && $start_time <= $nowTime && $end_time >= $nowTime;
+        });
+
+    // Fetch enrolled students for the subjects
+    $students = DB::table('student_subject')
+        ->join('students', 'student_subject.student_id', '=', 'students.id')
+        ->whereIn('student_subject.subject_id', $linkedSubjects->pluck('id'))
+        ->select('students.id', 'students.name', 'students.email')
+        ->get();
+
+    // Check if a QR code was provided via GET query parameter
+    $qrCode = $request->query('qr_code');
+    if ($qrCode) {
+        // Fetch the subject by QR code
+        $subject = Subject::where('qr', $qrCode)
+            ->where('school_year', $schoolYear)
+            ->where('semester', $semester)
+            ->first();
+
+        if ($subject) {
+            // Fetch the scans related to this subject
+            $scans = Scan::where('subject_id', $subject->id)
+                ->where('fingerprint_verified', true)
+                ->orderBy('scanned_at', 'desc')
+                ->with('subject')
+                ->get();
+        } else {
+            $scans = collect(); // Return an empty collection if no subject is found
+        }
+    } else {
+        // Fetch the scans related to the filtered subjects
+        $scans = Scan::whereIn('subject_id', $linkedSubjects->pluck('id'))
+            ->where('fingerprint_verified', true)
+            ->with('subject')
+            ->orderBy('scanned_at', 'desc')
+            ->get();
     }
+
+    // Return the rendered view with both scans and students
+    return view('partials.scans-list', compact('scans', 'students'))->render();
+}
+
+
+    
+
     
 
     public function toSeatplan()
