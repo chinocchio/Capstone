@@ -2,6 +2,17 @@
     {{-- Heading --}}
     <h1 class="title">Welcome {{ auth()->user()->username }}, you have {{ $posts->total() }} subjects</h1>
 
+    @php
+    // Fetch current semester and academic year settings
+    $currentSettings = App\Models\Setting::first();
+@endphp
+
+<!-- Display current settings as indicators -->
+<div>
+    <h3>Current Semester: {{ $currentSettings->current_semester }}</h3>
+    <h3>Current Academic Year: {{ $currentSettings->academic_year }}</h3>
+</div>
+
     <div class="grid grid-cols-12 gap-1">
         <div class="card mb-4 p-4 text-sm col-span-2 h-32">
             @if ($latestTemperature)

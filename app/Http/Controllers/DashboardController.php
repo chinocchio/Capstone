@@ -18,47 +18,52 @@ use PDF;
 class DashboardController extends Controller
 {
     public function index()
-{
-    // Fetch the posts for the authenticated user with pagination
-    $posts = Auth::user()->subjects()->latest()->paginate(6);
-
-    // Fetch the current semester and academic year from the settings
-    $currentSettings = Setting::first();
-    $schoolYear = $currentSettings->academic_year;
-    $semester = $currentSettings->current_semester;
-
-    // Get the current date and time in the Asia/Manila timezone
-    $now = Carbon::now('Asia/Manila');
-    $currentDate = $now->format('Y-m-d'); // Format for SQL comparison
-    $currentTime = $now->format('H:i:s'); // Format for SQL comparison
-    $today = $now->format('l'); // Day of the week (e.g., Monday, Tuesday)
-
-    // Retrieve subjects excluding "Pending" and "Vacant" subjects, and filter by current day, time, semester, and school year
-    $subjects = DB::table('subjects')
-        ->leftJoin('user_subject', 'subjects.id', '=', 'user_subject.subject_id')
-        ->leftJoin('users', 'user_subject.user_id', '=', 'users.id')
-        ->where('subjects.day', $today) // Ensure the subject is for the current day
-        ->where('subjects.school_year', $schoolYear) // Filter by the current school year
-        ->where('subjects.semester', $semester) // Filter by the current semester
-        ->whereNotIn('subjects.name', ['Vacant', 'Pending']) // Exclude "Vacant" and "Pending" subjects
-        ->whereTime('subjects.start_time', '<=', $currentTime) // Ensure the subject's start time is before or equal to the current time
-        ->whereTime('subjects.end_time', '>=', $currentTime) // Ensure the subject's end time is after or equal to the current time
-        ->select('subjects.*', 'users.username', 'users.email')
-        ->get();
-
-    // Retrieve the latest temperature and humidity data
-    $latestTemperature = DB::table('temperature')
-        ->latest('created_at')
-        ->first();
-
-    // Return the view with the data
-    return view('users.dashboard', [
-        'posts' => $posts,
-        'subjects' => $subjects,
-        'latestTemperature' => $latestTemperature,
-        'currentDate' => $now->format('l, F j, Y') // Format for display
-    ]);
-}
+    {
+        // Fetch the current semester and academic year from the settings
+        $currentSettings = Setting::first();
+        $schoolYear = $currentSettings->academic_year;
+        $semester = $currentSettings->current_semester;
+    
+        // Fetch the posts (user's subjects) for the authenticated user with pagination, filtered by the current semester and school year
+        $posts = Auth::user()->subjects()
+            ->where('school_year', $schoolYear)
+            ->where('semester', $semester)
+            ->latest()
+            ->paginate(6);
+    
+        // Get the current date and time in the Asia/Manila timezone
+        $now = Carbon::now('Asia/Manila');
+        $currentDate = $now->format('Y-m-d'); // Format for SQL comparison
+        $currentTime = $now->format('H:i:s'); // Format for SQL comparison
+        $today = $now->format('l'); // Day of the week (e.g., Monday, Tuesday)
+    
+        // Retrieve subjects excluding "Pending" and "Vacant" subjects, and filter by current day, time, semester, and school year
+        $subjects = DB::table('subjects')
+            ->leftJoin('user_subject', 'subjects.id', '=', 'user_subject.subject_id')
+            ->leftJoin('users', 'user_subject.user_id', '=', 'users.id')
+            ->where('subjects.day', $today) // Ensure the subject is for the current day
+            ->where('subjects.school_year', $schoolYear) // Filter by the current school year
+            ->where('subjects.semester', $semester) // Filter by the current semester
+            ->whereNotIn('subjects.name', ['Vacant', 'Pending']) // Exclude "Vacant" and "Pending" subjects
+            ->whereTime('subjects.start_time', '<=', $currentTime) // Ensure the subject's start time is before or equal to the current time
+            ->whereTime('subjects.end_time', '>=', $currentTime) // Ensure the subject's end time is after or equal to the current time
+            ->select('subjects.*', 'users.username', 'users.email')
+            ->get();
+    
+        // Retrieve the latest temperature and humidity data
+        $latestTemperature = DB::table('temperature')
+            ->latest('created_at')
+            ->first();
+    
+        // Return the view with the data
+        return view('users.dashboard', [
+            'posts' => $posts, // User's subjects for the current semester and academic year
+            'subjects' => $subjects, // Subjects for the current day and time
+            'latestTemperature' => $latestTemperature,
+            'currentDate' => $now->format('l, F j, Y') // Format for display
+        ]);
+    }
+    
 
     
     
@@ -171,10 +176,22 @@ class DashboardController extends Controller
 
     public function toSeatplan()
     {
-        $posts = Auth::user()->subjects()->latest()->paginate(6);
-
+        // Fetch the current semester and academic year from the settings
+        $currentSettings = Setting::first();
+        $schoolYear = $currentSettings->academic_year;
+        $semester = $currentSettings->current_semester;
+    
+        // Fetch the user's subjects for the current semester and school year with pagination
+        $posts = Auth::user()->subjects()
+            ->where('school_year', $schoolYear)
+            ->where('semester', $semester)
+            ->latest()
+            ->paginate(6);
+    
+        // Return the seatplan view with the filtered posts
         return view('users.seatplan', compact('posts'));
     }
+    
 
     public function importStudents(Request $request)
     {
@@ -247,50 +264,68 @@ class DashboardController extends Controller
 
     public function showUserCalendar()
     {
-        $subjects = Subject::all();
-        $events = [];
-    
-        foreach ($subjects as $subject) {
-            // Fetch the section of the subject
-            $section = $subject->section;
-    
-            // Fetch linked instructors (select username and email from users)
-            $instructors = DB::table('user_subject')
-                ->join('users', 'user_subject.user_id', '=', 'users.id')
-                ->where('user_subject.subject_id', $subject->id)
-                ->pluck('users.username'); // Assuming 'username' is the instructor's name
-    
-            // Convert the instructors into a string (comma-separated if multiple)
-            $instructorNames = $instructors->isEmpty() ? 'No instructor' : implode(', ', $instructors->toArray());
-    
-            if ($subject->type === 'makeup') {
-                // If it's a makeup class, use the specific_date for the start
-                $events[] = [
-                    'title' => $subject->name . ' (Makeup Class) - Section: ' . $section . ' - Instructor(s): ' . $instructorNames,
-                    'start' => Carbon::parse($subject->specific_date . ' ' . $subject->start_time)->format('Y-m-d\TH:i:s'),
-                    'end' => Carbon::parse($subject->specific_date . ' ' . $subject->end_time)->format('Y-m-d\TH:i:s'),
-                    'color' => 'red',
-                ];
-            } else {
-                // If it's a regular subject, use the day of the week and combine it with the time
-                $dayOfWeek = $subject->day;
-                $startTime = $subject->start_time;
-                $endTime = $subject->end_time;
-    
-                // Find the next occurrence of the day in this week
-                $startDateTime = Carbon::now()->next($dayOfWeek)->setTimeFromTimeString($startTime)->format('Y-m-d\TH:i:s');
-                $endDateTime = Carbon::now()->next($dayOfWeek)->setTimeFromTimeString($endTime)->format('Y-m-d\TH:i:s');
-    
-                $events[] = [
-                    'title' => $subject->name . ' - Section: ' . $section . ' - Instructor(s): ' . $instructorNames,
-                    'start' => $startDateTime,
-                    'end' => $endDateTime,
-                    'color' => 'blue',
-                ];
-            }
-        }
+     // Fetch the current semester and academic year from the settings
+     $currentSettings = Setting::first();
+     $schoolYear = $currentSettings->academic_year;
+     $semester = $currentSettings->current_semester;
+ 
+     // Fetch all subjects excluding "vacant" and "pending" and filter by current sem and year
+     $subjects = Subject::where('school_year', $schoolYear)
+                         ->where('semester', $semester)
+                         ->whereNotIn('name', ['Vacant', 'Pending'])
+                         ->get();
+ 
+     $events = [];
+ 
+     foreach ($subjects as $subject) {
+         // Fetch subject details
+         $section = $subject->section;
+ 
+         // Fetch linked instructors (select username from users)
+         $instructors = DB::table('user_subject')
+                         ->join('users', 'user_subject.user_id', '=', 'users.id')
+                         ->where('user_subject.subject_id', $subject->id)
+                         ->pluck('users.username'); // Assuming 'username' is the instructor's name
+ 
+         // Convert the instructors into a string (comma-separated if multiple)
+         $instructorNames = $instructors->isEmpty() ? 'No instructor' : implode(', ', $instructors->toArray());
+ 
+         // Whether it's a makeup or a regular class, we handle both using the day of the week
+         $dayOfWeek = $this->convertDayToNumber($subject->day); // Convert day name to day number
+         $startTime = $subject->start_time;
+         $endTime = $subject->end_time;
+ 
+         // Set color based on whether the class is a makeup class or regular class
+         $color = $subject->type === 'makeup' ? 'red' : 'blue';
+ 
+         // Add the class as a recurring event based on the day of the week
+         $events[] = [
+             'title' => $subject->name . ($subject->type === 'makeup' ? ' (Makeup Class)' : '') . ' - Section: ' . $section . ' - Instructor(s): ' . $instructorNames,
+             'startTime' => Carbon::createFromFormat('H:i:s', $startTime)->format('H:i'),
+             'endTime' => Carbon::createFromFormat('H:i:s', $endTime)->format('H:i'),
+             'daysOfWeek' => [$dayOfWeek], // Use the correct day of the week for recurrence
+             'startRecur' => Carbon::now()->startOfMonth()->format('Y-m-d'), // Recurrence starting from the start of the month
+             'endRecur' => Carbon::now()->endOfMonth()->format('Y-m-d'), // Recurrence till the end of the month
+             'color' => $color,
+         ];
+     }
 
         return view('users.userCalendar', compact('events'));
+    }
+
+    private function convertDayToNumber($day)
+    {
+        $days = [
+            'Sunday' => 0,
+            'Monday' => 1,
+            'Tuesday' => 2,
+            'Wednesday' => 3,
+            'Thursday' => 4,
+            'Friday' => 5,
+            'Saturday' => 6,
+        ];
+    
+        return $days[$day] ?? null; // Return the day number, or null if not found
     }
     
 }

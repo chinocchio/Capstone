@@ -145,17 +145,30 @@ class UserController extends Controller
     public function showDashboard()
     {
         $user = Auth::user();
-        
-        // Subjects currently linked to the user
-        $linkedSubjects = $user->subjects->map(function ($subject) {
-            $subject->start_time = Carbon::parse($subject->start_time);
-            $subject->end_time = Carbon::parse($subject->end_time);
-            return $subject;
-        });
     
-        // All subjects that are not linked to any user and have 'type' as null (regular classes)
+        // Fetch the current semester and academic year from the settings
+        $currentSettings = Setting::first();
+        $schoolYear = $currentSettings->academic_year;
+        $semester = $currentSettings->current_semester;
+        
+        // Subjects currently linked to the user, filtered by current semester and academic year
+        $linkedSubjects = $user->subjects()
+            ->where('school_year', $schoolYear)
+            ->where('semester', $semester)
+            ->get()
+            ->map(function ($subject) {
+                $subject->start_time = Carbon::parse($subject->start_time);
+                $subject->end_time = Carbon::parse($subject->end_time);
+                return $subject;
+            });
+    
+        // All subjects that are not linked to any user and have 'type' as null (regular classes),
+        // filtered by current semester and academic year, and excluding "Pending" and "Vacant"
         $availableSubjects = Subject::whereDoesntHave('users')
             ->whereNull('type') // Filter to include only subjects where 'type' is null
+            ->where('school_year', $schoolYear)
+            ->where('semester', $semester)
+            ->whereNotIn('name', ['Vacant', 'Pending']) // Exclude "Vacant" and "Pending" subjects
             ->get()
             ->map(function ($subject) {
                 $subject->start_time = Carbon::parse($subject->start_time);
@@ -165,6 +178,8 @@ class UserController extends Controller
     
         return view('users.subjects', compact('linkedSubjects', 'availableSubjects'));
     }
+    
+    
 
     /**
      * Link a new subject to the user.
