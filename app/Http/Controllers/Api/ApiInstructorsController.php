@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Http\Resources\UserResource;
 use App\Models\User_Subject;
 use App\Models\Subject;
+use App\Models\Setting;
 use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -44,19 +45,36 @@ class ApiInstructorsController extends Controller
         $currentDay = $now->format('l'); // Get the full name of the day (e.g., "Monday")
         $currentTime = $now->format('H:i:s'); // Get the current time in 24-hour format
     
-        // Retrieve the instructor's details
-        $instructor = $user->only(['id', 'username', 'email', 'finger_id']); // Customize as needed
+        // Fetch the current semester and academic year from the settings
+        $currentSettings = Setting::first();
     
-        // Retrieve and filter the instructor's subjects based on current day and time
+        // Ensure the setting exists and has valid values
+        if (!$currentSettings) {
+            return response()->json(['message' => 'Settings not found'], 404);
+        }
+    
+        $schoolYear = $currentSettings->academic_year;
+        $semester = $currentSettings->current_semester;
+    
+        // Log the semester for debugging
+        \Log::info('Current Semester: ' . $semester); // Check if this logs the correct value
+    
+        // Retrieve and filter the instructor's subjects based on the current day, time, semester, and school year
         $subjects = $user->subjects()
                          ->where('day', $currentDay)
+                         ->where('school_year', $schoolYear) // Filter by the selected school year
+                         ->where('semester', $semester)      // Filter by the selected semester
                          ->where(function($query) use ($currentTime) {
                              $query->where('start_time', '<=', $currentTime)
                                    ->where('end_time', '>=', $currentTime);
                          })
                          ->get()
-                         ->map(function($subject) use ($instructor) {
-                             return array_merge($instructor, [
+                         ->map(function($subject) use ($user) {
+                             return [
+                                 'id' => $user->id,
+                                 'username' => $user->username,
+                                 'email' => $user->email,
+                                 'finger_id' => $user->finger_id,
                                  'name' => $subject->name,
                                  'code' => $subject->code,
                                  'description' => $subject->description,
@@ -65,14 +83,18 @@ class ApiInstructorsController extends Controller
                                  'end_time' => $subject->end_time,
                                  'section' => $subject->section,
                                  'day' => $subject->day,
-                             ]);
+                             ];
                          });
     
+        // Check if no subjects were found
+        if ($subjects->isEmpty()) {
+            return response()->json(['message' => 'No subjects found for the current semester'], 404);
+        }
+    
         // Format the response
-        $response = $subjects->toArray();
-        
-        return response()->json($response, 200);
+        return response()->json($subjects->toArray(), 200);
     }
+    
     
     
 

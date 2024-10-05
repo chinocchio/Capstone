@@ -596,10 +596,18 @@ class SubjectController extends Controller
 
     public function getAllSubjects()
     {
+        // Fetch the current semester and academic year from the settings
+        $currentSettings = Setting::first();
+        $schoolYear = $currentSettings->academic_year;
+        $semester = $currentSettings->current_semester;
+    
+        // Fetch subjects filtered by the current school year and semester
         $subjects = Subject::with(['students' => function ($query) {
             // Select only the required fields from students, specifying the table
             $query->select('students.id', 'students.name', 'students.student_number', 'students.email');
         }])
+            ->where('school_year', $schoolYear) // Filter by current school year
+            ->where('semester', $semester) // Filter by current semester
             ->select(
                 'subjects.id', 
                 'subjects.name', 
@@ -624,5 +632,6 @@ class SubjectController extends Controller
     
         return response()->json($subjects);
     }
+    
     
 }

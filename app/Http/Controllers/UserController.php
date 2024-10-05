@@ -307,14 +307,22 @@ class UserController extends Controller
 
     public function getAllInstructorsWithSubjects()
     {
-        // Fetch all instructors with their linked subjects
-        $instructors = User::with(['subjects' => function ($query) {
-            // Optional: Select specific fields if needed
-            $query->select('id', 'name', 'code', 'description', 'start_time', 'end_time', 'section', 'day', 'type', 'school_year', 'semester');
+        // Fetch the current semester and academic year from the settings
+        $currentSettings = Setting::first();
+        $schoolYear = $currentSettings->academic_year;
+        $semester = $currentSettings->current_semester;
+    
+        // Fetch all instructors with their linked subjects and filter by current school year and semester
+        $instructors = User::with(['subjects' => function ($query) use ($schoolYear, $semester) {
+            // Filter subjects by the current school year and semester
+            $query->where('school_year', $schoolYear)
+                  ->where('semester', $semester)
+                  ->select('id', 'name', 'code', 'description', 'start_time', 'end_time', 'section', 'day', 'type', 'school_year', 'semester');
         }])->get(['id', 'instructor_number', 'username', 'email', 'school_year', 'semester']);
-
+    
         return response()->json($instructors);
     }
+    
 
     // Method to change PIN using PUT
     public function changePin(Request $request)

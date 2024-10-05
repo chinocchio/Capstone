@@ -29,9 +29,9 @@ Route::get('/user/get-old-pin', [UserController::class, 'getOldPin']);
 
 Route::post('/reports', [ReportController::class, 'store']);
 
-Route::get('/instructors-subs-linked', [UserController::class, 'getAllInstructorsWithSubjects']);
+Route::get('/instructors-subs-linked', [UserController::class, 'getAllInstructorsWithSubjects']); // okay na sa setting
 
-Route::get('/subjectsNgStudent', [SubjectController::class, 'getAllSubjects']);
+Route::get('/subjectsNgStudent', [SubjectController::class, 'getAllSubjects']); // okay na din sa setting
 
 Route::get('posts', [PostController::class, 'getManuals']);
 
@@ -58,7 +58,7 @@ Route::apiResource('logs', LogsController::class)->only([
     'store', 'index'
 ]);
 
-Route::apiResource('subs', ApiSubjectController::class);
+Route::apiResource('subs', ApiSubjectController::class); // okay na to sa setting
 Route::get('subs/{day}', [ApiSubjectController::class, 'getScheduleByDay']);// wag to bobo to 
 
 Route::get('subjects/{day}', [SubjectController::class, 'getScheduleByDay']);
