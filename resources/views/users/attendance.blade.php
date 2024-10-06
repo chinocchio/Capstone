@@ -32,6 +32,7 @@
                     <table class="table-auto w-full">
                         <thead>
                             <tr>
+                                <th class="px-4 py-2">ID</th>
                                 <th class="px-4 py-2">Name</th>
                                 <th class="px-4 py-2">Time In</th>
                                 <th class="px-4 py-2">Time Out</th>
@@ -45,6 +46,7 @@
                                     $studentScan = $scans->where('scanned_by', $student->name)->first();
                                 @endphp
                                 <tr>
+                                    <td class="border px-4 py-2">{{ $student->id }}</td> {{-- New ID column --}}
                                     <td class="border px-4 py-2">{{ $student->name }}</td>
                                     <td class="border px-4 py-2">
                                         {{ $studentScan ? \Carbon\Carbon::parse($studentScan->scanned_at)->format('h:i A') : '-' }}
@@ -81,4 +83,4 @@
             window.location.href = '{{ route('scans.export.excel') }}';
         }
     </script>
-</x-layout> 
+</x-layout>

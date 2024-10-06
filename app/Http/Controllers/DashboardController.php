@@ -232,11 +232,14 @@ class DashboardController extends Controller
         $schoolYear = $currentSettings->academic_year;
         $semester = $currentSettings->current_semester;
     
+        // Store the subject_id for later use
+        $subjectId = $request->input('subject_id');
+    
         // Process each student from the form data
         foreach ($request->input('students', []) as $studentId => $studentData) {
             StudentAttendance::create([
                 'student_id' => $studentId,
-                'subject_id' => $request->input('subject_id'), // Now we have the subject_id
+                'subject_id' => $subjectId, // Now we have the subject_id
                 'status' => $studentData['status'],
                 'time_in' => $studentData['time_in'],
                 'time_out' => $studentData['time_out'],
@@ -246,8 +249,13 @@ class DashboardController extends Controller
             ]);
         }
     
-        return redirect()->back()->with('success', 'Attendance saved successfully.');
+        // After saving the attendance, delete the related scans for the subject
+        Scan::where('subject_id', $subjectId)->delete();
+    
+        // Redirect back with a success message
+        return redirect()->back()->with('success', 'Attendance saved successfully, and scans cleared.');
     }
+    
     
      
     public function exportPdf()
