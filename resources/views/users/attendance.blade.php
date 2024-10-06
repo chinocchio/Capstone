@@ -70,6 +70,12 @@
             </form>
 
             <button id="export-btn" class="mt-4 p-2 bg-blue-500 text-white rounded">Export PDF</button>
+
+                        {{-- New Export Button --}}
+                        <button class="mt-4 p-2 bg-blue-500 text-white rounded"
+                        onclick="window.location.href='{{ route('attendance.export.excel', ['subjectId' => $linkedSubjects->first()->id ?? '']) }}'">
+                        Export Excel
+                    </button>
         </div>
     </div>
 

@@ -36,6 +36,7 @@ Route::get('/{user}/posts', [DashboardController::class, 'userPosts'])->name('po
 Route::middleware('auth')->group(function() {
 
     Route::post('/attendance/save', [DashboardController::class, 'saveAttendance'])->name('attendance.save');
+    Route::get('/attendance/export/{subjectId}', [DashboardController::class, 'exportAttendance'])->name('attendance.export.excel');
 
 
     Route::get('/user/change-pin', [UserController::class, 'showChangePinForm'])->name('user.showChangePinForm');

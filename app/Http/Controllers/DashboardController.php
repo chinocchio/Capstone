@@ -14,6 +14,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade;
+use App\Exports\AttendanceExport;
+use Maatwebsite\Excel\Facades\Excel;
 use PDF; 
 
 class DashboardController extends Controller
@@ -256,7 +258,46 @@ class DashboardController extends Controller
         return redirect()->back()->with('success', 'Attendance saved successfully, and scans cleared.');
     }
     
-    
+    public function exportAttendance($subjectId)
+{
+    // Fetch all students enrolled in the subject
+    $students = Student::whereHas('subjects', function ($query) use ($subjectId) {
+        $query->where('subject_id', $subjectId);
+    })->get();
+
+    // Fetch all attendance records for the subject
+    $attendances = StudentAttendance::where('subject_id', $subjectId)
+        ->orderBy('date', 'asc')
+        ->get();
+
+    // Prepare the data for Excel export
+    $data = $students->map(function ($student) use ($attendances) {
+        // Initialize a row with the student's name
+        $row = ['name' => $student->name];
+
+        // Get attendance records for the student, grouped by date
+        foreach ($attendances->where('student_id', $student->id) as $attendance) {
+            $row[$attendance->date] = $attendance->status;
+        }
+
+        return $row;
+    });
+
+    // Define headers for the Excel sheet (including date headers)
+    $headers = ['Name'];
+    $dates = StudentAttendance::where('subject_id', $subjectId)
+        ->select('date')
+        ->distinct()
+        ->orderBy('date', 'asc')
+        ->pluck('date')
+        ->toArray();
+
+    $headers = array_merge($headers, $dates);
+
+    // Generate Excel file
+    return Excel::download(new \App\Exports\AttendanceExport($data, $headers), 'attendance.xlsx');
+}
+
      
     public function exportPdf()
     {
