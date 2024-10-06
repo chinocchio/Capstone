@@ -2,65 +2,60 @@
 
 namespace App\Exports;
 
-use App\Models\Logs;
-use Carbon\Carbon;
+use App\Models\StudentAttendance;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithMapping;
+use Illuminate\Support\Facades\DB;
 
-class LogsExport implements FromCollection, WithHeadings
+class LogsExport implements FromCollection, WithHeadings, WithMapping
 {
     public function collection()
     {
-        return Logs::with('user') // Assuming you have a user relationship on the Log model
-            ->get()
-            ->map(function ($log) {
-                // Add the current date and time in/out fields
-                $currentDate = Carbon::now()->format('Y-m-d');
-                $timeIn = $this->parseTime($log->scanned_at);  // Assuming 'scanned_at' as Time In
-                $timeOut = $this->parseTime($log->verified_at); // Assuming 'verified_at' as Time Out
-
-                return [
-                    'User' => $log->user ? $log->user->name : 'Admin', // Get user name if available, otherwise default to 'Admin'
-                    'Status' => $log->status,
-                    'Time In' => $timeIn,
-                    'Time Out' => $timeOut,
-                    'Day' => $log->day,
-                    'Log Date' => $log->created_at->format('Y-m-d'),
-                ];
-            });
+        // Fetch all attendance records
+        return DB::table('student_attendance')
+            ->join('students', 'student_attendance.student_id', '=', 'students.id')
+            ->leftJoin('mac_student', 'student_attendance.student_id', '=', 'mac_student.student_id') // Fetch PC number, if exists
+            ->join('user_subject', 'student_attendance.subject_id', '=', 'user_subject.subject_id')
+            ->join('users', 'user_subject.user_id', '=', 'users.id')
+            ->select(
+                'student_attendance.date',
+                'students.name as student_name',
+                'mac_student.mac_id as pc_number',
+                'students.student_number',
+                'students.section as year_course',
+                'users.username as instructor_name',
+                'student_attendance.time_in'
+            )
+            ->orderBy('student_attendance.date', 'desc') // Order by date, latest first
+            ->get();
     }
 
+    // Define the headings for the exported Excel file
     public function headings(): array
     {
         return [
-            'User',
-            'Status',
+            'Date',
+            'Name',
+            'PC #',
+            'Student ID #',
+            'Year Course & Section',
+            'Instructor',
             'Time In',
-            'Time Out',
-            'Day',
-            'Log Date',
         ];
     }
 
-    /**
-     * Parse the time field to a readable format, handling potential errors.
-     *
-     * @param string|null $time
-     * @return string
-     */
-    private function parseTime($time)
+    // Map the data for each row in the export
+    public function map($attendance): array
     {
-        try {
-            // Attempt to parse using a strict time format
-            return Carbon::createFromFormat('H:i:s', $time)->format('h:i a');
-        } catch (\Exception $e) {
-            // Fallback to a more flexible parse if the strict format fails
-            try {
-                return Carbon::parse($time)->format('h:i a');
-            } catch (\Exception $e) {
-                // Return 'Invalid Time' if parsing fails completely
-                return 'Invalid Time';
-            }
-        }
+        return [
+            $attendance->date,
+            $attendance->student_name,
+            $attendance->pc_number ?? 'N/A', // Show 'N/A' if no PC is linked
+            $attendance->student_number,
+            $attendance->year_course,
+            $attendance->instructor_name,
+            $attendance->time_in,
+        ];
     }
 }
