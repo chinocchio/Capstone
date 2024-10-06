@@ -66,7 +66,21 @@
                     </table>
                 </div>
 
-                <button type="submit" class="mt-4 p-2 bg-green-500 text-white rounded">Save Attendance</button>
+                    {{-- If there are linked subjects (ongoing subjects) --}}
+                @if($linkedSubjects->isNotEmpty())
+                {{-- Hidden input for subject_id (assuming only one subject is active) --}}
+                <input type="hidden" name="subject_id" value="{{ $linkedSubjects->first()->id }}">
+
+                {{-- Save Attendance Button --}}
+                <button type="submit" class="mt-4 p-2 bg-green-500 text-white rounded">
+                    Save Attendance
+                </button>
+            @else
+                {{-- If no linked subjects, disable the Save Attendance button --}}
+                <button class="mt-4 p-2 bg-gray-400 text-white rounded" disabled>
+                    Save Attendance
+                </button>
+            @endif
             </form>
 
             {{-- <button id="export-btn" class="mt-4 p-2 bg-blue-500 text-white rounded">Export PDF</button> --}}

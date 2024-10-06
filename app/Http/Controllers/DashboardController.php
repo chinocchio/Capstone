@@ -239,16 +239,25 @@ class DashboardController extends Controller
     
         // Process each student from the form data
         foreach ($request->input('students', []) as $studentId => $studentData) {
-            StudentAttendance::create([
-                'student_id' => $studentId,
-                'subject_id' => $subjectId, // Now we have the subject_id
-                'status' => $studentData['status'],
-                'time_in' => $studentData['time_in'],
-                'time_out' => $studentData['time_out'],
-                'date' => $today,
-                'school_year' => $schoolYear,
-                'semester' => $semester,
-            ]);
+            // Check if the record already exists for the student, subject, and date
+            $existingRecord = StudentAttendance::where('student_id', $studentId)
+                ->where('subject_id', $subjectId)
+                ->where('date', $today)
+                ->first();
+    
+            // If no existing record is found, create a new attendance entry
+            if (!$existingRecord) {
+                StudentAttendance::create([
+                    'student_id' => $studentId,
+                    'subject_id' => $subjectId, 
+                    'status' => $studentData['status'],
+                    'time_in' => $studentData['time_in'],
+                    'time_out' => $studentData['time_out'],
+                    'date' => $today,
+                    'school_year' => $schoolYear,
+                    'semester' => $semester,
+                ]);
+            } 
         }
     
         // After saving the attendance, delete the related scans for the subject
@@ -257,6 +266,7 @@ class DashboardController extends Controller
         // Redirect back with a success message
         return redirect()->back()->with('success', 'Attendance saved successfully, and scans cleared.');
     }
+    
     
     public function exportAttendance($subjectId)
 {
