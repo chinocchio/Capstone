@@ -69,13 +69,19 @@
                 <button type="submit" class="mt-4 p-2 bg-green-500 text-white rounded">Save Attendance</button>
             </form>
 
-            <button id="export-btn" class="mt-4 p-2 bg-blue-500 text-white rounded">Export PDF</button>
+            {{-- <button id="export-btn" class="mt-4 p-2 bg-blue-500 text-white rounded">Export PDF</button> --}}
 
                         {{-- New Export Button --}}
+                        @if($linkedSubjects->isNotEmpty())
                         <button class="mt-4 p-2 bg-blue-500 text-white rounded"
-                        onclick="window.location.href='{{ route('attendance.export.excel', ['subjectId' => $linkedSubjects->first()->id ?? '']) }}'">
-                        Export Excel
-                    </button>
+                            onclick="window.location.href='{{ route('attendance.export.excel', ['subjectId' => $linkedSubjects->first()->id ?? '']) }}'">
+                            Export Excel
+                        </button>
+                    @else
+                        <button class="mt-4 p-2 bg-gray-400 text-white rounded" disabled>
+                            Export Excel
+                        </button>
+                    @endif
         </div>
     </div>
 
