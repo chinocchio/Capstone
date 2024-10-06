@@ -35,6 +35,9 @@ Route::get('/{user}/posts', [DashboardController::class, 'userPosts'])->name('po
 // Routes for authenticated users
 Route::middleware('auth')->group(function() {
 
+    Route::post('/attendance/save', [DashboardController::class, 'saveAttendance'])->name('attendance.save');
+
+
     Route::get('/user/change-pin', [UserController::class, 'showChangePinForm'])->name('user.showChangePinForm');
     Route::put('/user/change-pin', [UserController::class, 'changePinUser'])->name('user.changePin');
 

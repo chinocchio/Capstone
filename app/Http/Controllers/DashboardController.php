@@ -6,6 +6,7 @@ use App\Models\Post;
 use App\Models\Subject;
 use App\Models\Setting;
 use App\Models\User;
+use App\Models\StudentAttendance;
 use App\Models\Student;
 use App\Models\Scan;
 use Illuminate\Support\Facades\Auth;
@@ -64,10 +65,6 @@ class DashboardController extends Controller
         ]);
     }
     
-
-    
-    
-
     public function userPosts(User $user) {
 
         $userPosts = $user->posts()->latest()->paginate(6);
@@ -223,7 +220,34 @@ class DashboardController extends Controller
             'currentDate' => $now->format('l, F j, Y') 
         ]);
     }
+
+
+    public function saveAttendance(Request $request)
+    {
+        $now = Carbon::now('Asia/Manila');
+        $today = $now->format('Y-m-d'); // Current date
     
+        // Fetch the current semester and academic year from the settings
+        $currentSettings = Setting::first();
+        $schoolYear = $currentSettings->academic_year;
+        $semester = $currentSettings->current_semester;
+    
+        // Process each student from the form data
+        foreach ($request->input('students', []) as $studentId => $studentData) {
+            StudentAttendance::create([
+                'student_id' => $studentId,
+                'subject_id' => $request->input('subject_id'), // Now we have the subject_id
+                'status' => $studentData['status'],
+                'time_in' => $studentData['time_in'],
+                'time_out' => $studentData['time_out'],
+                'date' => $today,
+                'school_year' => $schoolYear,
+                'semester' => $semester,
+            ]);
+        }
+    
+        return redirect()->back()->with('success', 'Attendance saved successfully.');
+    }
     
      
     public function exportPdf()
